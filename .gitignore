@@ -1,0 +1,15 @@
+# GITIGNORE FILE 
+# Lists all files that Git shall ignore:
+
+
+# Temporary compile data: 
+Project/[Dd]ebug/
+Project/[Rr]elease/
+
+# Project cache files:
+*.sdf
+*.suo
+
+# Output: Debugging databases and linker listings:
+*.pdb
+*.ilk
