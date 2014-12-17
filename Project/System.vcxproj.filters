@@ -4,15 +4,30 @@
     <Filter Include="Execution">
       <UniqueIdentifier>{4440737e-b3b4-4b59-807a-64a76dcc32f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Visualization">
+      <UniqueIdentifier>{54fcd3ed-d3e4-4543-bc66-4baab9ce6bc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Agents">
+      <UniqueIdentifier>{ad6a4ffa-1f02-4014-a7d7-587f6a100ef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{7814c26d-7865-4aeb-bedf-bba746e3e956}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\System\Execution\IExecutable.h">
       <Filter>Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\System\Visualization\Engine.h">
+      <Filter>Visualization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\System\Execution\Program.cpp">
       <Filter>Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\System\Visualization\Engine.cpp">
+      <Filter>Visualization</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

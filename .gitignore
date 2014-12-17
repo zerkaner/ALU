@@ -9,6 +9,7 @@ Project/[Rr]elease/
 # Project cache files:
 *.sdf
 *.suo
+*.opensdf
 
 # Output: Debugging databases and linker listings:
 *.pdb
