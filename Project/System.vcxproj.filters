@@ -23,11 +23,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Code\System\Execution\Program.cpp">
-      <Filter>Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\System\Visualization\Engine.cpp">
       <Filter>Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\System\Execution\System.cpp">
+      <Filter>Execution</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
