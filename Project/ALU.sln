@@ -2,20 +2,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "System", "System.vcxproj", "{9A80FC2F-DEC0-46BF-8B4F-8E403DE00F31}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "System", "System\System.vcxproj", "{9A80FC2F-DEC0-46BF-8B4F-8E403DE00F31}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BCD2640D-0A38-4211-A70D-850123C65B11} = {BCD2640D-0A38-4211-A70D-850123C65B11}
 		{BFBDEE32-34DA-4614-BB18-DBB9A64F143E} = {BFBDEE32-34DA-4614-BB18-DBB9A64F143E}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Data", "Data.vcxproj", "{BCD2640D-0A38-4211-A70D-850123C65B11}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Data", "Data\Data.vcxproj", "{BCD2640D-0A38-4211-A70D-850123C65B11}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Converter", "Converter.vcxproj", "{2BAFED92-8DE9-4CA7-9E4B-500E5139D137}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Converter", "Converter\Converter.vcxproj", "{2BAFED92-8DE9-4CA7-9E4B-500E5139D137}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BCD2640D-0A38-4211-A70D-850123C65B11} = {BCD2640D-0A38-4211-A70D-850123C65B11}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Visualization", "Visualization.vcxproj", "{BFBDEE32-34DA-4614-BB18-DBB9A64F143E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Visualization", "Visualization\Visualization.vcxproj", "{BFBDEE32-34DA-4614-BB18-DBB9A64F143E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BCD2640D-0A38-4211-A70D-850123C65B11} = {BCD2640D-0A38-4211-A70D-850123C65B11}
 	EndProjectSection
