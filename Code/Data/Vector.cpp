@@ -8,7 +8,7 @@
 using namespace std;
 
 
-/* Initialize a two-dimensional vector (height is set to zero). */
+/** Initialize a two-dimensional vector (height is set to zero). */
 Vector::Vector (float x, float y) {
   X = x;
   Y = y;
@@ -17,12 +17,18 @@ Vector::Vector (float x, float y) {
 }
 
 
-/* Initialize a three-dimensional vector. */
+/** Initialize a three-dimensional vector. */
 Vector::Vector (float x, float y, float z) {
   X = x;
   Y = y;
   Z = z;
   _is3D = true;
+}
+
+
+/** Destroy this vector. */
+Vector::~Vector() {
+  // Nothing to free here!
 }
 
 
@@ -115,12 +121,32 @@ Vector Vector::operator+(Vector right) {
 }
 
 
+/** Addition of another vector.
+  * @param right Second (right) vector. */
+void Vector::operator+=(Vector right) {
+  X += right.X;
+  Y += right.Y; 
+  Z += right.Z;
+  if (!_is3D) _is3D = right._is3D;  // Set flag, if addition is 3D.
+}
+
+
 /** Substraction of another vector.
  * @param right Second (right) vector.
  * @return Difference of both vectors. */
 Vector Vector::operator-(Vector right) {
   if (_is3D || right._is3D) return Vector(X-right.X, Y-right.Y, Z-right.Z);
   else                      return Vector(X-right.X, Y-right.Y);
+}
+
+
+/** Substraction of another vector.
+  * @param right Second (right) vector. */
+void Vector::operator-=(Vector right) {
+  X -= right.X;
+  Y -= right.Y; 
+  Z -= right.Z;
+  if (!_is3D) _is3D = right._is3D;  // Set flag, if substraction is 3D.
 }
 
 
@@ -156,4 +182,38 @@ Vector operator*(float factor, Vector vec) {
  * @return The scaled vector. */
 Vector Vector::operator/(float div) {
   return operator* (1.0f/div);
+}
+
+
+/** Returns the pitch (lateral axis) of this vector.
+  * @return The pitch value [-90° -> 90°]. (In 2D always zero.) */
+float Vector::GetPitch() {
+  return RadToDeg(asinf(Z / GetLength()));
+}
+
+
+/** Returns the yaw (vertical axis) of this vector.
+  * @return The yaw value [0° -> <360°]. 0°: northbound (y-axis) */
+float Vector::GetYaw() {
+  float yaw = 0.0f;
+
+  // Check 90° and 270° (arctan infinite) first. (-> x-axis only)      
+  if (fabs(Y) <= numeric_limits<float>::epsilon()) {
+    if      (X > 0.0f) yaw = 90.0f;
+    else if (X < 0.0f) yaw = 270.0f;
+  }
+
+  // Arctan argument fine? Calculate heading then.    
+  else {
+    yaw = RadToDeg(atanf(X / Y));
+    if (Y   < 0.0f) yaw += 180.0f;  // Range  90° to 270° correction. 
+    if (yaw < 0.0f) yaw += 360.0f;  // Range 270° to 360° correction.        
+  }
+  return yaw;
+}
+
+/** Returns whether this vector is 3D or not. 
+  * @return 'True' if 3D, 'false' otherwise. */
+bool Vector::Is3D() {
+  return _is3D;
 }

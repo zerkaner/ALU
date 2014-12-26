@@ -69,11 +69,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Code\Data\Direction.cpp" />
+    <ClCompile Include="..\..\Code\Data\Object3D.cpp" />
     <ClCompile Include="..\..\Code\Data\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Code\Data\Direction.h" />
+    <ClInclude Include="..\..\Code\Data\Object3D.h" />
     <ClInclude Include="..\..\Code\Data\Primitives.h" />
     <ClInclude Include="..\..\Code\Data\Vector.h" />
   </ItemGroup>
