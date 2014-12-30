@@ -6,8 +6,9 @@
 
 #pragma once
 
-#include <SDL_opengl.h>
 #include <SDL.h>
+#include <SDL_opengl.h>
+
 
 /* This is the OpenGL engine, responsible for 3D rendering. */
 class Engine {

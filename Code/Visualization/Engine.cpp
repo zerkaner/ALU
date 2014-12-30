@@ -1,11 +1,16 @@
 #include "Engine.h"
 
-#include <stdio.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <gl\GLU.h>
+#include <stdio.h>
 
 
-/* Create a new OpenGL engine instance. */
+/** Create a new OpenGL engine instance.
+ * @param winname String with the window title. 
+ * @param width The window's starting width.
+ * @param height The initial height of the window.
+ * @param fullscreen If 'true', supplied width and height are ignored. */
 Engine::Engine(char* winname, int width, int height, bool fullscreen) {
   
   // Initialize the SDL video subsystem.   
@@ -20,7 +25,7 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen) {
   _glcontext = SDL_GL_CreateContext(_window);
   if (_glcontext == NULL) printf ("[ERROR] OpenGL context handler could not be created.\n");
   else                    printf ("Created OpenGL context handler.\n");
-  /*
+  
   // OpenGL initialization.
   glClearColor (0.0f, 0.0f, 0.0f, 1.0f);              // Set clear color.
   glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Highest quality desired.
@@ -36,12 +41,10 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen) {
   SetResolution (width, height, fullscreen);
   //_objects = vector <IObjectGL*> ();
   //camera = new Camera (_window); 
-  */
 }
 
 
-
-/* Terminate the SDL / OpenGL engine and return to main program. */
+/** Terminate the SDL / OpenGL engine and return to main program. */
 Engine::~Engine () { 
   SDL_GL_DeleteContext(_glcontext);
   SDL_DestroyWindow(_window);
@@ -50,10 +53,12 @@ Engine::~Engine () {
 }
 
 
+/** Set the window resolution, update the viewport and adjust perspective. 
+ * @param width The window's width.
+ * @param height The height of the window.
+ * @param fullscreen If 'true', supplied width and height are ignored. */
+void Engine::SetResolution (int width, int height, bool fullscreen = false) {
 
-/* Set the window resolution. */
-void Engine::SetResolution (int width, int height, bool fullscreen) {
-  /*
   // Set resolution to native fullscreen or given window size.
   if (fullscreen) SDL_SetWindowFullscreen (_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
   else {
@@ -67,16 +72,15 @@ void Engine::SetResolution (int width, int height, bool fullscreen) {
   glViewport (0, 0, x, y); 
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
-  //gluPerspective(60.0, (double) x/y, 1.0, 1000.0),
+  //TODO Perspective calculation. It's the y-axis angle (top-down).
+  gluPerspective(60.0, (double) x/y, 1.0, 1000.0),
   glMatrixMode (GL_MODELVIEW);
-  */
 }
 
 
-
-/* Clear screen and render all objects. */
+/** Clear screen and render all objects. */
 void Engine::Render () {
-  /*
+
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear current buffer.
   glLoadIdentity();                                    // Reset model matrix.
 
@@ -86,5 +90,4 @@ void Engine::Render () {
   // Render objects.
   //for (unsigned int i = 0; i < _objects.size(); i ++) _objects[i]->Render ();
   SDL_GL_SwapWindow (_window);   // Swap active and standby buffers.
-  */
 }
