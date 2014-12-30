@@ -212,6 +212,7 @@ float Vector::GetYaw() {
   return yaw;
 }
 
+
 /** Returns whether this vector is 3D or not. 
   * @return 'True' if 3D, 'false' otherwise. */
 bool Vector::Is3D() {
