@@ -5,8 +5,6 @@
 /*****************************************************************************/
 
 #pragma once
-//#ifndef ENGINE_H
-//#define ENGINE_H
 
 #include <SDL_opengl.h>
 #include <SDL.h>
@@ -25,6 +23,3 @@ class Engine {
     void SetResolution(int width, int height, bool fullscreen);
     void Render();
 };
-
-
-//#endif

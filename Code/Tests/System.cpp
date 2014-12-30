@@ -1,10 +1,12 @@
 #include <stdio.h>
-#include "..\Execution\Executor.h"
-#include "..\..\Data\Vector.h"
-#include "..\..\Data\Object3D.h"
+
+#include <Data\Vector.h>
+#include <Data\Object3D.h>
+#include <Execution\Executor.h>
+#include <Visualization\Engine.h>
 
 const float Gravity    = 9.81f;  // Earth gravity constant. [m/s^2]
-const float AirDensity = 1.29f;  // Density of air.        [kg/m^3]
+const float AirDensity = 1.20f;  // Density of air.        [kg/m^3]
 
 
 void UpdateObject(Object3D* obj) {
@@ -36,18 +38,18 @@ void UpdateObject(Object3D* obj) {
 
 
 int main (int argc, char** argv) {
-
+  
   Object3D obj = Object3D(Vector(0,0));
   obj.Cw =          0.8f;
   obj.ProfileArea = 1.0f;
   obj.Mass =      200.0f;
   obj.Thrust =   1000.0f;
 
-  for (int i = 0; i < 24; i++) UpdateObject(&obj);
-
-
-  //new Engine("Testfenster", 640, 480, false);
+  //for (int i = 0; i < 24; i++) UpdateObject(&obj);
+  
+  Engine* eng = new Engine("Testfenster", 640, 480, false);
 
   getchar();
+  eng->~Engine();
   return 0;
 }

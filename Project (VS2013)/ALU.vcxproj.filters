@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Agents">
+      <UniqueIdentifier>{51980fdd-c1c9-41e9-8676-cae23966ebd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Converter">
+      <UniqueIdentifier>{29ab8534-7564-4b70-a7dc-b7dd17169c1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{3cf5fd64-7a72-4099-a6b6-4963bd004da7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{6855e0e9-9c36-4285-aadc-e03c05d38ce1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Execution">
+      <UniqueIdentifier>{b12236df-d6de-4a17-94d3-700e443e68b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tests">
+      <UniqueIdentifier>{91d42bf4-ec80-4654-9ad8-1e6100a4d305}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{a8cf9ea6-f056-43a3-a160-09cee7c102d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visualization">
+      <UniqueIdentifier>{56cfeb81-9ecd-48c4-b002-7bf3bee19b6d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\Agents\Agent.cpp">
+      <Filter>Agents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Converter.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Object3D.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Vector.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Execution\Executor.cpp">
+      <Filter>Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Tests\System.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Visualization\Engine.cpp">
+      <Filter>Visualization</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Agents\Agent.h">
+      <Filter>Agents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Object3D.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Primitives.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Vector.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\Executor.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\IExecutable.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\Engine.h">
+      <Filter>Visualization</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

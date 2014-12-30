@@ -56,33 +56,14 @@ bool RemoveElementFromVector(vector<T*> vec, T* elem) {
 
 // Removal of sequential executed tasks.
 void Executor::SequentialRemove(IExecutable* exec) {
-  int index;
+  unsigned int index;
 
   if (index = GetIndexOfElement(_exec, exec) != -1) {
     if(index <= _ex1) _ex1 --;
-
   }
 
-
-
-
-  if(find(_exec.begin(), _exec.end(), exec) != _exec.end()) {
-
-
-  } 
-  else if (find(_preExec.begin(), _preExec.end(), exec) != _preExec.end()) {
-    
-    _preExec.erase(remove(begin(_preExec), end(_preExec), exec), end(_preExec)); 
-    
-  
-  } 
-  else if (find(_postExec.begin(), _postExec.end(), exec) != _postExec.end()) {
-  
-  
-  }
-
-      if (_execList.IndexOf(agent) <= _execCounter) _execCounter --;
-      _agents.Remove(agent);
+    //  if (_execList.IndexOf(agent) <= _execCounter) _execCounter --;
+    //  _agents.Remove(agent);
 }
 
 
@@ -107,7 +88,7 @@ void Executor::Advance() {
   
   // Main queue: If a random execution is desired, we shuffle the agent list.
   if (RandomExecution) {
-    for (int i = 0; i < _exec.size(); i++) {
+    for (unsigned int i = 0; i < _exec.size(); i++) {
       int j = rand() % (_exec.size() - i) + i;  // Interval (i -> count).
       IExecutable* temp = _exec[i];
       _exec[i] = _exec[j];

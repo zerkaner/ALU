@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 
-int main (int argc, char** argv) {
+int StartConverter (int argc, char** argv) {
 
   printf("Test Converter!\n");
   printf("2nd line!\n");

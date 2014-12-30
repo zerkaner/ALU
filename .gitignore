@@ -3,16 +3,8 @@
 
 
 # Temporary compile data: 
-Project/[Dd]ebug/
-Project/[Rr]elease/
-Project/Converter/[Dd]ebug/
-Project/Converter/[Rr]elease/
-Project/Data/[Dd]ebug/
-Project/Data/[Rr]elease/
-Project/System/[Dd]ebug/
-Project/System/[Rr]elease/
-Project/Visualization/[Dd]ebug/
-Project/Visualization/[Rr]elease/
+Project (VS2013)/[Dd]ebug/
+Project (VS2013)/[Rr]elease/
 
 # Project cache files:
 *.sdf

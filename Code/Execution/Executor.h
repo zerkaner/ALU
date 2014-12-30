@@ -21,7 +21,7 @@ class Executor {
     map<IExecutable*, thread> _threads;  // Thread mapping structure.
     long _idCounter = 0;                 // ID distribution counter.
     long _cycle = 0;                     // Counter for execution cycle.
-    int _ex0, _ex1, _ex2;                // Iteration counters (+/- for list changes). 
+    unsigned int _ex0, _ex1, _ex2;       // Iteration counters (+/- for list changes). 
 
   public:
     bool RandomExecution = false;   // On true, _exec is shuffled each round.

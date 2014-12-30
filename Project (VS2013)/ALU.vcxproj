@@ -10,19 +10,37 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\Agents\Agent.cpp" />
+    <ClCompile Include="..\Code\Converter\Converter.cpp" />
+    <ClCompile Include="..\Code\Data\Object3D.cpp" />
+    <ClCompile Include="..\Code\Data\Vector.cpp" />
+    <ClCompile Include="..\Code\Execution\Executor.cpp" />
+    <ClCompile Include="..\Code\Tests\System.cpp" />
+    <ClCompile Include="..\Code\Visualization\Engine.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Agents\Agent.h" />
+    <ClInclude Include="..\Code\Data\Object3D.h" />
+    <ClInclude Include="..\Code\Data\Primitives.h" />
+    <ClInclude Include="..\Code\Data\Vector.h" />
+    <ClInclude Include="..\Code\Execution\Executor.h" />
+    <ClInclude Include="..\Code\Execution\IExecutable.h" />
+    <ClInclude Include="..\Code\Visualization\Engine.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BFBDEE32-34DA-4614-BB18-DBB9A64F143E}</ProjectGuid>
-    <RootNamespace>Visualization</RootNamespace>
+    <ProjectGuid>{6A1E07B8-D75A-47FB-98A3-67682FF66EB4}</ProjectGuid>
+    <RootNamespace>ALU</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -39,25 +57,35 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\Output\</OutDir>
-    <IncludePath>..\..\Ressources\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\Ressources\SDL2-2.0.3\lib_x86;$(LibraryPath)</LibraryPath>
+    <OutDir>..\Output\</OutDir>
+    <TargetName>ALU</TargetName>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\Code;..\Ressources\SDL2-2.0.3\include</IncludePath>
+    <LibraryPath>..\Ressources\SDL2-2.0.3\lib_x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\Output\</OutDir>
-    <IncludePath>..\..\Ressources\SDL2-2.0.3\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\Ressources\SDL2-2.0.3\lib_x86;$(LibraryPath)</LibraryPath>
+    <OutDir>..\Output\</OutDir>
+    <TargetName>ALU</TargetName>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\Code;..\Ressources\SDL2-2.0.3\include</IncludePath>
+    <LibraryPath>..\Ressources\SDL2-2.0.3\lib_x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -66,20 +94,22 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Code\Visualization\Engine.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Code\Visualization\Engine.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

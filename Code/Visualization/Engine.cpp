@@ -11,7 +11,7 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen) {
   // Initialize the SDL video subsystem.   
   if (SDL_Init (SDL_INIT_VIDEO) != 0) printf ("[ERROR] SDL initialization failed.\n");
   else                                printf ("SDL system initialized.\n");
-
+  
   // Create the window and the OpenGL context handler.
   _window = SDL_CreateWindow (winname, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               width, height, SDL_WINDOW_OPENGL);
@@ -20,7 +20,7 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen) {
   _glcontext = SDL_GL_CreateContext(_window);
   if (_glcontext == NULL) printf ("[ERROR] OpenGL context handler could not be created.\n");
   else                    printf ("Created OpenGL context handler.\n");
-  
+  /*
   // OpenGL initialization.
   glClearColor (0.0f, 0.0f, 0.0f, 1.0f);              // Set clear color.
   glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Highest quality desired.
@@ -36,6 +36,7 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen) {
   SetResolution (width, height, fullscreen);
   //_objects = vector <IObjectGL*> ();
   //camera = new Camera (_window); 
+  */
 }
 
 
@@ -52,7 +53,7 @@ Engine::~Engine () {
 
 /* Set the window resolution. */
 void Engine::SetResolution (int width, int height, bool fullscreen) {
-  
+  /*
   // Set resolution to native fullscreen or given window size.
   if (fullscreen) SDL_SetWindowFullscreen (_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
   else {
@@ -68,12 +69,14 @@ void Engine::SetResolution (int width, int height, bool fullscreen) {
   glLoadIdentity ();
   //gluPerspective(60.0, (double) x/y, 1.0, 1000.0),
   glMatrixMode (GL_MODELVIEW);
+  */
 }
 
 
 
 /* Clear screen and render all objects. */
 void Engine::Render () {
+  /*
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear current buffer.
   glLoadIdentity();                                    // Reset model matrix.
 
@@ -83,4 +86,5 @@ void Engine::Render () {
   // Render objects.
   //for (unsigned int i = 0; i < _objects.size(); i ++) _objects[i]->Render ();
   SDL_GL_SwapWindow (_window);   // Swap active and standby buffers.
+  */
 }
