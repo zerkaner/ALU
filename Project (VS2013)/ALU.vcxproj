@@ -15,8 +15,18 @@
     <ClCompile Include="..\Code\Converter\Converter.cpp" />
     <ClCompile Include="..\Code\Data\Object3D.cpp" />
     <ClCompile Include="..\Code\Data\Vector.cpp" />
+    <ClCompile Include="..\Code\Environment\Environment.cpp" />
+    <ClCompile Include="..\Code\Execution\ALU.cpp" />
     <ClCompile Include="..\Code\Execution\Executor.cpp" />
-    <ClCompile Include="..\Code\Tests\System.cpp" />
+    <ClCompile Include="..\Code\Execution\SimManager.cpp" />
+    <ClCompile Include="..\Code\Execution\SystemTest.cpp" />
+    <ClCompile Include="..\Code\Input\InputController.cpp" />
+    <ClCompile Include="..\Code\Input\InputListener.cpp" />
+    <ClCompile Include="..\Code\Physics\Modules\GravityModule.cpp" />
+    <ClCompile Include="..\Code\Physics\PhysicsEngine.cpp" />
+    <ClCompile Include="..\Code\UserInterface\TextWriter.cpp" />
+    <ClCompile Include="..\Code\UserInterface\UserInterface.cpp" />
+    <ClCompile Include="..\Code\Visualization\Camera.cpp" />
     <ClCompile Include="..\Code\Visualization\Engine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -24,8 +34,20 @@
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />
     <ClInclude Include="..\Code\Data\Vector.h" />
+    <ClInclude Include="..\Code\Environment\Environment.h" />
+    <ClInclude Include="..\Code\Execution\ALU.h" />
     <ClInclude Include="..\Code\Execution\Executor.h" />
     <ClInclude Include="..\Code\Execution\IExecutable.h" />
+    <ClInclude Include="..\Code\Execution\IThread.h" />
+    <ClInclude Include="..\Code\Execution\SimManager.h" />
+    <ClInclude Include="..\Code\Input\InputController.h" />
+    <ClInclude Include="..\Code\Input\InputListener.h" />
+    <ClInclude Include="..\Code\Physics\IPhysicsModule.h" />
+    <ClInclude Include="..\Code\Physics\Modules\GravityModule.h" />
+    <ClInclude Include="..\Code\Physics\PhysicsEngine.h" />
+    <ClInclude Include="..\Code\UserInterface\TextWriter.h" />
+    <ClInclude Include="..\Code\UserInterface\UserInterface.h" />
+    <ClInclude Include="..\Code\Visualization\Camera.h" />
     <ClInclude Include="..\Code\Visualization\Engine.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

@@ -16,14 +16,20 @@
     <Filter Include="Execution">
       <UniqueIdentifier>{b12236df-d6de-4a17-94d3-700e443e68b1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Tests">
-      <UniqueIdentifier>{91d42bf4-ec80-4654-9ad8-1e6100a4d305}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Physics">
       <UniqueIdentifier>{a8cf9ea6-f056-43a3-a160-09cee7c102d7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visualization">
       <UniqueIdentifier>{56cfeb81-9ecd-48c4-b002-7bf3bee19b6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{cdc82ca5-89e2-418c-82b3-73e9373266d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface">
+      <UniqueIdentifier>{12143306-5348-4094-a21d-e02616886eb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Modules">
+      <UniqueIdentifier>{f2b39ec9-71bc-45d8-9e57-bb5107ae6d5d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,11 +48,41 @@
     <ClCompile Include="..\Code\Execution\Executor.cpp">
       <Filter>Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Tests\System.cpp">
-      <Filter>Tests</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Visualization\Engine.cpp">
       <Filter>Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Execution\ALU.cpp">
+      <Filter>Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Execution\SimManager.cpp">
+      <Filter>Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Physics\PhysicsEngine.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\UserInterface\TextWriter.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\UserInterface\UserInterface.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Visualization\Camera.cpp">
+      <Filter>Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Execution\SystemTest.cpp">
+      <Filter>Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Input\InputController.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Input\InputListener.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Physics\Modules\GravityModule.cpp">
+      <Filter>Physics\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Environment\Environment.cpp">
+      <Filter>Environment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +106,42 @@
     </ClInclude>
     <ClInclude Include="..\Code\Visualization\Engine.h">
       <Filter>Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\IThread.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\ALU.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\SimManager.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Physics\IPhysicsModule.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Physics\PhysicsEngine.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\UserInterface\TextWriter.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\UserInterface\UserInterface.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\Camera.h">
+      <Filter>Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\InputController.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\InputListener.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Physics\Modules\GravityModule.h">
+      <Filter>Physics\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Environment\Environment.h">
+      <Filter>Environment</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
