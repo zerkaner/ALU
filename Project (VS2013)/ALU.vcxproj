@@ -18,7 +18,7 @@
     <ClCompile Include="..\Code\Environment\Environment.cpp" />
     <ClCompile Include="..\Code\Execution\ALU.cpp" />
     <ClCompile Include="..\Code\Execution\Executor.cpp" />
-    <ClCompile Include="..\Code\Execution\SimManager.cpp" />
+    <ClCompile Include="..\Code\Execution\World.cpp" />
     <ClCompile Include="..\Code\Execution\SystemTest.cpp" />
     <ClCompile Include="..\Code\Input\InputController.cpp" />
     <ClCompile Include="..\Code\Input\InputListener.cpp" />
@@ -39,7 +39,8 @@
     <ClInclude Include="..\Code\Execution\Executor.h" />
     <ClInclude Include="..\Code\Execution\IExecutable.h" />
     <ClInclude Include="..\Code\Execution\IThread.h" />
-    <ClInclude Include="..\Code\Execution\SimManager.h" />
+    <ClInclude Include="..\Code\Execution\Stopwatch.h" />
+    <ClInclude Include="..\Code\Execution\World.h" />
     <ClInclude Include="..\Code\Input\InputController.h" />
     <ClInclude Include="..\Code\Input\InputListener.h" />
     <ClInclude Include="..\Code\Physics\IPhysicsModule.h" />

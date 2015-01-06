@@ -54,9 +54,6 @@
     <ClCompile Include="..\Code\Execution\ALU.cpp">
       <Filter>Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Execution\SimManager.cpp">
-      <Filter>Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Physics\PhysicsEngine.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
@@ -83,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Environment\Environment.cpp">
       <Filter>Environment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Execution\World.cpp">
+      <Filter>Execution</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,9 +113,6 @@
     <ClInclude Include="..\Code\Execution\ALU.h">
       <Filter>Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Execution\SimManager.h">
-      <Filter>Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Physics\IPhysicsModule.h">
       <Filter>Physics</Filter>
     </ClInclude>
@@ -142,6 +139,12 @@
     </ClInclude>
     <ClInclude Include="..\Code\Environment\Environment.h">
       <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\World.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\Stopwatch.h">
+      <Filter>Execution</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

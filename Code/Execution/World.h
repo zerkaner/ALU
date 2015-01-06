@@ -1,6 +1,12 @@
 #pragma once
 
 /** Superior class for agents, ojects, environment and physics. */
-class SimManager {
+class World {
+
+
+  public:
+    
+    void AdvanceOneTick() {
+    }
 
 };
