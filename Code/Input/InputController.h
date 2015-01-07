@@ -26,6 +26,10 @@ class InputController {
 
     void KeyPressed(char key, Modifier mod) {
       printf("[Key pressed]: %c  mod %d\n", key, mod);
+      if (key == 'c' && mod == CTRL) ExitCalled();
     }
 
+    void ExitCalled() {
+      printf("Exit command echoed!\n");
+    }
 };
