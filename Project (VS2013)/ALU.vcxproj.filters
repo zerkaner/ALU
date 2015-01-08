@@ -146,5 +146,8 @@
     <ClInclude Include="..\Code\Execution\Stopwatch.h">
       <Filter>Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Environment\GridTerrain.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

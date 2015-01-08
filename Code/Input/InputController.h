@@ -1,35 +1,36 @@
 #pragma once
-
-#include <stdio.h>
+class ALU;
+class InputListener; 
+class Camera;
 
 
 /** This controller class receives parsed user input and acts accordingly. */
 class InputController {
 
+  private:
+    ALU* _runtime;
+    enum CameraMode {LOCK, MOVE, ROTATE}; // List of available camera modes.
+    Camera* _camera;            // Camera reference.
+    CameraMode _cameraMode;     // Current mode.
+    InputListener* _listener;   // The listener that feeds this controller.
+    bool _relMouse;
 
   public:
-    InputController() {
-    }
 
     enum MouseButton {LEFT=1, MIDDLE, RIGHT, MOUSE4, MOUSE5};
     enum Modifier    {NONE, CTRL, SHIFT, ALT};
     enum SpecialKey  {};
 
 
-    void MouseClick(MouseButton button) {
-      printf("[Mouse click]: %d\n", button);
-    }
+    InputController(ALU* runtime, Camera* camera);
+    
+    void SetListenerReference(InputListener* listener);
 
-    void MouseMove(int x, int y) {
-      printf("[Mouse moved]: (%03d|%03d)\n", x, y);
-    }
+    void MouseClick(MouseButton button);
 
-    void KeyPressed(char key, Modifier mod) {
-      printf("[Key pressed]: %c  mod %d\n", key, mod);
-      if (key == 'c' && mod == CTRL) ExitCalled();
-    }
+    void MouseMove(int x, int y);
 
-    void ExitCalled() {
-      printf("Exit command echoed!\n");
-    }
+    void KeyPressed(char key, Modifier mod);
+
+    void ExitCalled();
 };

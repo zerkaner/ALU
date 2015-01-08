@@ -35,6 +35,7 @@
     <ClInclude Include="..\Code\Data\Primitives.h" />
     <ClInclude Include="..\Code\Data\Vector.h" />
     <ClInclude Include="..\Code\Environment\Environment.h" />
+    <ClInclude Include="..\Code\Environment\GridTerrain.h" />
     <ClInclude Include="..\Code\Execution\ALU.h" />
     <ClInclude Include="..\Code\Execution\Executor.h" />
     <ClInclude Include="..\Code\Execution\IExecutable.h" />

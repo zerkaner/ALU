@@ -12,10 +12,11 @@ int main (int argc, char** argv) {
   //TODO ...
 
   // Start the runtime environment and enter main loop.
-  ALU alu = ALU();
-  alu.Start();
+  ALU* alu = new ALU();
+  alu->Start();
 
   // Exit and return.
+  delete(alu);
   printf("Press any key to exit.");
   getchar();
   return 0;

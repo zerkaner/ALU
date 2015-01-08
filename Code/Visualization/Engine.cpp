@@ -1,17 +1,22 @@
-#include "Engine.h"
+#include <Visualization/Camera.h>
+#include <Visualization/Engine.h>
 
-#include <SDL.h>
-#include <SDL_opengl.h>
-#include <gl\GLU.h>
+#include <gl/GLU.h>
 #include <stdio.h>
+
+
+#include <Environment/GridTerrain.h>  //DBG
+GridTerrain gt = GridTerrain(30, 20); 
 
 
 /** Create a new OpenGL engine instance.
  * @param winname String with the window title. 
  * @param width The window's starting width.
  * @param height The initial height of the window.
- * @param fullscreen If 'true', supplied width and height are ignored. */
-Engine::Engine(char* winname, int width, int height, bool fullscreen) {
+ * @param fullscreen If 'true', supplied width and height are ignored.
+ * @param camera Pointer to the associated camera. */
+Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* camera) :
+  _camera(camera) {
   
   // Initialize the SDL video subsystem.   
   if (SDL_Init (SDL_INIT_VIDEO) != 0) printf ("[ERROR] SDL initialization failed.\n");
@@ -85,9 +90,11 @@ void Engine::Render () {
   glLoadIdentity();                                    // Reset model matrix.
 
   // Position calculation and camera update.
-  //camera->Update ();
+  _camera->Update();
 
   // Render objects.
-  //for (unsigned int i = 0; i < _objects.size(); i ++) _objects[i]->Render ();
+  //for (unsigned int i = 0; i < _objects.size(); i ++) _objects[i]->Render ();  
+  gt.DrawGrid();
+  
   SDL_GL_SwapWindow (_window);   // Swap active and standby buffers.
 }
