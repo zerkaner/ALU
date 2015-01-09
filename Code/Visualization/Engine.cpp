@@ -1,3 +1,4 @@
+#include <UserInterface/UserInterface.h>
 #include <Visualization/Camera.h>
 #include <Visualization/Engine.h>
 
@@ -14,9 +15,10 @@ GridTerrain gt = GridTerrain(30, 20);
  * @param width The window's starting width.
  * @param height The initial height of the window.
  * @param fullscreen If 'true', supplied width and height are ignored.
- * @param camera Pointer to the associated camera. */
-Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* camera) :
-  _camera(camera) {
+ * @param camera Pointer to the associated camera.
+ * @param ui Pointer to the user interface. */
+Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* camera, UserInterface* ui) :
+  _camera(camera), _ui(ui) {
   
   // Initialize the SDL video subsystem.   
   if (SDL_Init (SDL_INIT_VIDEO) != 0) printf ("[ERROR] SDL initialization failed.\n");
@@ -39,13 +41,8 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* ca
   glDepthFunc (GL_LEQUAL);  // Only render points with less or equal depth (def.: GL_LESS). 
   glClearDepth (1.0f);      // Set depth buffer clearing value to maximum.  
   
-  //TODO Altcode der ersten Generation. Umstellen auf OpenGL Version 3/4 !
-  //_initExtensions ();       // Initialize OpenGL extentions.
-  
-  // Initialize camera and resolution.
-  SetResolution (width, height, fullscreen);
-  //_objects = vector <IObjectGL*> ();
-  //camera = new Camera (_window); 
+  // Initialize viewport and resolution.
+  SetResolution (width, height, fullscreen); 
 }
 
 
@@ -72,29 +69,38 @@ void Engine::SetResolution (int width, int height, bool fullscreen = false) {
   }
 
   // Update the OpenGL viewport and adjust the user perspective.
-  int x, y;
-  SDL_GetWindowSize (_window, &x, &y);
-  glViewport (0, 0, x, y); 
+  SDL_GetWindowSize (_window, &_width, &_height);
+  glViewport (0, 0, _width, _height); 
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
-  //TODO Perspective calculation. It's the y-axis angle (top-down).
-  gluPerspective(60.0, (double) x/y, 1.0, 1000.0),
+  gluPerspective(40.0, (double) _width/_height, 1.0, 1000.0),
   glMatrixMode (GL_MODELVIEW);
 }
 
 
 /** Clear screen and render all objects. */
 void Engine::Render () {
-
-  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear current buffer.
-  glLoadIdentity();                                    // Reset model matrix.
-
-  // Position calculation and camera update.
-  _camera->Update();
-
-  // Render objects.
-  //for (unsigned int i = 0; i < _objects.size(); i ++) _objects[i]->Render ();  
-  gt.DrawGrid();
+  glClear (0x4100);    // Clear current buffer (color & depth buffer bit).
+  glLoadIdentity();    // Reset model matrix.
+  _camera->Update();   // Position calculation and camera update.
+  gt.DrawGrid();       // Draw the world.
   
+  // Switch to 2D rendering for the user interface.
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+  glLoadIdentity();
+  glOrtho(0.0, _width, _height, 0.0, -1.0, 10.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glDisable(GL_CULL_FACE);
+  glClear(GL_DEPTH_BUFFER_BIT);
+
+  _ui->Update();  // Call user interface rendering method.
+
+  // Return to 3D rendering mode.
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW);
+
   SDL_GL_SwapWindow (_window);   // Swap active and standby buffers.
 }

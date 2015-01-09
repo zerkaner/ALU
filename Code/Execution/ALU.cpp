@@ -8,8 +8,8 @@ ALU::ALU() :
   _camera(Camera(12, -7, 2)),
   _controller(InputController(this, &_camera)),
   _listener(InputListener(&_controller)),
-  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera)),
-  _interface(UserInterface()) {
+  _interface(UserInterface()),
+  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface)) {
 }
 
 
@@ -23,7 +23,6 @@ void ALU::Start() {
     _world.AdvanceOneTick();      // 1) Execute the world.
     _listener.EvaluateEvents();   // 2) Read and evaluate user input.
     _3dEngine.Render();           // 3) Render the 3D environment.
-    _interface.Update();          // 4) Update the 2D user interface.
 
     // Sleep calculation.
     delay = (long)((1.0f/_targetFPS)*1000) - _stopwatch.GetInterval();

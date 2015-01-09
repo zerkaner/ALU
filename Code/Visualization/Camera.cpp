@@ -84,7 +84,7 @@ void Camera::Update () {
   printf("Pos: (%3d,%3d,%3d)  |  Yaw: %-3d | Pitch: %-3d\n", 
           (int)_pos.X, (int)_pos.Y, (int)_pos.Z, (int)_yaw, (int)_pitch);
 
-  glRotatef (_pitch, -1.0f,  0.0f, 0.0f);  // Rotate on x-Axis (set height).
-  glRotatef (_yaw,    0.0f, -1.0f, 0.0f);  // Rotate on y-Axis (set spin).
-  glTranslatef (-_pos.X, -_pos.Y, -_pos.Z);   // Set the camera position.
+  glRotatef (_pitch+90, -1.0f, 0.0f, 0.0f);  // Rotate on x-Axis (set height).
+  glRotatef (_yaw,       0.0f, 0.0f, 1.0f);  // Rotate on y-Axis (set spin).
+  glTranslatef (-_pos.X, -_pos.Y, -_pos.Z);  // Set the camera position.
 }
