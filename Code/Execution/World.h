@@ -1,6 +1,6 @@
 #pragma once
 
-/** Superior class for agents, ojects, environment and physics. */
+/** Superior class for agents, objects, environment and physics. */
 class World {
 
 

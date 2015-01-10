@@ -1,50 +1,50 @@
+/* DISCLAIMER: The code used in this class is based on "glFont".  */
+/* It also uses its file format to load generated fonts.          */
+/* - Copyright (c) 1998 Brad Fish                                 */
+/* - E-mail: bhf5@email.byu.edu                                   */
+/* - Web: http://students.cs.byu.edu/~bfish/                      */
+
 #pragma once
 
-// Skip fopen warnings.
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
 
+/** A simple text writer. It is capable of rendering texts to a OpenGL surface. */
+class TextWriter {
 
-#include <SDL_opengl.h>
-#include <gl/GLU.h>
+  private:
 
-
-class GLFontBase {
-  public:
-	  GLFontBase();
-	  void Begin();
-	  virtual ~GLFontBase();
-
-  protected:
-
-	  void CreateImpl(char* filename, GLuint Tex);
-
-	  typedef struct {
+    // Character structure.
+	  struct Character {
 	    union { float dx; int width;  };
 	    union { float dy; int height; };
 	    float tx1, ty1;
 	    float tx2, ty2;
-	  } GLFONTCHAR;
+	  };
 
-	  typedef struct {
-	    int Tex;
-	    int TexWidth, TexHeight;
-	    int IntStart, IntEnd;
-	    GLFONTCHAR *Char;
-	  } GLFONT;
+    // Font structure.
+	  struct Font {
+	    unsigned int Texture;
+	    int Width, Height;
+	    int Start, End;
+	    Character* Characters;
+	  };
 
-	  GLFONT Font;
-	  bool ok;
-
-  private:
-	  void FreeResources();
-};
+    Font _font;  // Font assigned to this writer.
 
 
-class PixelPerfectGLFont : public GLFontBase {
-public:
-	PixelPerfectGLFont();
-	void Create(char* filename, GLuint Tex);
-	void TextOut (char* String, int x, int y, int z);
+  public:
+
+    /** Initialize a new text writer with the given font.
+     * @param filename Path to the font file to load. */
+    TextWriter(char* filename);
+
+
+    /** Destroy text writer and free allocated memory. */
+    ~TextWriter();
+
+
+    /** Write some text to the screen.
+     * @param text The text to output. 
+     * @param x X coordinate on screen.
+     * @param y Y coordinate on screen. */
+    void WriteText(char* text, int x, int y);
 };
