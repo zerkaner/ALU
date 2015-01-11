@@ -149,5 +149,8 @@
     <ClInclude Include="..\Code\Environment\GridTerrain.h">
       <Filter>Environment</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Converter\Converter.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -31,6 +31,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h" />
+    <ClInclude Include="..\Code\Converter\Converter.h" />
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />
     <ClInclude Include="..\Code\Data\Vector.h" />

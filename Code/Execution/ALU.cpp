@@ -8,7 +8,7 @@ ALU::ALU() :
   _camera(Camera(12, -7, 2)),
   _controller(InputController(this, &_camera)),
   _listener(InputListener(&_controller)),
-  _interface(UserInterface()),
+  _interface(UserInterface(&_camera)),
   _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface)) {
 }
 

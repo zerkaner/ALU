@@ -12,7 +12,7 @@ Camera::Camera() {}
 
 /** Initialize a camera at given position (x,y,z) and with optional pitch and yaw. */
 Camera::Camera(float posX, float posY, float posZ, float yaw, float pitch) : 
-  _pos(Float3(posX, posY, posZ)) {
+  Pos(Float3(posX, posY, posZ)) {
   SetPitch(pitch);
   SetYaw(yaw);
 }
@@ -21,18 +21,18 @@ Camera::Camera(float posX, float posY, float posZ, float yaw, float pitch) :
 /** Restrict pitch value to interval (-90° -> 90°). 
   * @param pitch New pitch value. */
 void Camera::SetPitch(float pitch) {
-  if (pitch > 90.0f) _pitch = 90.0f;
-  else if (pitch < -90.0f) _pitch = -90.0f; //TODO [-89.99] Zeichenfehler bei -90°. Warum???
-  else _pitch = pitch;
+  if (pitch > 90.0f) Pitch = 90.0f;
+  else if (pitch < -90.0f) Pitch = -90.0f;
+  else Pitch = pitch;
 }
 
 
 /** Limit yaw value to compass heading (0° -> <360°).
   * @param yaw New yaw value. */
 void Camera::SetYaw(float yaw) {
-  _yaw = yaw;
-  if (_yaw < 0.0f) _yaw += 360.0f;
-  if (_yaw >= 360.0f) _yaw -= 360.0f;
+  Yaw = yaw;
+  if (Yaw < 0.0f) Yaw += 360.0f;
+  if (Yaw >= 360.0f) Yaw -= 360.0f;
 }
 
 
@@ -57,14 +57,14 @@ void Camera::MoveCamera(int xIn, int yIn, int zIn) {
       * Attention: yDelta of event is inverse (up=negative values)!        
       */
 
-    float yawRad = _yaw * 0.0174532925f;  // Degree to radians.
-    _pos.X += (SpeedMovement*( xIn*cos(yawRad) + yIn*sin(yawRad)));
-    _pos.Y += (SpeedMovement*(-xIn*sin(yawRad) + yIn*cos(yawRad)));
+    float yawRad = Yaw * 0.0174532925f;  // Degree to radians.
+    Pos.X += (SpeedMovement*( xIn*cos(yawRad) + yIn*sin(yawRad)));
+    Pos.Y += (SpeedMovement*(-xIn*sin(yawRad) + yIn*cos(yawRad)));
   }
 
   // Zooming mode.
   if (zIn != 0) {
-    _pos.Z += zIn*SpeedZoom;
+    Pos.Z += zIn*SpeedZoom;
   }
 }
 
@@ -73,18 +73,14 @@ void Camera::MoveCamera(int xIn, int yIn, int zIn) {
   * @param xIn X delta input (yaw axis).
   * @param yIn Y delta input (pitch axis). */
 void Camera::RotateCamera(int xIn, int yIn) {
-  SetYaw(_yaw + SpeedYaw*xIn);
-  SetPitch(_pitch + SpeedPitch*yIn);    
+  SetYaw(Yaw + SpeedYaw*xIn);
+  SetPitch(Pitch + SpeedPitch*yIn);    
 }
 
 
 /** Update the camera values. */
 void Camera::Update () {
-
-  printf("Pos: (%3d,%3d,%3d)  |  Yaw: %-3d | Pitch: %-3d\n", 
-          (int)_pos.X, (int)_pos.Y, (int)_pos.Z, (int)_yaw, (int)_pitch);
-
-  glRotatef (_pitch+90, -1.0f, 0.0f, 0.0f);  // Rotate on x-Axis (set height).
-  glRotatef (_yaw,       0.0f, 0.0f, 1.0f);  // Rotate on y-Axis (set spin).
-  glTranslatef (-_pos.X, -_pos.Y, -_pos.Z);  // Set the camera position.
+  glRotatef (Pitch+90, -1.0f, 0.0f, 0.0f);  // Rotate on x-Axis (set height).
+  glRotatef (Yaw,       0.0f, 0.0f, 1.0f);  // Rotate on y-Axis (set spin).
+  glTranslatef (-Pos.X, -Pos.Y, -Pos.Z);    // Set the camera position.
 }
