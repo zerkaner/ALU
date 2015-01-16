@@ -1,10 +1,10 @@
+#include <Data/StatsInfo.h>
 #include <UserInterface/UserInterface.h>
 #include <Visualization/Camera.h>
 #include <Visualization/Engine.h>
 
 #include <gl/GLU.h>
 #include <stdio.h>
-
 
 #include <Environment/GridTerrain.h>  //DBG
 GridTerrain gt = GridTerrain(30, 20); 
@@ -71,6 +71,8 @@ void Engine::SetResolution (int width, int height, bool fullscreen = false) {
   // Update the OpenGL viewport and adjust the user perspective.
   SDL_GetWindowSize (_window, &_width, &_height);
   glViewport (0, 0, _width, _height); 
+  StatsInfo::WINDOW_X = _width;
+  StatsInfo::WINDOW_Y = _height;
   glMatrixMode (GL_PROJECTION);
   glLoadIdentity ();
   gluPerspective(40.0, (double) _width/_height, 1.0, 1000.0),

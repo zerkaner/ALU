@@ -14,7 +14,9 @@
 class Camera {
 
   private:
-   
+    Float3 _pos;           // Coordinates of the camera position.
+    float _pitch, _yaw;    // Pitch (up/down) and yaw (turn around).
+    
     const float SpeedMovement = 0.05f;  // Movement (displacement) factor.
     const float SpeedZoom     = 0.20f;  // Zooming factor (mousewheel adjustment).
     const float SpeedPitch    = 0.30f;  // Pitch adjustment factor.
@@ -33,9 +35,7 @@ class Camera {
 
   public:
 
-    Float3 Pos;           // Coordinates of the camera position.
-    float Pitch, Yaw;     // Pitch (up/down) and yaw (turn around).
- 
+
 
     /** Initialize a camera at (0,0,0) facing straight north. */
     Camera();

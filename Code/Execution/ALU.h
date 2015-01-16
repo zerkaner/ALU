@@ -40,3 +40,4 @@ class ALU {
 
 
 //TODO ALU-Constr.: Initialization parameter object.
+//TODO Kameragrenzen (bei Verschiebung)? [Anhand der Umweltdimensionen festlegen]

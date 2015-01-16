@@ -16,16 +16,24 @@ void InputController::SetListenerReference(InputListener* listener) {
 }
 
 
-void InputController::MouseClick(MouseButton button) {
-  printf("[Mouse click]: %d\n", button);
+void InputController::MouseButtonPressed(MouseButton mousebutton) {
+  if (mousebutton == RIGHT) _cameraMode = ROTATE;
+}
+
+
+void InputController::MouseButtonReleased(MouseButton mousebutton) {
+  if (mousebutton == RIGHT) _cameraMode = MOVE;
+}
+
+
+void InputController::MouseWheelTurned(int steps) {
+  _camera->MoveCamera(0, 0, steps);
 }
 
 
 void InputController::MouseMove(int x, int y) {
-      
-  // Camera move or rotate: (-y) used, because mouse up returns negative values.
-  if      (_cameraMode == MOVE)   _camera->MoveCamera(x, -y, 0);  
-  else if (_cameraMode == ROTATE) _camera->RotateCamera(x, -y);
+  if      (_cameraMode == MOVE)   _camera->MoveCamera(x, -y, 0); //| (-y) is used, because mouse 
+  else if (_cameraMode == ROTATE) _camera->RotateCamera(x, -y);  //| up returns negative values.
 }
 
 

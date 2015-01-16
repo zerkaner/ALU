@@ -26,9 +26,10 @@ class InputController {
     
     void SetListenerReference(InputListener* listener);
 
-    void MouseClick(MouseButton button);
-
+    void MouseButtonPressed(MouseButton button);
+    void MouseButtonReleased(MouseButton button);
     void MouseMove(int x, int y);
+    void MouseWheelTurned(int steps);
 
     void KeyPressed(char key, Modifier mod);
 

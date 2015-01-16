@@ -6,8 +6,8 @@
 
 /** Create a new SDL2 input listener. 
  * @param controller The controller to send events to. */
-InputListener::InputListener(InputController* controller)
- : _controller(controller) {
+InputListener::InputListener(InputController* controller) :
+  _controller(controller) {
   _controller->SetListenerReference(this);
 }
 
@@ -35,7 +35,13 @@ void InputListener::EvaluateEvents() {
 
       // A mouse button was pressed.
       case SDL_MOUSEBUTTONDOWN: {
-        _controller->MouseClick((InputController::MouseButton)event.button.button);
+        _controller->MouseButtonPressed((InputController::MouseButton)event.button.button);
+        break;
+      }
+
+      // The mouse button was released.
+      case SDL_MOUSEBUTTONUP: {
+        _controller->MouseButtonReleased((InputController::MouseButton)event.button.button);
         break;
       }
 
@@ -44,6 +50,12 @@ void InputListener::EvaluateEvents() {
         if (_relSkip) { _relSkip = false; break; }  // Skip warp mouse event.
         if (_relativeMouse) _controller->MouseMove(event.motion.xrel, event.motion.yrel);
         else _controller->MouseMove(event.motion.x, event.motion.y);
+        break;
+      }
+
+      // Mouse wheel was turned (only up/down currently supported).
+      case SDL_MOUSEWHEEL: {
+        _controller->MouseWheelTurned(event.wheel.y);
         break;
       }
 

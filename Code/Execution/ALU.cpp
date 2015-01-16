@@ -1,3 +1,4 @@
+#include <Data/StatsInfo.h>
 #include <Execution/ALU.h>
 
 
@@ -8,7 +9,7 @@ ALU::ALU() :
   _camera(Camera(12, -7, 2)),
   _controller(InputController(this, &_camera)),
   _listener(InputListener(&_controller)),
-  _interface(UserInterface(&_camera)),
+  _interface(UserInterface()),
   _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface)) {
 }
 
@@ -24,8 +25,11 @@ void ALU::Start() {
     _listener.EvaluateEvents();   // 2) Read and evaluate user input.
     _3dEngine.Render();           // 3) Render the 3D environment.
 
-    // Sleep calculation.
-    delay = (long)((1.0f/_targetFPS)*1000) - _stopwatch.GetInterval();
+    // Information pass along and sleep calculation.
+    long execTime = _stopwatch.GetInterval();
+    StatsInfo::ExecTime = execTime;
+    StatsInfo::FPS = _targetFPS;
+    delay = (long)((1.0f/_targetFPS)*1000) - execTime;
     if (delay > 0) Sleep(delay);
   }
 }
