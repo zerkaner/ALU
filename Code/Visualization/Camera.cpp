@@ -4,7 +4,6 @@
 
 #include <SDL_opengl.h>
 #include <cmath>
-#include <stdio.h>
 
 
 /** Initialize a camera at (0,0,0) facing straight north. */
@@ -12,10 +11,8 @@ Camera::Camera() {}
 
 
 /** Initialize a camera at given position (x,y,z) and with optional pitch and yaw. */
-Camera::Camera(float posX, float posY, float posZ, float yaw, float pitch) : 
-  _pos(Float3(posX, posY, posZ)) {
-  SetPitch(pitch);
-  SetYaw(yaw);
+Camera::Camera(float posX, float posY, float posZ, float yaw, float pitch) {
+  //SetPosition(posX, posY, posZ, yaw, pitch);
 }
 
 
@@ -44,7 +41,7 @@ void Camera::SetYaw(float yaw) {
   * @param xIn X delta input (mouse/kbd. x-axis, -: left, +: right).
   * @param yIn Y delta input (mouse/kbd, y-axis, -: down, +: up).
   * @param zIn Z delta input (zoom level,        -: out,  +: in). */
-void Camera::MoveCamera(int xIn, int yIn, int zIn) {
+void Camera::MoveCamera(float xIn, float yIn, float zIn) {
       
   // Horizontal displacement.
   if (xIn != 0 || yIn != 0) {
@@ -59,13 +56,12 @@ void Camera::MoveCamera(int xIn, int yIn, int zIn) {
      */
 
     float yawRad = _yaw * 0.0174532925f;  // Degree to radians.
-    _pos.X += (SpeedMovement*( xIn*cos(yawRad) + yIn*sin(yawRad)));
-    _pos.Y += (SpeedMovement*(-xIn*sin(yawRad) + yIn*cos(yawRad)));
+    _pos.X += ( xIn*cos(yawRad) + yIn*sin(yawRad));
+    _pos.Y += (-xIn*sin(yawRad) + yIn*cos(yawRad));
   }
 
   // Zooming mode.
-  if (zIn != 0) _pos.Z += zIn*SpeedZoom;
-
+  if (zIn != 0) _pos.Z += zIn;
   StatsInfo::Position = _pos;
 }
 
@@ -73,9 +69,20 @@ void Camera::MoveCamera(int xIn, int yIn, int zIn) {
 /** Rotates the camera around lateral and vertical axes.
   * @param xIn X delta input (yaw axis).
   * @param yIn Y delta input (pitch axis). */
-void Camera::RotateCamera(int xIn, int yIn) {
-  SetYaw(_yaw + SpeedYaw*xIn);
-  SetPitch(_pitch + SpeedPitch*yIn);    
+void Camera::RotateCamera(float xIn, float yIn) {
+  SetYaw(_yaw + xIn);
+  SetPitch(_pitch + yIn);    
+}
+
+
+/** Sets the camera to a position (x,y,z) with optional pitch and yaw values. */
+void Camera::SetPosition(float posX, float posY, float posZ, float yaw, float pitch) {
+  _pos.X = posX;
+  _pos.Y = posY;
+  _pos.Z = posZ;
+  StatsInfo::Position = _pos;
+  SetYaw(yaw);
+  SetPitch(pitch);
 }
 
 

@@ -31,6 +31,9 @@
     <Filter Include="Physics\Modules">
       <UniqueIdentifier>{f2b39ec9-71bc-45d8-9e57-bb5107ae6d5d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Input\ControllerModules">
+      <UniqueIdentifier>{9b549005-f2a4-4b79-b435-b9453eef31eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp">
@@ -157,6 +160,18 @@
     </ClInclude>
     <ClInclude Include="..\Code\Data\StatsInfo.h">
       <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerFPS.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerRTS.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\ControllerModule.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\ExecutionController.h">
+      <Filter>Input\ControllerModules</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -14,6 +14,7 @@ namespace StatsInfo {
   extern Float3 Position;   // Camera position.
   extern float Pitch;       // Camera pitch.
   extern float Yaw;         // Camera yaw.
+  extern int Mode;          // Camera mode.
 
   // Execution logic / ALU. 
   extern long ExecTime;     // Execution time of last cycle.

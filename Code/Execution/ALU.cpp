@@ -6,18 +6,18 @@
 ALU::ALU() : 
   _stopwatch(Stopwatch()),
   _world(World()),
-  _camera(Camera(12, -7, 2)),
-  _controller(InputController(this, &_camera)),
-  _listener(InputListener(&_controller)),
+  _camera(Camera(12, -7, 2, 0, -10)),
   _interface(UserInterface()),
-  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface)) {
+  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface)),
+  _controller(InputController(this, &_camera)),
+  _listener(InputListener(&_controller, _3dEngine.GetWindowHandle())) {
 }
 
 
 /** Enters execution loop. */
 void ALU::Start() {
-  _run = true;               // Enable loop execution.
-  long delay;                // Stores sleep time (in ms).
+  _run = true;         // Enable loop execution.
+  long delay;          // Stores sleep time (in ms).
       
   while (_run) {
     _stopwatch.GetInterval();     // Reset stopwatch counter.

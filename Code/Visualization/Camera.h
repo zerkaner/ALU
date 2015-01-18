@@ -17,12 +17,6 @@ class Camera {
     Float3 _pos;           // Coordinates of the camera position.
     float _pitch, _yaw;    // Pitch (up/down) and yaw (turn around).
     
-    const float SpeedMovement = 0.05f;  // Movement (displacement) factor.
-    const float SpeedZoom     = 0.20f;  // Zooming factor (mousewheel adjustment).
-    const float SpeedPitch    = 0.30f;  // Pitch adjustment factor.
-    const float SpeedYaw      = 0.45f;  // Turning (yaw) factor.
-
-
     /** Restrict pitch value to interval (-90° -> 90°). 
      * @param pitch New pitch value. */
     void SetPitch(float pitch);
@@ -34,8 +28,6 @@ class Camera {
 
 
   public:
-
-
 
     /** Initialize a camera at (0,0,0) facing straight north. */
     Camera();
@@ -50,13 +42,17 @@ class Camera {
      * @param xIn X delta input (mouse/kbd. x-axis, -: left, +: right).
      * @param yIn Y delta input (mouse/kbd, y-axis, -: down, +: up).
      * @param zIn Z delta input (zoom level,        -: out,  +: in). */
-    void MoveCamera(int xIn, int yIn, int zIn);
+    void MoveCamera(float xIn, float yIn, float zIn);
 
 
     /** Rotates the camera around lateral and vertical axes.
      * @param xIn X delta input (yaw axis).
      * @param yIn Y delta input (pitch axis). */
-    void RotateCamera(int xIn, int yIn);
+    void RotateCamera(float xIn, float yIn);
+
+
+    /** Sets the camera to a position (x,y,z) with optional pitch and yaw values. */
+    void SetPosition(float posX, float posY, float posZ, float yaw=0.0f, float pitch=0.0f);
 
 
     /** Update the camera values. */

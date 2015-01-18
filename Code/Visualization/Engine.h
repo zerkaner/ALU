@@ -25,6 +25,10 @@ class Engine {
     Engine(char* winname, int width, int height, bool fullscreen, Camera* camera, UserInterface* ui);
     ~Engine();
 
+    /** Return the pointer to the SDL window handle.
+     * @returns Address of pointer to accociated SDL_Window. */
+    SDL_Window** GetWindowHandle();
+
     void SetResolution(int width, int height, bool fullscreen);
     void Render();
 };

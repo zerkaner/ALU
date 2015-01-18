@@ -55,6 +55,13 @@ Engine::~Engine () {
 }
 
 
+/** Return the pointer to the SDL window handle.
+  * @returns Address of pointer to accociated SDL_Window. */
+SDL_Window** Engine::GetWindowHandle() {
+  return &_window;
+}
+
+
 /** Set the window resolution, update the viewport and adjust perspective. 
  * @param width The window's width.
  * @param height The height of the window.
