@@ -18,7 +18,6 @@
     <ClCompile Include="..\Code\Data\Vector.cpp" />
     <ClCompile Include="..\Code\Environment\Environment.cpp" />
     <ClCompile Include="..\Code\Execution\ALU.cpp" />
-    <ClCompile Include="..\Code\Execution\Executor.cpp" />
     <ClCompile Include="..\Code\Execution\World.cpp" />
     <ClCompile Include="..\Code\Execution\SystemTest.cpp" />
     <ClCompile Include="..\Code\Input\InputController.cpp" />
@@ -40,9 +39,6 @@
     <ClInclude Include="..\Code\Environment\Environment.h" />
     <ClInclude Include="..\Code\Environment\GridTerrain.h" />
     <ClInclude Include="..\Code\Execution\ALU.h" />
-    <ClInclude Include="..\Code\Execution\Executor.h" />
-    <ClInclude Include="..\Code\Execution\IExecutable.h" />
-    <ClInclude Include="..\Code\Execution\IThread.h" />
     <ClInclude Include="..\Code\Execution\Stopwatch.h" />
     <ClInclude Include="..\Code\Execution\World.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerFPS.h" />

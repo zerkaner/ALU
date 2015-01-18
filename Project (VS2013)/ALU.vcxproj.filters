@@ -48,9 +48,6 @@
     <ClCompile Include="..\Code\Data\Vector.cpp">
       <Filter>Data</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Execution\Executor.cpp">
-      <Filter>Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Visualization\Engine.cpp">
       <Filter>Visualization</Filter>
     </ClCompile>
@@ -104,17 +101,8 @@
     <ClInclude Include="..\Code\Data\Vector.h">
       <Filter>Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Execution\Executor.h">
-      <Filter>Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Execution\IExecutable.h">
-      <Filter>Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Visualization\Engine.h">
       <Filter>Visualization</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Execution\IThread.h">
-      <Filter>Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Execution\ALU.h">
       <Filter>Execution</Filter>

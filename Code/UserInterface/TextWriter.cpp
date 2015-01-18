@@ -12,6 +12,11 @@
 TextWriter::TextWriter(char* filename) {
 
   FILE* file = fopen(filename, "rb");          // Open file stream.
+  if (file == NULL) {
+    printf("[TextWriter] Error opening font file '%s'.\n", filename);
+    return;
+  }
+
   fread(&_font, sizeof(Font), 1, file);        // Read in font structure.
   glGenTextures(1, &_font.Texture);            // Generate OpenGL texture number.     
   int nrChars = _font.End - _font.Start + 1;   // Get number of characters.
