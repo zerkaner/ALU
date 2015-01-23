@@ -5,6 +5,7 @@
 #include "InputController.h"
 #include "InputListener.h"
 #include "ControllerModules/ControllerModule.h"
+#include "ControllerModules/CameraControllerFPS.h"
 #include "ControllerModules/CameraControllerRTS.h"
 #include "ControllerModules/ExecutionController.h"
 
@@ -14,7 +15,7 @@
  * @param camera Camera reference. */
 InputController::InputController(ALU* runtime, Camera* camera) {
   _controllers.push_back(new ExecutionController(runtime));
-  _controllers.push_back(new CameraControllerRTS(camera, _listener));  
+  _controllers.push_back(new CameraControllerFPS(camera, _listener));  
 }
     
 
