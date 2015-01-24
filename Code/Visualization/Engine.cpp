@@ -2,23 +2,15 @@
 #include <UserInterface/UserInterface.h>
 #include <Visualization/Camera.h>
 #include <Visualization/Engine.h>
+#include <Visualization/IDrawable.h>
 
 #include <gl/GLU.h>
 #include <stdio.h>
 
-#include <Environment/GridTerrain.h>  //DBG
-GridTerrain gt = GridTerrain(30, 20); 
 
 
-/** Create a new OpenGL engine instance.
- * @param winname String with the window title. 
- * @param width The window's starting width.
- * @param height The initial height of the window.
- * @param fullscreen If 'true', supplied width and height are ignored.
- * @param camera Pointer to the associated camera.
- * @param ui Pointer to the user interface. */
-Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* camera, UserInterface* ui) :
-  _camera(camera), _ui(ui) {
+Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* camera, UserInterface* ui, IDrawable* world) :
+  _camera(camera), _ui(ui), _world(world) {
   
   // Initialize the SDL video subsystem.   
   if (SDL_Init (SDL_INIT_VIDEO) != 0) printf ("[ERROR] SDL initialization failed.\n");
@@ -46,7 +38,7 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* ca
 }
 
 
-/** Terminate the SDL / OpenGL engine and return to main program. */
+
 Engine::~Engine () { 
   SDL_GL_DeleteContext(_glcontext);
   SDL_DestroyWindow(_window);
@@ -55,17 +47,13 @@ Engine::~Engine () {
 }
 
 
-/** Return the pointer to the SDL window handle.
-  * @returns Address of pointer to accociated SDL_Window. */
+
 SDL_Window** Engine::GetWindowHandle() {
   return &_window;
 }
 
 
-/** Set the window resolution, update the viewport and adjust perspective. 
- * @param width The window's width.
- * @param height The height of the window.
- * @param fullscreen If 'true', supplied width and height are ignored. */
+
 void Engine::SetResolution (int width, int height, bool fullscreen = false) {
 
   // Set resolution to native fullscreen or given window size.
@@ -87,12 +75,12 @@ void Engine::SetResolution (int width, int height, bool fullscreen = false) {
 }
 
 
-/** Clear screen and render all objects. */
+
 void Engine::Render () {
   glClear (0x4100);    // Clear current buffer (color & depth buffer bit).
   glLoadIdentity();    // Reset model matrix.
   _camera->Update();   // Position calculation and camera update.
-  gt.DrawGrid();       // Draw the world.
+  _world->Draw();      // Draw the world.
   
   // Switch to 2D rendering for the user interface.
   glMatrixMode(GL_PROJECTION);

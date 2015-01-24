@@ -1,8 +1,9 @@
 #pragma once
 
+#include <Visualization/IDrawable.h>
 #include <SDL_opengl.h>
 
-class GridTerrain {
+class GridTerrain : public IDrawable {
 
   private:
 
@@ -18,7 +19,7 @@ class GridTerrain {
 
 
     /** Draw the grid tiles. */
-    void DrawGrid() {
+    void Draw() {
       glBegin(GL_LINES);
       for (int i = 0; i <= _height; i ++) {
         glVertex3i(0, i, 0);

@@ -17,4 +17,5 @@ namespace StatsInfo {
   // Execution logic / ALU. 
   long ExecTime = 0;
   int FPS = 0;
+  long Ticks = 0;
 }

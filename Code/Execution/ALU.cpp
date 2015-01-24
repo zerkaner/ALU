@@ -8,7 +8,7 @@ ALU::ALU() :
   _world(World()),
   _camera(Camera(12, -7, 2, 0, -10)),
   _interface(UserInterface()),
-  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface)),
+  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface, _world.GetDrawableWorld())),
   _controller(InputController(this, &_camera)),
   _listener(InputListener(&_controller, _3dEngine.GetWindowHandle())) {
 }

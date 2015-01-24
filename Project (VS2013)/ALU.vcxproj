@@ -16,10 +16,9 @@
     <ClCompile Include="..\Code\Data\Object3D.cpp" />
     <ClCompile Include="..\Code\Data\StatsInfo.cpp" />
     <ClCompile Include="..\Code\Data\Vector.cpp" />
-    <ClCompile Include="..\Code\Environment\Environment.cpp" />
     <ClCompile Include="..\Code\Execution\ALU.cpp" />
-    <ClCompile Include="..\Code\Execution\World.cpp" />
     <ClCompile Include="..\Code\Execution\SystemTest.cpp" />
+    <ClCompile Include="..\Code\Execution\World.cpp" />
     <ClCompile Include="..\Code\Input\InputController.cpp" />
     <ClCompile Include="..\Code\Input\InputListener.cpp" />
     <ClCompile Include="..\Code\Physics\Modules\GravityModule.cpp" />
@@ -54,6 +53,7 @@
     <ClInclude Include="..\Code\UserInterface\UserInterface.h" />
     <ClInclude Include="..\Code\Visualization\Camera.h" />
     <ClInclude Include="..\Code\Visualization\Engine.h" />
+    <ClInclude Include="..\Code\Visualization\IDrawable.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6A1E07B8-D75A-47FB-98A3-67682FF66EB4}</ProjectGuid>

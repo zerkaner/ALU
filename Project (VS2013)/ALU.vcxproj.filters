@@ -78,14 +78,11 @@
     <ClCompile Include="..\Code\Physics\Modules\GravityModule.cpp">
       <Filter>Physics\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Environment\Environment.cpp">
-      <Filter>Environment</Filter>
+    <ClCompile Include="..\Code\Data\StatsInfo.cpp">
+      <Filter>Data</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Execution\World.cpp">
       <Filter>Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Data\StatsInfo.cpp">
-      <Filter>Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Input\ControllerModules\ExecutionController.h">
       <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\IDrawable.h">
+      <Filter>Visualization</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

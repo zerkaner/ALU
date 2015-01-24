@@ -19,4 +19,5 @@ namespace StatsInfo {
   // Execution logic / ALU. 
   extern long ExecTime;     // Execution time of last cycle.
   extern int FPS;           // Targeted frames per second.
+  extern long Ticks;        // Number of world executions.
 }
