@@ -21,7 +21,7 @@ class CameraControllerFPS : public ControllerModule {
     const bool  _turnOnLR      = false;   // If set, the camera is turned (RP like).
     const float _pitchMax      =  90.0f;  // Maximum +pitch angle: Look to the stars! 
     const float _pitchMin      = -90.0f;  // Maximum -pitch angle: Bottom view.
-    const float _speedMovement =  0.40f;  // Movement (displacement) factor.
+    const float _speedMovement =  1.40f;  // Movement (displacement) factor.
     const float _speedPitch    =  0.30f;  // Pitch adjustment factor.
     const float _speedYawMouse =  0.45f;  // Turning (yaw) factor.
     const float _speedYawKbd   =  3.75f;  // Turning factor for keyboard input.
@@ -37,7 +37,7 @@ class CameraControllerFPS : public ControllerModule {
       listener->SetRelativeMouseMode(true);   
       _moveInputs[0] = 0;     _moveInputs[1] = 0;
       _moveSpeeds[0] = 0.0f;  _moveSpeeds[1] = 0.0f;
-      _camera->SetPosition(-7, 1, 6, 70, -20);
+      _camera->SetPosition(12, 10, 215, 40, -10);
       StatsInfo::Mode = 2;
     } 
 

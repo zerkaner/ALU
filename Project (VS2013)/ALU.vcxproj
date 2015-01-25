@@ -37,6 +37,7 @@
     <ClInclude Include="..\Code\Data\Vector.h" />
     <ClInclude Include="..\Code\Environment\Environment.h" />
     <ClInclude Include="..\Code\Environment\GridTerrain.h" />
+    <ClInclude Include="..\Code\Environment\HeightmapTerrain.h" />
     <ClInclude Include="..\Code\Execution\ALU.h" />
     <ClInclude Include="..\Code\Execution\Stopwatch.h" />
     <ClInclude Include="..\Code\Execution\World.h" />
@@ -54,6 +55,7 @@
     <ClInclude Include="..\Code\Visualization\Camera.h" />
     <ClInclude Include="..\Code\Visualization\Engine.h" />
     <ClInclude Include="..\Code\Visualization\IDrawable.h" />
+    <ClInclude Include="..\Code\Visualization\Model3D.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6A1E07B8-D75A-47FB-98A3-67682FF66EB4}</ProjectGuid>

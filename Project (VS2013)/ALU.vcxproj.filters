@@ -161,5 +161,11 @@
     <ClInclude Include="..\Code\Visualization\IDrawable.h">
       <Filter>Visualization</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Environment\HeightmapTerrain.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\Model3D.h">
+      <Filter>Visualization</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #pragma once
 #include "GridTerrain.h"
+#include "HeightmapTerrain.h"
 #include <Visualization/IDrawable.h>
 
 
@@ -7,12 +8,13 @@
 class Environment : public IDrawable {
 
   private:
-    GridTerrain _terrain;
+    HeightmapTerrain _terrain;
 
   public:
 
     Environment() : 
-      _terrain(GridTerrain(30, 20)) {
+      _terrain(HeightmapTerrain("..\\Output\\heightfield2.raw")) {
+      //_terrain(GridTerrain(30, 20)) {
     }
 
 

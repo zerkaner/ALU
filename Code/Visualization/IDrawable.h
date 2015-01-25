@@ -1,7 +1,7 @@
 #pragma once
 
 
-/** Interface class that defines rendering methods for 3D objects. */
+/** Interface class that declares a rendering method for 3D objects. */
 class IDrawable {
   
   public:

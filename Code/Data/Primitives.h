@@ -1,5 +1,11 @@
 #pragma once
 
+/** Type definitions. */
+typedef unsigned char  BYTE;
+typedef unsigned short WORD;
+typedef unsigned long DWORD;
+typedef unsigned int   uint;
+
 
 /** Float structure for three-dimensional data. */
 struct Float3 {
@@ -59,5 +65,20 @@ struct Vertex {
       Point = point;
       Texture = texture;
       Normal = normal;
+    }
+};
+
+
+
+/** Triangle class. Contains three vertices and draw methods. */
+struct Geometry {
+      
+  public:
+    Vertex* Vertices[3];
+
+    Geometry(Vertex* v1, Vertex* v2, Vertex* v3) {
+      Vertices[0] = v1;
+      Vertices[1] = v2;
+      Vertices[2] = v3;
     }
 };
