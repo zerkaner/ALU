@@ -1,19 +1,20 @@
 #pragma warning(disable: 4996) // Skip fopen warnings.
 
-#include <UserInterface/TextWriter.h>
+#include "FontArchive.h"
+#include "TextWriter.h"
 
 #include <stdio.h>
 #include <SDL_opengl.h>
 #include <gl/GLU.h>
 
 
-/** Initialize a new text writer with the given font.
-  * @param filename Path to the font file to load. */
+
 TextWriter::TextWriter(char* filename) {
 
   FILE* file = fopen(filename, "rb");          // Open file stream.
   if (file == NULL) {
     printf("[TextWriter] Error opening font file '%s'.\n", filename);
+    InitializeDefaultFont();
     return;
   }
 
@@ -22,23 +23,12 @@ TextWriter::TextWriter(char* filename) {
   int nrChars = _font.End - _font.Start + 1;   // Get number of characters.
   _font.Characters = new Character[nrChars];   // Allocate memory for characters.
   fread(_font.Characters, sizeof(Character), nrChars, file);	// Read in characters.     
-  int size = _font.Width * _font.Height * 2;	 // Get texture size.
-  char* textures = new char[size];             // Allocate memory for texture data.
-  fread(textures, sizeof(char), size, file);   // Read texture data from file.
-  fclose(file);                                // Close file stream.
-
-	// Set texture attributes.
-	glBindTexture(GL_TEXTURE_2D, _font.Texture);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-	// Create texture.
-	glTexImage2D(GL_TEXTURE_2D, 0, 2, _font.Width, _font.Height, 0, 
-                GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, (void*) textures);
-  delete[] textures;
+  int size = _font.Width * _font.Height * 2;	       // Get texture size.
+  unsigned char* textures = new unsigned char[size]; // Allocate memory for texture data.
+  fread(textures, sizeof(char), size, file);         // Read texture data from file.
+  fclose(file);                                      // Close file stream.
+  InitializeTexture(textures);                       // Initialize the texture.
+  delete[] textures;                                 // Free the input array.
 
   // Pixel-precise character alignment.
 	for (int i = 0; i < nrChars; i ++)	{
@@ -48,16 +38,45 @@ TextWriter::TextWriter(char* filename) {
 }
 
 
-/** Destroy text writer and free allocated memory. */
+
+TextWriter::TextWriter() {
+  InitializeDefaultFont();
+}
+
+
+
+void TextWriter::InitializeDefaultFont() {
+  printf("[TextWriter] Using built-in font.\n");
+  _font = CreateDefaultFont();         // Set up default font from archive.
+  glGenTextures(1, &_font.Texture);    // Generate OpenGL texture number.
+  InitializeTexture(defTexture);       // Initialize default texture.
+}
+
+
+
+void TextWriter::InitializeTexture(unsigned char* texture) {
+	
+  // Set texture attributes.
+	glBindTexture(GL_TEXTURE_2D, _font.Texture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	// Create texture.
+	glTexImage2D(GL_TEXTURE_2D, 0, 2, _font.Width, _font.Height, 0, 
+               GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, (void*) texture);
+}
+
+
+
 TextWriter::~TextWriter() {
   delete[] _font.Characters;
 }
 
 
-/** Write some text to the screen.
-  * @param text The text to output. 
-  * @param x X coordinate on screen.
-  * @param y Y coordinate on screen. */
+
 void TextWriter::WriteText(char* text, int x, int y) {
    
   // Enable blending (transparent overlay) and font texture.  

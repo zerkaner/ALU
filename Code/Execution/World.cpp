@@ -76,15 +76,13 @@ void World::AddAgent(Agent* agent) {
 
 
 
-template<typename T>
-
 /** Checks, if an element is present in a vector.
  * @param vec The vector to iterate.
  * @param elem The element to search for.
  * @return The element's index or -1, if not contained. */
-int GetIndexOfElement(std::vector<T*> vec, T* elem) {
+int GetIndexOfElement(std::vector<Agent*> vec, Agent* elem) {
   if (vec.empty()) return -1;            // Return on empty list.
-  auto iterator = find(vec.begin(), vec.end(), elem);
+  std::vector<Agent*>::iterator iterator = find(vec.begin(), vec.end(), elem);
   if (iterator == vec.end()) return -1;  // Element not in vector.
   return iterator - vec.begin();         // Return offset (= index).
   return 0;

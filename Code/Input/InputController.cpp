@@ -15,7 +15,7 @@
  * @param camera Camera reference. */
 InputController::InputController(ALU* runtime, Camera* camera) {
   _controllers.push_back(new ExecutionController(runtime));
-  _controllers.push_back(new CameraControllerFPS(camera, _listener));  
+  _controllers.push_back(new CameraControllerRTS(camera, _listener));  
 }
     
 

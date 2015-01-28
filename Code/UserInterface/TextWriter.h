@@ -5,6 +5,7 @@
 /* - Web: http://students.cs.byu.edu/~bfish/                      */
 
 #pragma once
+#include <Data/Primitives.h>
 
 
 /** A simple text writer. It is capable of rendering texts to a OpenGL surface. */
@@ -12,23 +13,15 @@ class TextWriter {
 
   private:
 
-    // Character structure.
-	  struct Character {
-	    union { float dx; int width;  };
-	    union { float dy; int height; };
-	    float tx1, ty1;
-	    float tx2, ty2;
-	  };
-
-    // Font structure.
-	  struct Font {
-	    unsigned int Texture;
-	    int Width, Height;
-	    int Start, End;
-	    Character* Characters;
-	  };
-
     Font _font;  // Font assigned to this writer.
+
+    /** Initialize the built-in font. */
+    void InitializeDefaultFont();
+
+
+    /** Set up the font texture.
+     * @param texture The texture array. */
+    void InitializeTexture(unsigned char* texture);
 
 
   public:
@@ -36,6 +29,10 @@ class TextWriter {
     /** Initialize a new text writer with the given font.
      * @param filename Path to the font file to load. */
     TextWriter(char* filename);
+
+
+    /** Initialize a text writer with the inbuilt font. */
+    TextWriter();
 
 
     /** Destroy text writer and free allocated memory. */

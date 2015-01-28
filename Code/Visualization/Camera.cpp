@@ -89,6 +89,6 @@ void Camera::SetPosition(float posX, float posY, float posZ, float yaw, float pi
 /** Update the camera values. */
 void Camera::Update () {
   glRotatef (_pitch+90, -1.0f, 0.0f, 0.0f);  // Rotate on x-Axis (set height).
-  glRotatef (_yaw,       0.0f, 0.0f, 1.0f);  // Rotate on y-Axis (set spin).
+  glRotatef (_yaw,       0.0f, 0.0f, 1.0f);  // Rotate on z-Axis (set spin).
   glTranslatef (-_pos.X, -_pos.Y, -_pos.Z);  // Set the camera position.
 }

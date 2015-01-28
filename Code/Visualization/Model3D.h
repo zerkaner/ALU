@@ -41,9 +41,9 @@ class Model3D : public IDrawable {
       // Displace and rotate model based on position and orientation vector.
       Float3 pos = GetPosition();
       Float2 ortn = GetOrientation();
-      glRotatef(ortn.Y, 1.0f, 0.0f, 0.0f);  // Rotate on x-Axis (set pitch).
-      glRotatef(ortn.X, 0.0f, 0.0f, -1.0f); // Rotate on y-Axis (set yaw).      
       glTranslatef(pos.X, pos.Y, pos.Z);    // Translate object in space.
+      glRotatef(ortn.Y, 1.0f, 0.0f, 0.0f);  // Rotate on x-Axis (set pitch).
+      glRotatef(ortn.X, 0.0f, 0.0f, -1.0f); // Rotate on z-Axis (set yaw).           
 
       // Draw on selected rendering mode.
       int size = _triangles.size();

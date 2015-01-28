@@ -35,6 +35,7 @@
     <ClInclude Include="..\Code\Data\Primitives.h" />
     <ClInclude Include="..\Code\Data\StatsInfo.h" />
     <ClInclude Include="..\Code\Data\Vector.h" />
+    <ClInclude Include="..\Code\Environment\Cube.h" />
     <ClInclude Include="..\Code\Environment\Environment.h" />
     <ClInclude Include="..\Code\Environment\GridTerrain.h" />
     <ClInclude Include="..\Code\Environment\HeightmapTerrain.h" />
@@ -50,6 +51,7 @@
     <ClInclude Include="..\Code\Physics\IPhysicsModule.h" />
     <ClInclude Include="..\Code\Physics\Modules\GravityModule.h" />
     <ClInclude Include="..\Code\Physics\PhysicsEngine.h" />
+    <ClInclude Include="..\Code\UserInterface\FontArchive.h" />
     <ClInclude Include="..\Code\UserInterface\TextWriter.h" />
     <ClInclude Include="..\Code\UserInterface\UserInterface.h" />
     <ClInclude Include="..\Code\Visualization\Camera.h" />

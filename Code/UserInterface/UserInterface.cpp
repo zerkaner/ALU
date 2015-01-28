@@ -5,7 +5,7 @@
 
 
 UserInterface::UserInterface() : 
-  _writer(TextWriter("..\\Output\\cali10.glf")) { 
+  _writer(TextWriter()) { 
 }
 
 

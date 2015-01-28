@@ -1,11 +1,9 @@
 #pragma once
 #pragma warning(disable: 4996) // Skip fopen warnings.
 
-#include <Data/Primitives.h>
 #include <Visualization/Model3D.h>
-#include <SDL_opengl.h>
 #include <stdio.h>
-#include <vector>
+#include <stdlib.h>
 
 
 class HeightmapTerrain : public Model3D {
@@ -65,14 +63,14 @@ class HeightmapTerrain : public Model3D {
 
   protected:
 
-    /** Returns the position of this object. [virtual]
+    /** Returns the position of this object. [override]
      * @return The position as a Float3 (x,y,z). */
     Float3 GetPosition() { 
       return Float3(0.0f, 0.0f, 0.0f); 
     }
 
 
-    /** Returns the orientation of this object. [virtual]
+    /** Returns the orientation of this object. [override]
      * @return A Float2 structure with yaw (x) and pitch (y). */
     Float2 GetOrientation() { 
       return Float2(0.0f, 0.0f);
@@ -85,6 +83,6 @@ class HeightmapTerrain : public Model3D {
      * @param filename The heightmap file to use. */
     HeightmapTerrain(const char* filename) {
       LoadHeightmap(filename);
-      _renderingMode = RenderingMode::MESH;
+      _renderingMode = Model3D::MESH;
     }
 };

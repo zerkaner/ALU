@@ -7,6 +7,24 @@ typedef unsigned long DWORD;
 typedef unsigned int   uint;
 
 
+/** Character structure. */
+struct Character {
+	int width;
+	int height;
+	float tx1, ty1;
+	float tx2, ty2;
+};
+
+
+/** Font structure. */
+struct Font {
+	unsigned int Texture;
+	int Width, Height;
+	int Start, End;
+	Character* Characters;
+};
+
+
 /** Float structure for three-dimensional data. */
 struct Float3 {
     

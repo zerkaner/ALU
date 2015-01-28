@@ -167,5 +167,11 @@
     <ClInclude Include="..\Code\Visualization\Model3D.h">
       <Filter>Visualization</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Environment\Cube.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\UserInterface\FontArchive.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
