@@ -25,7 +25,7 @@ INC_PATHS = -I$(SRC) -I$(RES)/SDL2-2.0.3/include
 LIB_PATHS = -L$(RES)/SDL2-2.0.3/lib_x86_mingw
 
 # Compiler flags.
-C_FLAGS = -w -Wl,-subsystem,windows
+C_FLAGS = -w -Wl,-subsystem,console
 
 # Linker flags.
 L_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lopengl32 -lglu32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -static

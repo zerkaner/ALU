@@ -54,7 +54,7 @@ SDL_Window** Engine::GetWindowHandle() {
 
 
 
-void Engine::SetResolution (int width, int height, bool fullscreen = false) {
+void Engine::SetResolution (int width, int height, bool fullscreen) {
 
   // Set resolution to native fullscreen or given window size.
   if (fullscreen) SDL_SetWindowFullscreen (_window, SDL_WINDOW_FULLSCREEN_DESKTOP);

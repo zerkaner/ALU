@@ -49,7 +49,7 @@ class Engine {
      * @param width The window's width.
      * @param height The height of the window.
      * @param fullscreen If 'true', supplied width and height are ignored. */
-    void SetResolution(int width, int height, bool fullscreen);
+    void SetResolution(int width, int height, bool fullscreen = false);
 
 
     /** Render all 3D objects and print the user interface on top of it. */

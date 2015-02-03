@@ -173,5 +173,8 @@
     <ClInclude Include="..\Code\UserInterface\FontArchive.h">
       <Filter>UserInterface</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\EngineController.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

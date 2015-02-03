@@ -22,7 +22,7 @@ class ExecutionController : public ControllerModule {
     /** A key was pressed.
      * @param key The pressed key (Int32 enum value).
      * @param mod The used modifier (Ctrl, Shift...). */
-    virtual void KeyPressed(Key key, Modifier mod) {
+    void KeyPressed(Key key, Modifier mod) {
       if (key == 'c' && mod == CTRL) ExitCalled();
     }
 

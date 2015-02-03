@@ -2,6 +2,7 @@
 class ALU;
 class Camera;
 class ControllerModule;
+class Engine;
 class InputListener; 
 #include <vector>
 
@@ -29,7 +30,7 @@ namespace InputSymbols {
     KEY_CTRL_L=1073742048, KEY_SHIFT_L, KEY_ALT_L,     // Modifier keys.
     KEY_WIN, KEY_CTRL_R, KEY_SHIFT_R, KEY_ALT_R,
 
-    KEY_TAB=9, KEY_DELETE=127
+    KEY_TAB=9, KEY_ENTER=13, KEY_DELETE=127
   };
 }
 
@@ -46,17 +47,56 @@ class InputController {
  
   public:
 
-    InputController(ALU* runtime, Camera* camera);  
+    /** Create a new input controller and used modules.
+     * @param runtime ALU reference for execution module.
+     * @param camera Camera reference. 
+     * @param engine 3D engine reference. */
+    InputController(ALU* runtime, Camera* camera, Engine* engine);  
+
+
+    /** Set the input listener reference (for mouse mode change).
+     * @param listener Listener backlink. */
     void SetListenerReference(InputListener* listener);
 
+
+    /** A mouse button was pressed.
+     * @param button The pressed button. */
     void MouseButtonPressed(MouseButton button);
+
+
+    /** A mouse button was released.
+     * @param button The released button. */
     void MouseButtonReleased(MouseButton button);
+
+
+    /** The mouse was moved.
+     * @param x Either x coordinate (absolute) or difference (relative).
+     * @param y Same for y-axis. 
+     * @param mode Current mouse mode (normal, relative, trapped). */
     void MouseMove(int x, int y, MouseMode mode);
+
+
+    /** The mouse wheel was turned.
+     * @param steps The amount of turns. */
     void MouseWheelTurned(int steps);
 
+
+    /** A key was pressed.
+     * @param key The pressed key (Int32 enum value).
+     * @param mod The used modifier (Ctrl, Shift...). */
     void KeyPressed(Key key, Modifier mod);
+
+
+    /** A key was released.
+     * @param key The released key (Int32 enum value).
+     * @param mod The used modifier (Ctrl, Shift...). */
     void KeyReleased(Key key, Modifier mod);
 
+
+    /** Input processing function. Is called after all events are sent. */
     void Process();
+
+
+    /** The window exit event (e.g. click on "X") was triggered. */
     void ExitCalled();
 };
