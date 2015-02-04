@@ -46,8 +46,8 @@ class CameraControllerRTS : public ControllerModule {
       _moveSpeeds[0] = 0.0f;  _moveSpeeds[1] = 0.0f;
       
       StatsInfo::Mode = 1; // Announce RTS camera. 
-      _camera->SetPosition(12, 10, 215, 40, -10); // For heightmap terrain.
-      //_camera->SetPosition(-8, -5, 8, 50, -20);
+      //_camera->SetPosition(12, 10, 215, 40, -10); // For heightmap terrain.
+      _camera->SetPosition(0, 0, 7, 50, -90);
     } 
 
 

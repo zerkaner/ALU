@@ -21,9 +21,9 @@ World::World() {
   _ticks = 0;
   _idCounter = 0;
 
-  AddAgent(new Agent(this));
-  AddAgent(new Agent(this));
-  AddAgent(new Agent(this));
+  //AddAgent(new Agent(this));
+  //AddAgent(new Agent(this));
+  //AddAgent(new Agent(this));
 }
 
 
@@ -32,7 +32,7 @@ int c;
 void World::AdvanceOneTick() {
 
   c ++;
-  if (c < 25) return; 
+  //if (c < 25) return; 
   c = 0;   //TODO Temporary solution to ensure 25fps and 1s execution. 
 
 

@@ -13,7 +13,6 @@
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp" />
     <ClCompile Include="..\Code\Converter\Converter.cpp" />
-    <ClCompile Include="..\Code\Data\Object3D.cpp" />
     <ClCompile Include="..\Code\Data\StatsInfo.cpp" />
     <ClCompile Include="..\Code\Data\Vector.cpp" />
     <ClCompile Include="..\Code\Execution\ALU.cpp" />

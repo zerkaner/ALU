@@ -42,9 +42,6 @@
     <ClCompile Include="..\Code\Converter\Converter.cpp">
       <Filter>Converter</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Data\Object3D.cpp">
-      <Filter>Data</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Data\Vector.cpp">
       <Filter>Data</Filter>
     </ClCompile>
@@ -131,9 +128,6 @@
     <ClInclude Include="..\Code\Environment\Environment.h">
       <Filter>Environment</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Execution\World.h">
-      <Filter>Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Execution\Stopwatch.h">
       <Filter>Execution</Filter>
     </ClInclude>
@@ -175,6 +169,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Input\ControllerModules\EngineController.h">
       <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\World.h">
+      <Filter>Execution</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

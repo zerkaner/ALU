@@ -1,7 +1,6 @@
 #pragma once
-
 #include "IDrawable.h"
-#include <Data/Primitives.h>
+#include <Data/Object3D.h>
 #include <SDL_opengl.h>
 #include <vector>
 
@@ -9,7 +8,7 @@ using namespace std;
 
 
 /** Base class for 3D models that implements some rendering functions. */
-class Model3D : public IDrawable {
+class Model3D : public Object3D, public IDrawable {
 
   protected:
 
@@ -18,14 +17,6 @@ class Model3D : public IDrawable {
 
     RenderingMode _renderingMode;   // Current rendering mode.
     vector<Geometry*> _triangles;   // List with all triangles.
-
-    /** Returns the position of this object. [virtual]
-     * @return The position as a Float3 (x,y,z). */
-    virtual Float3 GetPosition() = 0;
-
-    /** Returns the orientation of this object. [virtual]
-     * @return A Float2 structure with yaw (x) and pitch (y). */
-    virtual Float2 GetOrientation() = 0;
 
 
   public:
@@ -37,13 +28,12 @@ class Model3D : public IDrawable {
     /** Draws this model. */
     void Draw() {
       if (_renderingMode == OFF) return;  // Instant skip on disabled model.
+      glPushMatrix();                     // Use designated matrix for object rendering.
 
       // Displace and rotate model based on position and orientation vector.
-      Float3 pos = GetPosition();
-      Float2 ortn = GetOrientation();
-      glTranslatef(pos.X, pos.Y, pos.Z);    // Translate object in space.
-      glRotatef(ortn.Y, 1.0f, 0.0f, 0.0f);  // Rotate on x-Axis (set pitch).
-      glRotatef(ortn.X, 0.0f, 0.0f, -1.0f); // Rotate on z-Axis (set yaw).           
+      glTranslatef(Position.X, Position.Y, Position.Z);  // Translate object in space.
+      glRotatef(Heading.X, 0.0f, 0.0f, -1.0f);           // Rotate on z-Axis (set yaw).       
+      glRotatef(Heading.Y, 1.0f, 0.0f, 0.0f);            // Rotate on x-Axis (set pitch).  
 
       // Draw on selected rendering mode.
       int size = _triangles.size();
@@ -97,9 +87,6 @@ class Model3D : public IDrawable {
         default: break;
       }
 
-
-      //TODO Translation and rotation!
-      //TODO ...
- 
+      glPopMatrix();
     }
 };

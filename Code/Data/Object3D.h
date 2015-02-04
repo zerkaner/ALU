@@ -1,38 +1,25 @@
 #pragma once
-
-#include "Vector.h"
-
-#include <stdio.h>
+#include "Primitives.h"
 
 
+/** Base class for any physical 3D object. */
 class Object3D {
-
-  private:
 
   public:
 
-    float Mass;
-    float Cw;
-    float ProfileArea;
-    float Thrust;
-
-    Vector Position     = Vector(0,0);
-    Vector Heading      = Vector(1,0);
-    Vector Movement     = Vector(0,0);
-    Vector Acceleration = Vector(0,0);
-
-    Object3D(Vector pos) {
-      Position = pos;
-    }
+    Float3 Position;      // Center point of object.
+    Float3 Heading;       // Orientation (yaw, pitch, roll).
+    Float3 Movement;      // The movement speeds as a vector (V).
+    Float3 Acceleration;  // Change of movement speeds (A).
+    
+    // Parameters for physics simulation.
+    float Mass;           // Mass of object.
+    float Cw;             // The drag coefficient.
+    float ProfileArea;    // Cross sectional area.
+    float Thrust;         // Thrust (engine, muscles, ...).
 
 
-    void Echo() {
-      printf("Object3D output:\n"
-             " - Position: %s\n"
-             " - Speed   : %s  (%5.2f)\n"
-             " - Acceler.: %s  (%5.2f)\n\n",
-             Position.ToString(),
-             Movement.ToString(), Movement.GetLength(),
-             Acceleration.ToString(), Acceleration.GetLength());
+    /** Create a new object. */
+    Object3D() {
     }
 };
