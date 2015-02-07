@@ -1,9 +1,12 @@
 #include "World.h"
 
 #include <Agents/Agent.h>
+#include <Agents/TestAgent.h>
 #include <Data/StatsInfo.h>
+#include <Environment/Cube.h>
 #include <Environment/Environment.h>
 #include <Physics/PhysicsEngine.h>
+#include <Physics/Modules/GravityModule.h>
 #include <Visualization/IDrawable.h>
 
 #include <algorithm>
@@ -14,12 +17,17 @@
 
 World::World() {
   _environment = new Environment();
-  _physics = new PhysicsEngine();
+  _physics = new PhysicsEngine(&_environment->Quadtree);
 
   _randomExec = true;
   srand((unsigned int) time(NULL));
   _ticks = 0;
   _idCounter = 0;
+
+  AddAgent(new TestAgent(this));
+  Cube* obj1 = new Cube(Float3(0.5,0.5,0.5));
+  _environment->Quadtree.Objects.push_back(obj1);
+  _physics->AddModule(new GravityModule());
 
   //AddAgent(new Agent(this));
   //AddAgent(new Agent(this));
@@ -27,15 +35,8 @@ World::World() {
 }
 
 
-int c;
 
 void World::AdvanceOneTick() {
-
-  c ++;
-  //if (c < 25) return; 
-  c = 0;   //TODO Temporary solution to ensure 25fps and 1s execution. 
-
-
   _environment->AdvanceEnvironment(); // Advance environment first.
 
   // Main queue: If a random execution is desired, we shuffle the agent list.

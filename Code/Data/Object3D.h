@@ -1,5 +1,6 @@
 #pragma once
 #include "Primitives.h"
+#include "Vector.h"
 
 
 /** Base class for any physical 3D object. */
@@ -7,10 +8,10 @@ class Object3D {
 
   public:
 
-    Float3 Position;      // Center point of object.
-    Float3 Heading;       // Orientation (yaw, pitch, roll).
-    Float3 Movement;      // The movement speeds as a vector (V).
-    Float3 Acceleration;  // Change of movement speeds (A).
+    Vector Position;      // Center point of object.
+    Vector Heading;       // Orientation (yaw, pitch, roll).
+    Vector Movement;      // The movement speeds as a vector (V).
+    Vector Acceleration;  // Change of movement speeds (A).
     
     // Parameters for physics simulation.
     float Mass;           // Mass of object.
@@ -19,7 +20,7 @@ class Object3D {
     float Thrust;         // Thrust (engine, muscles, ...).
 
 
-    /** Create a new object. */
+    /** Create a new object. Initially, all values are zero! */
     Object3D() {
     }
 };

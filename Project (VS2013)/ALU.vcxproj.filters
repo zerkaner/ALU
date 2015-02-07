@@ -34,6 +34,12 @@
     <Filter Include="Input\ControllerModules">
       <UniqueIdentifier>{9b549005-f2a4-4b79-b435-b9453eef31eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Agents\Perception">
+      <UniqueIdentifier>{7d2ce918-96de-42b5-8b15-403c34df755d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Agents\Reasoning">
+      <UniqueIdentifier>{3f406afa-a6ba-4434-adeb-28c8a308da7c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp">
@@ -71,9 +77,6 @@
     </ClCompile>
     <ClCompile Include="..\Code\Input\InputListener.cpp">
       <Filter>Input</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Physics\Modules\GravityModule.cpp">
-      <Filter>Physics\Modules</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Data\StatsInfo.cpp">
       <Filter>Data</Filter>
@@ -172,6 +175,27 @@
     </ClInclude>
     <ClInclude Include="..\Code\Execution\World.h">
       <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Physics\Modules\DragModule.h">
+      <Filter>Physics\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Environment\Quadtree.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\Reasoning\IAgentLogic.h">
+      <Filter>Agents\Reasoning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\Reasoning\IInteraction.h">
+      <Filter>Agents\Reasoning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\Perception\Sensor.h">
+      <Filter>Agents\Perception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\Perception\PerceptionUnit.h">
+      <Filter>Agents\Perception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\TestAgent.h">
+      <Filter>Agents</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

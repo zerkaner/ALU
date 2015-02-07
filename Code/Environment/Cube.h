@@ -11,7 +11,10 @@ class Cube : public Model3D {
   public:
 
     Cube(Float3 position) {
-      Position = position;
+      Position = Vector (position.X, position.Y, position.Z);      
+      Movement = Vector(0,0,0);
+      Acceleration = Vector(0,0,0);
+      
       _renderingMode = Model3D::MESH;
 
 

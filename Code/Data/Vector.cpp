@@ -8,8 +8,16 @@
 using namespace std;
 
 
+Vector::Vector() {
+  X = 0.0f;
+  Y = 0.0f;
+  Z = 0.0f;
+  _is3D = true;
+}
+
+
 /** Initialize a two-dimensional vector (height is set to zero). */
-Vector::Vector (float x, float y) {
+Vector::Vector(float x, float y) {
   X = x;
   Y = y;
   Z = 0.0f;
@@ -18,7 +26,7 @@ Vector::Vector (float x, float y) {
 
 
 /** Initialize a three-dimensional vector. */
-Vector::Vector (float x, float y, float z) {
+Vector::Vector(float x, float y, float z) {
   X = x;
   Y = y;
   Z = z;

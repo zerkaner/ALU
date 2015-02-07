@@ -20,7 +20,6 @@
     <ClCompile Include="..\Code\Execution\World.cpp" />
     <ClCompile Include="..\Code\Input\InputController.cpp" />
     <ClCompile Include="..\Code\Input\InputListener.cpp" />
-    <ClCompile Include="..\Code\Physics\Modules\GravityModule.cpp" />
     <ClCompile Include="..\Code\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="..\Code\UserInterface\TextWriter.cpp" />
     <ClCompile Include="..\Code\UserInterface\UserInterface.cpp" />
@@ -29,6 +28,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h" />
+    <ClInclude Include="..\Code\Agents\Perception\PerceptionUnit.h" />
+    <ClInclude Include="..\Code\Agents\Perception\Sensor.h" />
+    <ClInclude Include="..\Code\Agents\Reasoning\IAgentLogic.h" />
+    <ClInclude Include="..\Code\Agents\Reasoning\IInteraction.h" />
+    <ClInclude Include="..\Code\Agents\TestAgent.h" />
     <ClInclude Include="..\Code\Converter\Converter.h" />
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />
@@ -38,6 +42,7 @@
     <ClInclude Include="..\Code\Environment\Environment.h" />
     <ClInclude Include="..\Code\Environment\GridTerrain.h" />
     <ClInclude Include="..\Code\Environment\HeightmapTerrain.h" />
+    <ClInclude Include="..\Code\Environment\Quadtree.h" />
     <ClInclude Include="..\Code\Execution\ALU.h" />
     <ClInclude Include="..\Code\Execution\Stopwatch.h" />
     <ClInclude Include="..\Code\Execution\World.h" />
@@ -49,6 +54,7 @@
     <ClInclude Include="..\Code\Input\InputController.h" />
     <ClInclude Include="..\Code\Input\InputListener.h" />
     <ClInclude Include="..\Code\Physics\IPhysicsModule.h" />
+    <ClInclude Include="..\Code\Physics\Modules\DragModule.h" />
     <ClInclude Include="..\Code\Physics\Modules\GravityModule.h" />
     <ClInclude Include="..\Code\Physics\PhysicsEngine.h" />
     <ClInclude Include="..\Code\UserInterface\FontArchive.h" />

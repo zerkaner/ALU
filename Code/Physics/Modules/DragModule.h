@@ -1,9 +1,27 @@
-#include "GravityModule.h"
+#pragma once
+#include "../IPhysicsModule.h"
+
+
+/** Adds drag and friction as negative acceleration to the objects. */
+class GravityModule : public IPhysicsModule {
+
+  private:
+    const float AirDensity = 1.20f;  // Density of air. [kg/m^3]
+
+  public:
+
+    /** Adds air drag and friction to an object.
+     * @param obj Pointer to concrete object. */
+    void AddEffect(Object3D* obj) {
+    }
+};
+
+
+
+
+
 
 /*
-const float Gravity    = 9.81f;  // Earth gravity constant. [m/s^2]
-const float AirDensity = 1.20f;  // Density of air.        [kg/m^3]
-
 
 void UpdateObject(Object3D* obj) {
   const float factor = 0.10f;  // Fraction of second.
@@ -15,17 +33,6 @@ void UpdateObject(Object3D* obj) {
   // Apply gravity, if acceleration vector is three-dimensional.
   if (obj->Acceleration.Is3D()) obj->Acceleration.Z -= (Gravity * factor);
 
-  // Update movement vector.
-  obj->Movement += (obj->Acceleration * factor);
-
-  // Set new position.
-  obj->Position += (obj->Movement * factor);
-  
-  // Output new values.
-  printf ("V: %6.2f km/h | Res: %7.2f N | Acc: %5.2f m/s^2", 
-          v*3.6f, resistance, obj->Acceleration.GetLength());
-  getchar();
-  //obj->Echo();
 }
 
 /*

@@ -15,11 +15,14 @@ class Vector {
   public:
     float X, Y, Z;  // The vector's coordinates.
 
+    /** Initialize an empty, three-dimensional(!) vector. */
+    Vector();
+
     /** Initialize a two-dimensional vector (height is set to zero). */
-    Vector (float x, float y);
+    Vector(float x, float y);
 
     /** Initialize a three-dimensional vector. */
-    Vector (float x, float y, float z);
+    Vector(float x, float y, float z);
 
     /** Destroy this vector. */
     ~Vector();
