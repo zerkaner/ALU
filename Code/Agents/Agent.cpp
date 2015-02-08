@@ -7,7 +7,7 @@
 
 
 Agent::Agent(World* world) {
-  _id = world->GetID();       // Get new agent ID. 
+  ID = world->GetID();        // Get new agent ID. 
   _world = world;             // Save reference for later use.
   IsAlive = true;             // Set alive flag.
   PU = new PerceptionUnit();  // Create new (empty) perception unit.

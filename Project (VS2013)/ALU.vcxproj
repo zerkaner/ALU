@@ -32,6 +32,7 @@
     <ClInclude Include="..\Code\Agents\Perception\Sensor.h" />
     <ClInclude Include="..\Code\Agents\Reasoning\IAgentLogic.h" />
     <ClInclude Include="..\Code\Agents\Reasoning\IInteraction.h" />
+    <ClInclude Include="..\Code\Agents\SpatialAgent.h" />
     <ClInclude Include="..\Code\Agents\TestAgent.h" />
     <ClInclude Include="..\Code\Converter\Converter.h" />
     <ClInclude Include="..\Code\Data\Object3D.h" />
@@ -111,6 +112,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -123,6 +125,9 @@
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

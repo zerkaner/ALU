@@ -9,22 +9,23 @@ class World;
 class Agent {
 
   private:
-    long _id;         // Unique identifier.    
     World* _world;    // Execution reference for add and remove queries.     
-
-    /** The removal method stops external triggering of the agent. */
-    void Remove();
 
 
   protected:
-    bool IsAlive;       // Alive flag for execution and deletion checks.
-    PerceptionUnit* PU; // Sensor container and input gathering. 
-    IAgentLogic* RL;    // The agent's reasoning logic.
+    long ID;             // Unique identifier.  
+    bool IsAlive;        // Alive flag for execution and deletion checks.
+    PerceptionUnit* PU;  // Sensor container and input gathering. 
+    IAgentLogic* RL;     // The agent's reasoning logic.
 
 
     /** Constructor for an abstract agent. It serves as a base class that is extended with
      *  domain specific sensors, actions and reasoning, optionally containing a knowledge base. */
     Agent(World* world); 
+
+
+    /** The removal method stops external triggering of the agent. */
+    virtual void Remove();
 
   
   public:    

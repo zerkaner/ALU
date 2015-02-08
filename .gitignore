@@ -14,3 +14,4 @@ Project (VS2013)/[Rr]elease/
 # Output: Debugging databases and linker listings:
 *.pdb
 *.ilk
+*.bsc

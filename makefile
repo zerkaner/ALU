@@ -7,6 +7,8 @@ NAME = ALU_standalone.exe
 
 #OBJS specifies which files to compile as part of the project.
 OBJS = $(wildcard $(SRC)/Agents/*.cpp)\
+       $(wildcard $(SRC)/Agents/Perception/*.cpp)\
+       $(wildcard $(SRC)/Agents/Reasoning/*.cpp)\
        $(wildcard $(SRC)/Converter/*.cpp)\
        $(wildcard $(SRC)/Data/*.cpp)\
        $(wildcard $(SRC)/Environment/*.cpp)\

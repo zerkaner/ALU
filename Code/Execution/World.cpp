@@ -17,23 +17,16 @@
 
 World::World() {
   _environment = new Environment();
-  _physics = new PhysicsEngine(&_environment->Quadtree);
+  _physics = new PhysicsEngine(&_environment->Objects);
 
   _randomExec = true;
   srand((unsigned int) time(NULL));
   _ticks = 0;
   _idCounter = 0;
 
-  AddAgent(new TestAgent(this));
-  Cube* obj1 = new Cube(Float3(0.5,0.5,0.5));
-  _environment->Quadtree.Objects.push_back(obj1);
-  _physics->AddModule(new GravityModule());
-
-  //AddAgent(new Agent(this));
-  //AddAgent(new Agent(this));
-  //AddAgent(new Agent(this));
+  new TestAgent(this, _environment);
+  //_physics->AddModule(new GravityModule());
 }
-
 
 
 void World::AdvanceOneTick() {
