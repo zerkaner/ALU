@@ -1,6 +1,6 @@
 #pragma once
 #include "../InputListener.h"
-#include "ControllerModule.h"
+#include "../IControllerModule.h"
 #include <Data/StatsInfo.h>
 #include <Visualization/Camera.h>
 
@@ -8,7 +8,7 @@ using namespace StatsInfo;
 
 
 /** This controller is intended for FPS-like camera movement. */
-class CameraControllerFPS : public ControllerModule {
+class CameraControllerFPS : public IControllerModule {
   
   private:
     Camera* _camera;        // Camera reference.

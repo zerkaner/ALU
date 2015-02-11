@@ -31,6 +31,7 @@ class PhysicsEngine {
      * @param module Physics module to add. */
     void AddModule(IPhysicsModule* module) {
       module->Factor = _resolution;
+      module->Objects = _objects;
       _modules.push_back(module);
     }
 
@@ -40,7 +41,7 @@ class PhysicsEngine {
       
       // Applies physical influences to all objects.
       for (unsigned int i = 0; i < _modules.size(); i ++) {
-        _modules[i]->AddEffectToAllObjects(_objects->Objects);
+        _modules[i]->AddEffectToAllObjects();
       }
 
       // Perform time-dependant value changes.

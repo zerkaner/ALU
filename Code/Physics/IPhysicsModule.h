@@ -1,6 +1,5 @@
 #pragma once
 #include <Data/Object3D.h>
-#include <Visualization/Model3D.h>
 #include <vector>
 
 
@@ -8,18 +7,17 @@
 class IPhysicsModule {
 
   public:
-    float Factor;  // Scaling factor (resolution). Has to be set by physics engine. 
-
+    float Factor;      // Scaling factor (resolution). Has to be set by physics engine. 
+    Quadtree* Objects; // Quadtree with objects that are influenced by physics.
 
     /** Interface class needs virtual destructor. */
     virtual ~IPhysicsModule() {}
 
 
-   /** Adds the physical effect of this module to all objects.
-    * @param objects List of all objects to apply this effect to. */
-    void AddEffectToAllObjects(std::vector<Model3D*> objects) {
-      for (unsigned int i = 0; i < objects.size(); i ++) {
-        AddEffect(objects[i]);
+   /** Adds the physical effect of this module to all objects. */
+    void AddEffectToAllObjects() {
+      for (unsigned int i = 0; i < Objects->Objects.size(); i ++) {
+        AddEffect(Objects->Objects[i]);
       }
     }
 

@@ -5,7 +5,7 @@
 
 #include "InputController.h"
 #include "InputListener.h"
-#include "ControllerModules/ControllerModule.h"
+#include "IControllerModule.h"
 #include "ControllerModules/CameraControllerFPS.h"
 #include "ControllerModules/CameraControllerRTS.h"
 #include "ControllerModules/EngineController.h"

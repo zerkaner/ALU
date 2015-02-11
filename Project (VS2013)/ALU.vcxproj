@@ -49,9 +49,9 @@
     <ClInclude Include="..\Code\Execution\World.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerFPS.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerRTS.h" />
-    <ClInclude Include="..\Code\Input\ControllerModules\ControllerModule.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\EngineController.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\ExecutionController.h" />
+    <ClInclude Include="..\Code\Input\IControllerModule.h" />
     <ClInclude Include="..\Code\Input\InputController.h" />
     <ClInclude Include="..\Code\Input\InputListener.h" />
     <ClInclude Include="..\Code\Physics\IPhysicsModule.h" />

@@ -1,6 +1,6 @@
 #pragma once
 #include "../InputListener.h"
-#include "ControllerModule.h"
+#include "../IControllerModule.h"
 #include <Data/StatsInfo.h>
 #include <Visualization/Camera.h>
 
@@ -8,7 +8,7 @@ using namespace StatsInfo;
 
 
 /** Controller for a RTS-like camera. */
-class CameraControllerRTS : public ControllerModule {
+class CameraControllerRTS : public IControllerModule {
 
   private:
     Camera* _camera;            // Camera reference.

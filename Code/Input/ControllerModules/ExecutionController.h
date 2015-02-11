@@ -1,10 +1,10 @@
 #pragma once
-#include "ControllerModule.h"
+#include "../IControllerModule.h"
 #include <Execution/ALU.h>
 
 
 /** This controller governs the ALU main routine. */
-class ExecutionController : public ControllerModule {
+class ExecutionController : public IControllerModule {
 
   private:
     ALU* _runtime;  // ALU reference.

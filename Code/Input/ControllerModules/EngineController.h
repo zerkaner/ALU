@@ -1,12 +1,12 @@
 #pragma once;
-#include "ControllerModule.h"
+#include "../IControllerModule.h"
 #include <Visualization/Engine.h>
 
 using namespace InputSymbols;
 
 
 /** This controller is intended for FPS-like camera movement. */
-class EngineController : public ControllerModule {
+class EngineController : public IControllerModule {
 
   private:
     Engine* _engine;    // Reference to 3D engine.

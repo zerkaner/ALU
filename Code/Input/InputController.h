@@ -1,8 +1,8 @@
 #pragma once
 class ALU;
 class Camera;
-class ControllerModule;
 class Engine;
+class IControllerModule;
 class InputListener; 
 #include <vector>
 
@@ -42,8 +42,8 @@ using namespace InputSymbols;
 class InputController {
 
   private:
-    InputListener* _listener;               // SDL input listener. 
-    vector<ControllerModule*> _controllers; // List with attached controllers.   
+    InputListener* _listener;                // SDL input listener. 
+    vector<IControllerModule*> _controllers; // List with attached controllers.   
  
   public:
 

@@ -1,18 +1,18 @@
 #pragma once
-#include "../InputController.h"
+#include "InputController.h"
 
 /** Base module, specifies called functions (to be overwritten by concrete controller). */
-class ControllerModule {
+class IControllerModule {
 
   protected:
 
     /** Only allow creation out of inherited classes. */
-    ControllerModule() {}
+    IControllerModule() {}
 
   public:
 
     /** Virtual destructor. */
-    virtual ~ControllerModule() {}
+    virtual ~IControllerModule() {}
 
 
     /** A mouse button was pressed.

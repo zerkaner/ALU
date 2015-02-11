@@ -149,9 +149,6 @@
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerRTS.h">
       <Filter>Input\ControllerModules</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Input\ControllerModules\ControllerModule.h">
-      <Filter>Input\ControllerModules</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Input\ControllerModules\ExecutionController.h">
       <Filter>Input\ControllerModules</Filter>
     </ClInclude>
@@ -199,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Agents\SpatialAgent.h">
       <Filter>Agents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\IControllerModule.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
