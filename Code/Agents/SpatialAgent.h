@@ -1,6 +1,6 @@
 #pragma once
 #include "Agent.h"
-#include <Visualization/Model3D.h>
+#include <Data/Object3D.h>
 #include <Execution/World.h>
 #include <Environment/Environment.h>
 
@@ -13,7 +13,7 @@ class SpatialAgent : public Agent {
     Environment* _env;  // Environment implementation reference.
 
   protected:
-    Model3D* Data;  // Spatial data and model container. 
+    Object3D* Data;  // Spatial data and model container. 
 
 
     /** Instantiate a new agent with spatial data. Only available for specializations.

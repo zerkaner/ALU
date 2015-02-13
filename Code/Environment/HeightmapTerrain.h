@@ -1,7 +1,7 @@
 #pragma once
 #pragma warning(disable: 4996) // Skip fopen warnings.
 
-#include <Visualization/Model3D.h>
+#include <Data/Model3D.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -51,8 +51,8 @@ class HeightmapTerrain : public Model3D {
           }
           
           // Set up both triangles.
-          _triangles.push_back(new Geometry(vertices[0], vertices[1], vertices[2]));
-          _triangles.push_back(new Geometry(vertices[3], vertices[4], vertices[5]));
+          Triangles.push_back(new Geometry(vertices[0], vertices[1], vertices[2]));
+          Triangles.push_back(new Geometry(vertices[3], vertices[4], vertices[5]));
         }       
       }
 
@@ -83,6 +83,6 @@ class HeightmapTerrain : public Model3D {
      * @param filename The heightmap file to use. */
     HeightmapTerrain(const char* filename) {
       LoadHeightmap(filename);
-      _renderingMode = Model3D::MESH;
+      RenderingMode = Model3D::MESH;
     }
 };

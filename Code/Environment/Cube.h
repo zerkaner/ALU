@@ -1,12 +1,10 @@
 #pragma once
 
-#include <Visualization/Model3D.h>
+#include <Data/Object3D.h>
+#include <Data/Model3D.h>
 
 
-class Cube : public Model3D {
-
-  protected:
-
+class Cube : public Object3D {
 
   public:
 
@@ -14,32 +12,33 @@ class Cube : public Model3D {
       Position = Vector (position.X, position.Y, position.Z);      
       Movement = Vector(0,0,0);
       Acceleration = Vector(0,0,0);
-      
-      _renderingMode = Model3D::MESH;
+      Model = new Model3D();
+
+      Model->RenderingMode = Model3D::MESH;
 
 
       // Bottom
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,-0.5f))));
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(-0.5f,0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,-0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,-0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(-0.5f,0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,-0.5f))));
       
       // Top
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,0.5f)), new Vertex(Float3(0.5f,-0.5f,0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,0.5f)), new Vertex(Float3(-0.5f,0.5f,0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,0.5f)), new Vertex(Float3(0.5f,-0.5f,0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,0.5f)), new Vertex(Float3(-0.5f,0.5f,0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
 
       // Front
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,-0.5f,0.5f))));
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(-0.5f,-0.5f,0.5f)), new Vertex(Float3(0.5f,-0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,-0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(-0.5f,-0.5f,0.5f)), new Vertex(Float3(0.5f,-0.5f,0.5f))));
 
       // Back
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,0.5f,-0.5f)), new Vertex(Float3(-0.5f,0.5f,0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,0.5f,-0.5f)), new Vertex(Float3(-0.5f,0.5f,0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
 
       // Left
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(-0.5f,0.5f,-0.5f)), new Vertex(Float3(-0.5f,0.5f,0.5f))));
-      _triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(-0.5f,-0.5f,0.5f)), new Vertex(Float3(-0.5f,0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(-0.5f,0.5f,-0.5f)), new Vertex(Float3(-0.5f,0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(-0.5f,-0.5f,-0.5f)), new Vertex(Float3(-0.5f,-0.5f,0.5f)), new Vertex(Float3(-0.5f,0.5f,0.5f))));
 
       // Right
-      _triangles.push_back(new Geometry(new Vertex(Float3(0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
-      _triangles.push_back(new Geometry(new Vertex(Float3(0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,-0.5f,0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,-0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
+      Model->Triangles.push_back(new Geometry(new Vertex(Float3(0.5f,-0.5f,-0.5f)), new Vertex(Float3(0.5f,-0.5f,0.5f)), new Vertex(Float3(0.5f,0.5f,0.5f))));
     }
 };

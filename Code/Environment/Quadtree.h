@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <Visualization/Model3D.h>
+#include <Data/Object3D.h>
 #include <vector>
 
 
@@ -17,6 +17,6 @@ class Quadtree {
 
   public:
     // TBC ...
-    std::vector<Model3D*> Objects;
+    std::vector<Object3D*> Objects;
 
 };

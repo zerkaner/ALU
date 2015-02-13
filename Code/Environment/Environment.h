@@ -3,7 +3,7 @@
 #include "HeightmapTerrain.h"
 #include "Quadtree.h"
 #include <Visualization/IDrawable.h>
-#include <Visualization/Model3D.h>
+#include <Visualization/GLDrawer.h>
 #include <stdio.h>
 
 
@@ -32,14 +32,14 @@ class Environment : public IDrawable {
 
     /** Add an object to the environment.
      * @param obj The object to add. */
-    void AddObject(Model3D* obj) {
+    void AddObject(Object3D* obj) {
       Objects.Objects.push_back(obj);
     }
 
 
     /** Remove an object from the environment.
      * @param obj The object to remove. */
-    void RemoveObject(Model3D* obj) {
+    void RemoveObject(Object3D* obj) {
       //TODO ...
     }
 
@@ -47,6 +47,8 @@ class Environment : public IDrawable {
     /** Draw the environment. Calls the subroutines of the terrain and all objects. */
     void Draw() {
       _terrain->Draw();
-      for (unsigned int i = 0; i < Objects.Objects.size(); i ++) Objects.Objects[i]->Draw();
+      for (unsigned int i = 0; i < Objects.Objects.size(); i ++) {
+        GLDrawer::Draw(Objects.Objects[i]);
+      }
     }
 };

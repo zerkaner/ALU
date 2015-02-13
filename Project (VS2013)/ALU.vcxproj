@@ -35,6 +35,7 @@
     <ClInclude Include="..\Code\Agents\SpatialAgent.h" />
     <ClInclude Include="..\Code\Agents\TestAgent.h" />
     <ClInclude Include="..\Code\Converter\Converter.h" />
+    <ClInclude Include="..\Code\Data\Model3D.h" />
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />
     <ClInclude Include="..\Code\Data\StatsInfo.h" />
@@ -64,7 +65,7 @@
     <ClInclude Include="..\Code\Visualization\Camera.h" />
     <ClInclude Include="..\Code\Visualization\Engine.h" />
     <ClInclude Include="..\Code\Visualization\IDrawable.h" />
-    <ClInclude Include="..\Code\Visualization\Model3D.h" />
+    <ClInclude Include="..\Code\Visualization\GLDrawer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6A1E07B8-D75A-47FB-98A3-67682FF66EB4}</ProjectGuid>

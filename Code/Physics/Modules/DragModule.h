@@ -35,13 +35,7 @@ void UpdateObject(Object3D* obj) {
 
 }
 
-/*
-  IThread* it = new T();
-  it->StartThread();
-  getchar();
-
-
-  
+/*  
   Object3D obj = Object3D(Vector(0,0));
   obj.Cw =          0.8f;
   obj.ProfileArea = 1.0f;
