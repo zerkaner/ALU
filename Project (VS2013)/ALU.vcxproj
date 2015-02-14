@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp" />
     <ClCompile Include="..\Code\Converter\Converter.cpp" />
+    <ClCompile Include="..\Code\Data\Model3D.cpp" />
     <ClCompile Include="..\Code\Data\StatsInfo.cpp" />
     <ClCompile Include="..\Code\Data\Vector.cpp" />
     <ClCompile Include="..\Code\Execution\ALU.cpp" />
@@ -25,6 +26,7 @@
     <ClCompile Include="..\Code\UserInterface\UserInterface.cpp" />
     <ClCompile Include="..\Code\Visualization\Camera.cpp" />
     <ClCompile Include="..\Code\Visualization\Engine.cpp" />
+    <ClCompile Include="..\Code\Visualization\GLDrawer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h" />
@@ -40,7 +42,6 @@
     <ClInclude Include="..\Code\Data\Primitives.h" />
     <ClInclude Include="..\Code\Data\StatsInfo.h" />
     <ClInclude Include="..\Code\Data\Vector.h" />
-    <ClInclude Include="..\Code\Environment\Cube.h" />
     <ClInclude Include="..\Code\Environment\Environment.h" />
     <ClInclude Include="..\Code\Environment\GridTerrain.h" />
     <ClInclude Include="..\Code\Environment\HeightmapTerrain.h" />

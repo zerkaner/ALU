@@ -21,6 +21,7 @@ class SpatialAgent : public Agent {
      * @param env The environment, used to add (and remove) agent model.*/
     SpatialAgent(World* world, Environment* env) : Agent(world) {
       _env = env;     
+      Data = new Object3D();
     }
 
    

@@ -36,7 +36,7 @@ class HeightmapTerrain : public Model3D {
       // Iterate over height map and generate triangles.
       for (int x = 0; x < _width - levelOfDetail; x+= levelOfDetail) {  // X values.
         for (int y = 0; y < _height; y+=levelOfDetail) {                // Y values.
-          
+          /*
           // We compute two triangles each time. First, create its vertices.
           Vertex* vertices[6];
           for (int i = 0; i < 6; i++) {
@@ -53,6 +53,7 @@ class HeightmapTerrain : public Model3D {
           // Set up both triangles.
           Triangles.push_back(new Geometry(vertices[0], vertices[1], vertices[2]));
           Triangles.push_back(new Geometry(vertices[3], vertices[4], vertices[5]));
+          */
         }       
       }
 

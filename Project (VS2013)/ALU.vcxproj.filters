@@ -84,6 +84,12 @@
     <ClCompile Include="..\Code\Execution\World.cpp">
       <Filter>Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Data\Model3D.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Visualization\GLDrawer.cpp">
+      <Filter>Visualization</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h">
@@ -156,9 +162,6 @@
       <Filter>Visualization</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Environment\HeightmapTerrain.h">
-      <Filter>Environment</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Environment\Cube.h">
       <Filter>Environment</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\UserInterface\FontArchive.h">
