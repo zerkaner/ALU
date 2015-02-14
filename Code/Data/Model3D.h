@@ -19,7 +19,7 @@ class Model3D {
 
     RenderingMode RenderingMode;    // Current rendering mode.
     std::vector<Geoset*> Geosets;   // List with all geosets.
-    Material* _materials = NULL;    // Material pointer.
+    Material* _materials;           // Material pointer.
     float Scale = 1;                // Model scaling factor.
 
     /** Create an empty model. */

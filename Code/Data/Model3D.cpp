@@ -2,6 +2,7 @@
 #include "Model3D.h"
 #include "Primitives.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 
 Model3D::Model3D() {

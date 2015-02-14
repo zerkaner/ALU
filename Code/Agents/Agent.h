@@ -14,6 +14,7 @@ class Agent {
 
   protected:
     long ID;             // Unique identifier.  
+    long Ticks;          // Tick counter.
     bool IsAlive;        // Alive flag for execution and deletion checks.
     PerceptionUnit* PU;  // Sensor container and input gathering. 
     IAgentLogic* RL;     // The agent's reasoning logic.
