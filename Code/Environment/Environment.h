@@ -19,9 +19,8 @@ class Environment : public IDrawable {
 
 
     Environment() { 
-      //_terrain = new HeightmapTerrain("heightfield2.raw"); 
       _terrain = new GridTerrain(10, 10);
-
+      AddObject(new HeightmapTerrain("heightfield2.raw"));
     }
 
 

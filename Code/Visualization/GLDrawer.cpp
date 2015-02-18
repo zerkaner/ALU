@@ -24,7 +24,7 @@ void GLDrawer::Draw(Object3D* obj) {
 
 
   //TODO Move lighting somewhere else. Maybe as a Engine.Add() function.
-  glEnable (GL_LIGHTING);   // Enable lighting.
+  
   glEnable (GL_LIGHT0);
   float lightpos [] = {15.0f, 15.0f, 25.0f, 0.0f};    // Position. 4th is directional (0) or positional. 
   float diffuseLight [] = {0.8f, 0.8f, 0.8f, 1.0f};   // Color for diffuse light (RGBA code).
@@ -70,6 +70,7 @@ void GLDrawer::Draw(Object3D* obj) {
     }
         
     case Model3D::DIRECT: {  // Direct CPU rendering.
+      glEnable (GL_LIGHTING);
       glBegin(GL_TRIANGLES);
       for (int g, t, i = 0; i < size; i ++) {
         geoset = mdl->Geosets[i];
@@ -94,6 +95,7 @@ void GLDrawer::Draw(Object3D* obj) {
         }
       }          
       glEnd();
+      glDisable(GL_LIGHTING);
       break;
     }
 
@@ -106,6 +108,5 @@ void GLDrawer::Draw(Object3D* obj) {
     default: break;
   }
       
-  glDisable(GL_LIGHTING);
   glPopMatrix();
 }

@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-class HeightmapTerrain : public Model3D {
+class HeightmapTerrain : public Object3D {
 
   private:
 
@@ -18,47 +18,72 @@ class HeightmapTerrain : public Model3D {
 
     /** Load a new heightmap file.
      * @param filename The file path. */
-    void LoadHeightmap(const char* filename) {
+    Geoset* LoadHeightmap(const char* filename) {
       FILE* file = fopen(filename, "rb");          // Open file stream.
       if (file == NULL) {
         printf("[HeightmapTerrain] Error loading heightmap file '%s'.\n", filename);
-        return;
+        return NULL;
       }    
       
       // Read in dimensions (width, height) and height data.
       fread(&_width,  sizeof(int), 1, file);
       fread(&_height, sizeof(int), 1, file);
-      BYTE* heights = (BYTE*) calloc (_width*_height, sizeof (BYTE));
-      fread (heights, sizeof (BYTE), _width*_height, file);
+      BYTE* heights = (BYTE*) calloc(_width*_height, sizeof(BYTE));
+      fread(heights, sizeof(BYTE), _width*_height, file);
       fclose(file);
 
+      // Calculate storage space (same loop, only counter increase).
+      long nrVNT = 0;
+      for (int x = 0; x < _width-levelOfDetail; x += levelOfDetail) {
+        for (int y = 0; y < _height; y += levelOfDetail) nrVNT += 6;
+      }  //TODO Create formula to avoid this unnecessary loop!
+      long nrG = nrVNT / 3;
 
+      // Create geoset, set properties and then allocate arrays.
+      Geoset* geoset = new Geoset();
+      geoset->enabled = true;
+      (geoset->nrV = geoset->nrN = geoset->nrT = nrVNT); geoset->nrG = nrG;
+      geoset->vertices   = new Float3[nrVNT];
+      geoset->normals    = new Float3[nrVNT];
+      geoset->textures   = new Float2[nrVNT];
+      geoset->geometries = new Geometry[nrG];
+           
+      long cntVNT = 0, cntG = 0;  // Counter for array iteration.
+
+      
       // Iterate over height map and generate triangles.
-      for (int x = 0; x < _width - levelOfDetail; x+= levelOfDetail) {  // X values.
-        for (int y = 0; y < _height; y+=levelOfDetail) {                // Y values.
-          /*
+      for (int x = 0; x < _width-levelOfDetail; x += levelOfDetail) {  // X values.
+        for (int y = 0; y < _height; y += levelOfDetail) {             // Y values.
+          
           // We compute two triangles each time. First, create its vertices.
-          Vertex* vertices[6];
-          for (int i = 0; i < 6; i++) {
-            
+          for (int i = 0; i < 6; i ++, cntVNT ++) {       
             int valX = x + ((i == 1 || i == 2 || i == 5) ? levelOfDetail : 0);
             int valY = y + ((i == 1 || i == 4 || i == 5) ? levelOfDetail : 0);
             float valZ = heights[valX*_width + valY];
+            
+            geoset->vertices[cntVNT].X = (float) valX;
+            geoset->vertices[cntVNT].Y = (float) valY;
+            geoset->vertices[cntVNT].Z = valZ;
+            //TODO Calculate and set also normals!
+            geoset->textures[cntVNT].X = (float) valX/_width;
+            geoset->textures[cntVNT].Y = (float) valY/_height;
 
-            Float3 coordinates = Float3((float)valX, (float)valY, valZ);
-            Float2 texVector = Float2((float) valX/_width, (float) valY/_height);
-            vertices[i] = new Vertex(coordinates, texVector);     
+            // Set up geometry. Triggers on '2' and '5'.
+            if (i%3 == 2) {
+              Geometry* geo = &geoset->geometries[cntG];
+              geo->symIndices = true; // Same indices for vertices, textures and normals.
+              geo->vIdx[0] = geo->nIdx[0] = geo->tIdx[0] = cntVNT-2;
+              geo->vIdx[1] = geo->nIdx[1] = geo->tIdx[1] = cntVNT-1;
+              geo->vIdx[2] = geo->nIdx[2] = geo->tIdx[2] = cntVNT;
+              cntG ++;
+            }
           }
-          
-          // Set up both triangles.
-          Triangles.push_back(new Geometry(vertices[0], vertices[1], vertices[2]));
-          Triangles.push_back(new Geometry(vertices[3], vertices[4], vertices[5]));
-          */
         }       
       }
 
       // Delete reserved space for read-in data.
-      free (heights);
+      free(heights);
+      return geoset;
     }
 
 
@@ -83,7 +108,10 @@ class HeightmapTerrain : public Model3D {
     /** Create a new heightmap based terrain.
      * @param filename The heightmap file to use. */
     HeightmapTerrain(const char* filename) {
-      LoadHeightmap(filename);
-      RenderingMode = Model3D::MESH;
+      Position = Vector(-5, -5, -15);
+      Model = new Model3D();
+      Model->Geosets.push_back(LoadHeightmap(filename));
+      Model->RenderingMode = Model3D::MESH;
+      Model->Scale = 0.03f;
     }
 };

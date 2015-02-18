@@ -25,10 +25,11 @@ Model3D::~Model3D() {
 void Model3D::ClearGeosets() {
   // Clear all arrays of the geoset structures. 
   for (unsigned int i = 0; i < Geosets.size(); i ++) {
-    free(Geosets[i]->vertices);
-    free(Geosets[i]->normals);
-    free(Geosets[i]->textures);
-    free(Geosets[i]->geometries);
+    delete[] Geosets[i]->vertices;
+    delete[] Geosets[i]->normals;
+    delete[] Geosets[i]->textures;
+    delete[] Geosets[i]->geometries;
+    delete Geosets[i];
   }
   Geosets.clear();
 }

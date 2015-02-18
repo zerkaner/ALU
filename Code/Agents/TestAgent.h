@@ -21,10 +21,10 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
       RL = this;
       Data->Position = pos;
       if (pos.X >= 4) {
-        Data->Model = new Model3D("Bear.m4");
-        Data->Model->Scale = 0.02f;
-        //Data->Heading.X = -45.0f;
-        //Data->Heading.Y = 90.0f;
+        Data->Model = new Model3D("Draken.m4");
+        Data->Model->Scale = 0.2f;
+        Data->Heading.X = -45.0f;
+        Data->Heading.Y = 90.0f;
       }
       else Data->Model = new Model3D("Cube.m4");
       Data->Model->RenderingMode = Model3D::DIRECT;
