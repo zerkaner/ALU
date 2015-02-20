@@ -131,7 +131,6 @@ void Model3D::WriteFile(const char* filepath) {
   }
 
 
-
   // Write number of geosets and loop over them.
   int nrGeosets = Geosets.size();
   fwrite(&nrGeosets, sizeof(int), 1, fp);
@@ -178,7 +177,6 @@ void Model3D::WriteFile(const char* filepath) {
     }
   }
 
-
   // Close file stream and quit.
   printf("[%d bytes out]\n", ftell(fp));
   fclose(fp);
@@ -186,9 +184,61 @@ void Model3D::WriteFile(const char* filepath) {
 
 
 
-void Model3D::Echo(bool fileOutput) {
+void Model3D::ScaleModel(float factor) {
+  for (unsigned int i = 0; i < Geosets.size(); i ++) {
+    for (int v = 0; v < Geosets[i]->nrV; v ++) {
+      Geosets[i]->vertices[v].X *= factor;
+      Geosets[i]->vertices[v].Y *= factor;
+      Geosets[i]->vertices[v].Z *= factor;
+    }
+  }
+}
+
+
+
+void Model3D::CalculateNormals() {
+  for (unsigned int i = 0; i < Geosets.size(); i ++) {
+    Geoset* geo = Geosets[i];
+
+    // Allocate normals array and set counter.
+    if (geo->nrN > 0) delete[] geo->normals;
+    geo->nrN = geo->nrG;
+    geo->normals = new Float3 [geo->nrN];
+
+    for (int n = 0; n < geo->nrN; n ++) {
+      Geometry* tri = &geo->geometries[n];
+
+      // Get edge vectors u and v (p1p2, p1p3).
+      Float3 p1 = geo->vertices[tri->vIdx[0]];
+      Float3 p2 = geo->vertices[tri->vIdx[2]];
+      Float3 p3 = geo->vertices[tri->vIdx[1]];
+      Float3 u = Float3(p2.X-p1.X, p2.Y-p1.Y, p2.Z-p1.Z);
+      Float3 v = Float3(p3.X-p1.X, p3.Y-p1.Y, p3.Z-p1.Z);
+
+      // Calculate normal vector (cross product) and set index reference.
+      geo->normals[n].X = u.Y*v.Z - u.Z*v.Y;
+      geo->normals[n].Y = u.Z*v.X - u.X*v.Z;
+      geo->normals[n].Z = u.X*v.Y - u.Y*v.X;
+      tri->nIdx[0] = tri->nIdx[1] = tri->nIdx[2] = n;
+      
+      // Normalize the calculated vectors to unit vectors.
+      float length = sqrt(
+        geo->normals[n].X*geo->normals[n].X + 
+        geo->normals[n].Y*geo->normals[n].Y + 
+        geo->normals[n].Z*geo->normals[n].Z
+      );
+      geo->normals[n].X /= length;
+      geo->normals[n].Y /= length;
+      geo->normals[n].Z /= length;
+    }
+  }
+}
+
+
+
+void Model3D::Echo(bool fileOutput, const char* filename) {
   if (fileOutput) {
-    FILE* fp = fopen ("output.txt", "w");
+    FILE* fp = fopen (filename, "w");
     fprintf (fp, "Detailed output for Model3D:\n");
     for (unsigned int i = 0; i < Geosets.size(); i ++) {
       fprintf (fp, " - Geoset [%02d] (%s)\n", Geosets[i]->id, 

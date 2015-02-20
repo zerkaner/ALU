@@ -1,6 +1,7 @@
 #include "GLDrawer.h"
 #include <Data/Object3D.h>
 #include <SDL_opengl.h>
+#include <cmath>
 
 
 void GLDrawer::Draw(Object3D* obj) {
@@ -20,13 +21,12 @@ void GLDrawer::Draw(Object3D* obj) {
   glTranslatef(obj->Position.X, obj->Position.Y, obj->Position.Z);  // Translate object.     
   glRotatef(obj->Heading.X, 0.0f, 0.0f, -1.0f);   // Rotate on z [height]-Axis (set yaw).       
   glRotatef(obj->Heading.Y, 1.0f, 0.0f, 0.0f);    // Rotate on x-Axis (set pitch).  
-  glScalef(mdl->Scale, mdl->Scale, mdl->Scale);   // Scale model properly.
 
 
   //TODO Move lighting somewhere else. Maybe as a Engine.Add() function.
   
   glEnable (GL_LIGHT0);
-  float lightpos [] = {15.0f, 15.0f, 25.0f, 0.0f};    // Position. 4th is directional (0) or positional. 
+  float lightpos [] = {20.0f, 20.0f, 30.0f, 0.0f};    // Position. 4th is directional (0) or positional. 
   float diffuseLight [] = {0.8f, 0.8f, 0.8f, 1.0f};   // Color for diffuse light (RGBA code).
   float ambientLight [] = {0.2f, 0.2f, 0.2f, 1.0f};   // Color for ambient (environmental) light.
   float specularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};   // Specular (reflected) light.

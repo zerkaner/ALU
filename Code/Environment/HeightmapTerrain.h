@@ -108,10 +108,11 @@ class HeightmapTerrain : public Object3D {
     /** Create a new heightmap based terrain.
      * @param filename The heightmap file to use. */
     HeightmapTerrain(const char* filename) {
-      Position = Vector(-5, -5, -15);
+      Position = Vector(-5, -5, -10);
       Model = new Model3D();
       Model->Geosets.push_back(LoadHeightmap(filename));
-      Model->RenderingMode = Model3D::MESH;
-      Model->Scale = 0.03f;
+      Model->CalculateNormals();
+      Model->RenderingMode = Model3D::DIRECT;
+      Model->ScaleModel(0.03f);
     }
 };

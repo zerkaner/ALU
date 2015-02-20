@@ -22,11 +22,15 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
       Data->Position = pos;
       if (pos.X >= 4) {
         Data->Model = new Model3D("Draken.m4");
-        Data->Model->Scale = 0.2f;
+        Data->Model->ScaleModel(0.5f);
+        Data->Model->ScaleModel(0.5f);
         Data->Heading.X = -45.0f;
         Data->Heading.Y = 90.0f;
       }
-      else Data->Model = new Model3D("Cube.m4");
+      else { 
+        Data->Model = new Model3D("Cube.m4");
+        Data->Model->ScaleModel(0.60f);
+      }
       Data->Model->RenderingMode = Model3D::DIRECT;
 
       AddToEnvironment();
@@ -40,8 +44,8 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
         IsAlive = false;
       }    
 
-      Data->Movement.X = (float) (rand() % 5) - 2;
-      Data->Movement.Y = (float) (rand() % 5) - 2;
+      //Data->Movement.X = (float) (rand() % 5) - 2;
+      //Data->Movement.Y = (float) (rand() % 5) - 2;
 
       return NULL; //new TestInteraction();
     }

@@ -20,7 +20,6 @@ class Model3D {
     RenderingMode RenderingMode;    // Current rendering mode.
     std::vector<Geoset*> Geosets;   // List with all geosets.
     Material* _materials;           // Material pointer.
-    float Scale = 1;                // Model scaling factor.
 
     /** Create an empty model. */
     Model3D();
@@ -44,8 +43,18 @@ class Model3D {
      * @param filepath Path to output file. */
     void WriteFile(const char* filepath);
 
+
+    /** Scale the model's vertices. 
+     * @param factor The factor to scale. */
+    void ScaleModel(float factor);
+
+
+    /** (Re-)Calculate surface normals. */
+    void CalculateNormals();
+
     
     /** Outputs the model properties to console or text file. 
-     * @param fileOutput If set to 'true', detailed output will be written to a text file. */
-    void Echo(bool fileOutput = false);
+     * @param fileOutput If set to 'true', detailed output will be written to a text file.
+     * @param filename Name of the output file [default: output.txt]. */
+    void Echo(bool fileOutput = false, const char* filename = "output.txt");
 };
