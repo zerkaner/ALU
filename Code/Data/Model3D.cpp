@@ -196,6 +196,63 @@ void Model3D::ScaleModel(float factor) {
 
 
 
+/* Calculate vertex normals. */
+void Model3D::CalculateNormals() {
+  for (unsigned int i = 0; i < Geosets.size(); i ++) {
+    Geoset* geo = Geosets[i];
+
+    // Allocate normals array and set counter.
+    if (geo->nrN > 0) delete[] geo->normals;
+    geo->nrN = geo->nrV;
+    geo->normals = new Float3 [geo->nrN];
+
+
+    // Calculate all triangle normals and put them to the correspondent vertex normals.
+    for (int g = 0; g < geo->nrG; g ++) {
+      Geometry* tri = &geo->geometries[g];
+
+      // Get edge vectors u and v (v1v2, v1v3).
+      Float3 v1 = geo->vertices[tri->vIdx[2]];
+      Float3 v2 = geo->vertices[tri->vIdx[1]];
+      Float3 v3 = geo->vertices[tri->vIdx[0]];
+      Float3 u = Float3(v2.X-v1.X, v2.Y-v1.Y, v2.Z-v1.Z);
+      Float3 v = Float3(v3.X-v1.X, v3.Y-v1.Y, v3.Z-v1.Z);
+
+      // Calculate triangle normal vector (cross product).
+      Float3 nor = Float3(
+        (u.Y*v.Z - u.Z*v.Y), 
+        (u.Z*v.X - u.X*v.Z), 
+        (u.X*v.Y - u.Y*v.X)
+      );
+
+      // Add calculated triangle normal vector to all involved vertices-normals.
+      geo->normals[tri->vIdx[0]] += nor;
+      geo->normals[tri->vIdx[1]] += nor;
+      geo->normals[tri->vIdx[2]] += nor;
+
+      // Set index references. These are the same as the vertex indices.
+      tri->nIdx[0] = tri->vIdx[0];
+      tri->nIdx[1] = tri->vIdx[1];
+      tri->nIdx[2] = tri->vIdx[2];
+    }
+
+
+    // Normalize all calculated normal vectors to unit vectors.
+    for (int n = 0; n < geo->nrN; n ++) {
+      float length = sqrt(
+        geo->normals[n].X*geo->normals[n].X + 
+        geo->normals[n].Y*geo->normals[n].Y + 
+        geo->normals[n].Z*geo->normals[n].Z
+      );
+      geo->normals[n].X /= length;
+      geo->normals[n].Y /= length;
+      geo->normals[n].Z /= length;    
+    }
+  }
+}
+
+
+/*
 void Model3D::CalculateNormals() {
   for (unsigned int i = 0; i < Geosets.size(); i ++) {
     Geoset* geo = Geosets[i];
@@ -233,7 +290,7 @@ void Model3D::CalculateNormals() {
     }
   }
 }
-
+*/
 
 
 void Model3D::Echo(bool fileOutput, const char* filename) {

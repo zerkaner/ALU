@@ -35,6 +35,11 @@ struct Float3 {
       Y = y;
       Z = z;
     }
+    void operator+=(Float3 right) {
+      X += right.X;
+      Y += right.Y; 
+      Z += right.Z;
+    }
 };
 
 

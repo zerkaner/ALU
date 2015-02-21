@@ -15,6 +15,20 @@ void GLDrawer::Draw(Object3D* obj) {
   Geoset* geoset;
   Geometry* tri;
 
+
+  //TODO Move lighting somewhere else. Maybe as a Engine.Add() function. 
+  glEnable (GL_LIGHT0);
+  float lightpos [] = {20.0f, 20.0f, 30.0f, 1.0f};    // Position. 4th is directional (0) or positional. 
+  float diffuseLight [] = {0.8f, 0.8f, 0.8f, 1.0f};   // Color for diffuse light (RGBA code).
+  float ambientLight [] = {0.2f, 0.2f, 0.2f, 1.0f};   // Color for ambient (environmental) light.
+  float specularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};   // Specular (reflected) light.
+  glLightfv (GL_LIGHT0, GL_POSITION, lightpos);       // Set position of light source.
+  glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuseLight);    // Set diffuse light.
+  glLightfv (GL_LIGHT0, GL_AMBIENT, ambientLight);    // Set ambient light.
+  glLightfv (GL_LIGHT0, GL_SPECULAR, specularLight);  // Set specular light. 
+ 
+
+
   glPushMatrix();    // Use designated matrix for object rendering.
 
   // Displace and rotate model based on position and orientation vector.
@@ -22,18 +36,6 @@ void GLDrawer::Draw(Object3D* obj) {
   glRotatef(obj->Heading.X, 0.0f, 0.0f, -1.0f);   // Rotate on z [height]-Axis (set yaw).       
   glRotatef(obj->Heading.Y, 1.0f, 0.0f, 0.0f);    // Rotate on x-Axis (set pitch).  
 
-
-  //TODO Move lighting somewhere else. Maybe as a Engine.Add() function.
-  
-  glEnable (GL_LIGHT0);
-  float lightpos [] = {20.0f, 20.0f, 30.0f, 0.0f};    // Position. 4th is directional (0) or positional. 
-  float diffuseLight [] = {0.8f, 0.8f, 0.8f, 1.0f};   // Color for diffuse light (RGBA code).
-  float ambientLight [] = {0.2f, 0.2f, 0.2f, 1.0f};   // Color for ambient (environmental) light.
-  float specularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};   // Specular (reflected) light.
-  glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuseLight);    // Set diffuse light.
-  glLightfv (GL_LIGHT0, GL_AMBIENT, ambientLight);    // Set ambient light.
-  glLightfv (GL_LIGHT0, GL_SPECULAR, specularLight);  // Set specular light. 
-  
 
   // Draw on selected rendering mode.  
   switch (mdl->RenderingMode) {
@@ -43,7 +45,11 @@ void GLDrawer::Draw(Object3D* obj) {
       for (int i = 0; i < size; i ++) {
         geoset = mdl->Geosets[i];
         for (int v = 0; v < geoset->nrV; v ++) {
-          glVertex3f(geoset->vertices[v].X, geoset->vertices[v].Y, geoset->vertices[v].Z);
+          glVertex3f(
+            geoset->vertices[v].X, 
+            geoset->vertices[v].Y, 
+            geoset->vertices[v].Z
+          );
         }
       }
       glEnd();
@@ -74,6 +80,7 @@ void GLDrawer::Draw(Object3D* obj) {
       glBegin(GL_TRIANGLES);
       for (int g, t, i = 0; i < size; i ++) {
         geoset = mdl->Geosets[i];
+        if (!geoset->enabled) continue;
         for (g = 0; g < geoset->nrG; g ++) {
           for (t = 0; t < 3; t ++) {
             tri = &geoset->geometries[g];

@@ -22,9 +22,8 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
       Data->Position = pos;
       if (pos.X >= 4) {
         Data->Model = new Model3D("Draken.m4");
-        Data->Model->ScaleModel(0.5f);
-        Data->Model->ScaleModel(0.5f);
-        Data->Heading.X = -45.0f;
+        Data->Model->ScaleModel(0.40f);
+        Data->Heading.X = 130.0f;
         Data->Heading.Y = 90.0f;
       }
       else { 
@@ -40,10 +39,11 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
 
     IInteraction* Reason() { 
       if (Ticks == 200) {
-        printf("Killing myself!\n");
-        IsAlive = false;
+        //printf("Killing myself!\n");
+        //IsAlive = false;
       }    
-
+      Data->Heading.X += 1.0f;;
+      if (Data->Heading.X >= 360.0f) Data->Heading.X = 0.0f;
       //Data->Movement.X = (float) (rand() % 5) - 2;
       //Data->Movement.Y = (float) (rand() % 5) - 2;
 

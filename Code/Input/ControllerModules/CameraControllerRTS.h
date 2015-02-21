@@ -47,7 +47,7 @@ class CameraControllerRTS : public IControllerModule {
       
       StatsInfo::Mode = 1; // Announce RTS camera. 
       //_camera->SetPosition(12, 10, 215, 40, -10); // For heightmap terrain.
-      _camera->SetPosition(-2, -2, 6, 50, -60);
+      _camera->SetPosition(6, 6, 4, 211, -30);
     } 
 
 
