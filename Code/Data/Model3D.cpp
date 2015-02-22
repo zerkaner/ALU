@@ -1,6 +1,7 @@
 #pragma warning(disable: 4996) // Skip MSVC warnings.
 #include "Model3D.h"
 #include "Primitives.h"
+#include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 

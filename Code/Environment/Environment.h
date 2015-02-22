@@ -20,7 +20,7 @@ class Environment : public IDrawable {
 
     Environment() { 
       _terrain = new GridTerrain(10, 10);
-      AddObject(new HeightmapTerrain("heightfield2.raw"));
+      AddObject(new HeightmapTerrain("formats/heightfield2.raw"));
     }
 
 

@@ -1,9 +1,9 @@
 #pragma once
 
 /** Type definitions. */
-typedef unsigned char  BYTE;
-typedef unsigned short WORD;
-typedef unsigned long DWORD;
+typedef unsigned char  BYTE;  // 8 bit.
+typedef unsigned short WORD;  // 16 bit.
+typedef unsigned long DWORD;  // 32 bit.
 typedef unsigned int   uint;
 
 

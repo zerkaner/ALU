@@ -40,6 +40,9 @@
     <Filter Include="Agents\Reasoning">
       <UniqueIdentifier>{3f406afa-a6ba-4434-adeb-28c8a308da7c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Textures">
+      <UniqueIdentifier>{1df3deb3-a954-4782-89d9-9681c005de42}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp">
@@ -89,6 +92,12 @@
     </ClCompile>
     <ClCompile Include="..\Code\Visualization\GLDrawer.cpp">
       <Filter>Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Textures\Texture.cpp">
+      <Filter>Data\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Textures\stb_image.cpp">
+      <Filter>Data\Textures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +214,12 @@
     </ClInclude>
     <ClInclude Include="..\Code\Visualization\GLDrawer.h">
       <Filter>Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Textures\stb_image.h">
+      <Filter>Data\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Textures\Texture.h">
+      <Filter>Data\Textures</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
