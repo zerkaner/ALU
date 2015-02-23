@@ -1,5 +1,6 @@
 #pragma once
 #include "SpatialAgent.h"
+#include <Data/Textures/ImageLoader.h>
 #include "Reasoning/IAgentLogic.h"
 #include "Reasoning/IInteraction.h"
 #include <stdio.h>
@@ -21,8 +22,9 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
       RL = this;
       Data->Position = pos;
       if (pos.X >= 4) {
-        Data->Model = new Model3D("models/Cat.m4");
-        Data->Model->ScaleModel(0.04f);
+        Data->Model = new Model3D("models/Bear.m4");
+        Data->Model->Textures = ImageLoader::LoadTexture("models/bear.tga");
+        Data->Model->ScaleModel(0.03f);
       }
       else { 
         Data->Model = new Model3D("models/Cube.m4");

@@ -1,13 +1,9 @@
 #include "World.h"
-
 #include <Agents/Agent.h>
-#include <Agents/TestAgent.h>
 #include <Data/StatsInfo.h>
 #include <Environment/Environment.h>
 #include <Physics/PhysicsEngine.h>
 #include <Physics/Modules/GravityModule.h>
-#include <Visualization/IDrawable.h>
-
 #include <algorithm>
 #include <stdio.h>
 #include <time.h>
@@ -21,8 +17,7 @@ World::World() {
   _ticks = 0;
   _idCounter = 0;
 
-  new TestAgent(this, _environment, Vector(2.0f, 2.0f, 0.5f));
-  new TestAgent(this, _environment, Vector(4.0f, 1.0f, 0.5f));
+
   //_physics->AddModule(new GravityModule());
 }
 
@@ -109,6 +104,6 @@ long World::GetID() {
 
 
 
-IDrawable* World::GetDrawableWorld() {
+Environment* World::GetEnvironment() {
   return _environment;
 }

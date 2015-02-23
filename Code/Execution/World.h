@@ -48,7 +48,7 @@ class World {
     long GetID();
 
 
-    /** Returns a pointer to the drawable version.
-     * @return Pointer to the environment as an IDrawable form. */
-    IDrawable* GetDrawableWorld();
+    /** Returns a pointer to the environment.
+     * @return The environment reference (for agent adding). */
+    Environment* GetEnvironment();
 };

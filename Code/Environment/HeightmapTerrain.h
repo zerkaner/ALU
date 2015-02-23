@@ -1,7 +1,8 @@
 #pragma once
 #pragma warning(disable: 4996) // Skip fopen warnings.
 
-#include <Data/Model3D.h>
+#include <Data/Object3D.h>
+#include <Data/Textures/ImageLoader.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -111,8 +112,9 @@ class HeightmapTerrain : public Object3D {
       Position = Vector(-5, -5, -10);
       Model = new Model3D();
       Model->Geosets.push_back(LoadHeightmap(filename));
+      Model->Textures = ImageLoader::LoadTexture("formats/terrain.jpg");
       Model->CalculateNormals();
       Model->RenderingMode = Model3D::DIRECT;
-      Model->ScaleModel(0.03f);
+      Model->ScaleModel(0.04f);
     }
 };

@@ -1,3 +1,5 @@
+#include <Agents/TestAgent.h>
+#include <Environment/HeightmapTerrain.h>
 #include <Data/StatsInfo.h>
 #include <Execution/ALU.h>
 
@@ -8,9 +10,15 @@ ALU::ALU() :
   _world(World()),
   _camera(Camera(12, -7, 2, 0, -10)),
   _interface(UserInterface()),
-  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface, _world.GetDrawableWorld())),
+  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface, _world.GetEnvironment())),
   _controller(InputController(this, &_camera, &_3dEngine)),
   _listener(InputListener(&_controller, _3dEngine.GetWindowHandle())) {
+
+
+  // Create some test agents.
+  new TestAgent(&_world, _world.GetEnvironment(), Vector(2.0f, 2.0f, 0.5f));
+  new TestAgent(&_world, _world.GetEnvironment(), Vector(4.0f, 1.0f, 0.5f));
+  _world.GetEnvironment()->AddObject(new HeightmapTerrain("formats/heightfield2.raw"));
 }
 
 

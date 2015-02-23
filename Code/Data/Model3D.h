@@ -2,6 +2,7 @@
 #include <vector>
 struct Geoset;
 struct Material;
+class Texture;
 
 
 /** 3D model class that defines the .m4 model format. */
@@ -19,7 +20,9 @@ class Model3D {
 
     RenderingMode RenderingMode;    // Current rendering mode.
     std::vector<Geoset*> Geosets;   // List with all geosets.
-    Material* _materials;           // Material pointer.
+    Material* Materials;            // Material pointer.
+    Texture* Textures;              // Pointer to textures.  
+    //TODO What about multiple textures?!
 
     /** Create an empty model. */
     Model3D();

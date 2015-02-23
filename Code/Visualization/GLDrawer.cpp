@@ -1,5 +1,6 @@
 #include "GLDrawer.h"
 #include <Data/Object3D.h>
+#include <Data/Textures/Texture.h>
 #include <SDL_opengl.h>
 #include <cmath>
 
@@ -26,16 +27,15 @@ void GLDrawer::Draw(Object3D* obj) {
   glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuseLight);    // Set diffuse light.
   glLightfv (GL_LIGHT0, GL_AMBIENT, ambientLight);    // Set ambient light.
   glLightfv (GL_LIGHT0, GL_SPECULAR, specularLight);  // Set specular light. 
- 
 
 
   glPushMatrix();    // Use designated matrix for object rendering.
-
+  
   // Displace and rotate model based on position and orientation vector.
   glTranslatef(obj->Position.X, obj->Position.Y, obj->Position.Z);  // Translate object.     
   glRotatef(obj->Heading.X, 0.0f, 0.0f, -1.0f);   // Rotate on z [height]-Axis (set yaw).       
   glRotatef(obj->Heading.Y, 1.0f, 0.0f, 0.0f);    // Rotate on x-Axis (set pitch).  
-
+  
 
   // Draw on selected rendering mode.  
   switch (mdl->RenderingMode) {
@@ -76,7 +76,13 @@ void GLDrawer::Draw(Object3D* obj) {
     }
         
     case Model3D::DIRECT: {  // Direct CPU rendering.
-      glEnable (GL_LIGHTING);
+      glEnable(GL_LIGHTING);
+         
+      if (mdl->Textures != NULL) {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, mdl->Textures->ID()); 
+      }
+
       glBegin(GL_TRIANGLES);
       for (int g, t, i = 0; i < size; i ++) {
         geoset = mdl->Geosets[i];
@@ -102,6 +108,8 @@ void GLDrawer::Draw(Object3D* obj) {
         }
       }          
       glEnd();
+      
+      if (mdl->Textures != NULL) glDisable(GL_TEXTURE_2D);
       glDisable(GL_LIGHTING);
       break;
     }

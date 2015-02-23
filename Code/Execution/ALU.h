@@ -38,6 +38,5 @@ class ALU {
     void Stop();
 };
 
-
 //TODO ALU-Constr.: Initialization parameter object.
 //TODO Kameragrenzen (bei Verschiebung)? [Anhand der Umweltdimensionen festlegen]

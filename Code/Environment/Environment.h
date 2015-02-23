@@ -1,6 +1,5 @@
 #pragma once
 #include "GridTerrain.h"
-#include "HeightmapTerrain.h"
 #include "Quadtree.h"
 #include <Visualization/IDrawable.h>
 #include <Visualization/GLDrawer.h>
@@ -20,7 +19,6 @@ class Environment : public IDrawable {
 
     Environment() { 
       _terrain = new GridTerrain(10, 10);
-      AddObject(new HeightmapTerrain("formats/heightfield2.raw"));
     }
 
 

@@ -44,23 +44,30 @@ SimpleTexture::~SimpleTexture () {
 
 bool SimpleTexture::InitFromSurface(SDL_Surface* surface) {
   if (surface->w == _width && surface->h == _height) {
-    glEnable(GL_TEXTURE_2D);
-    glGenTextures(1, &_id);
-    glBindTexture(GL_TEXTURE_2D, _id);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);  
-  
+
+    // Get RGB / BGR format (little or big endian).  
     unsigned int format;
     bool isLE = (surface->format->Rmask == 0x000000ff);
     switch (surface->format->BytesPerPixel) {     
       case 3 : format = isLE? GL_RGB  : GL_BGR;  break;
       case 4 : format = isLE? GL_RGBA : GL_BGRA; break;
       default: return false;
-    }
+    }    
+    
+    glEnable(GL_TEXTURE_2D);
+    glGenTextures(1, &_id);
+
+    // Set texture attributes.
+    glBindTexture(GL_TEXTURE_2D, _id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);  
+ 
+    // Create texture.
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _storedWidth, _storedHeight,
                  0, format, GL_UNSIGNED_BYTE, surface->pixels);
+
     return true;
   }
   return false;
@@ -80,6 +87,6 @@ TextureSlice::TextureSlice(Texture* parent, int x, int y, int width, int height)
 
 Texture* TextureFromSurface(SDL_Surface* surface) {
   SimpleTexture* sTex = new SimpleTexture(surface->w, surface->h);
-  sTex->InitFromSurface (surface);
+  sTex->InitFromSurface(surface);
   return sTex;
 }
