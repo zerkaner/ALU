@@ -1,8 +1,8 @@
 #pragma once
 #include "SpatialAgent.h"
-#include <Data/Textures/ImageLoader.h>
 #include "Reasoning/IAgentLogic.h"
 #include "Reasoning/IInteraction.h"
+#include <Data/Textures/Texture.h>
 #include <stdio.h>
 
 /** Some basic implementations to test agent framework. */
@@ -23,7 +23,7 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
       Data->Position = pos;
       if (pos.X >= 4) {
         Data->Model = new Model3D("models/Bear.m4");
-        Data->Model->Textures = ImageLoader::LoadTexture("models/bear.tga");
+        Data->Model->Textures = new SimpleTexture("models/bear.tga");
         Data->Model->ScaleModel(0.03f);
       }
       else { 

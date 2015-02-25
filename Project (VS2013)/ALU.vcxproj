@@ -15,7 +15,6 @@
     <ClCompile Include="..\Code\Converter\Converter.cpp" />
     <ClCompile Include="..\Code\Data\Model3D.cpp" />
     <ClCompile Include="..\Code\Data\StatsInfo.cpp" />
-    <ClCompile Include="..\Code\Data\Textures\ImageLoader.cpp" />
     <ClCompile Include="..\Code\Data\Textures\stb_image.cpp" />
     <ClCompile Include="..\Code\Data\Textures\Texture.cpp" />
     <ClCompile Include="..\Code\Data\Vector.cpp" />
@@ -44,7 +43,6 @@
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />
     <ClInclude Include="..\Code\Data\StatsInfo.h" />
-    <ClInclude Include="..\Code\Data\Textures\ImageLoader.h" />
     <ClInclude Include="..\Code\Data\Textures\stb_image.h" />
     <ClInclude Include="..\Code\Data\Textures\Texture.h" />
     <ClInclude Include="..\Code\Data\Vector.h" />

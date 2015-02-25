@@ -11,7 +11,7 @@ OBJS = $(wildcard $(SRC)/Agents/*.cpp)\
        $(wildcard $(SRC)/Agents/Reasoning/*.cpp)\
        $(wildcard $(SRC)/Converter/*.cpp)\
        $(wildcard $(SRC)/Data/*.cpp)\
-	     $(wildcard $(SRC)/Data/Textures/*.cpp)\
+       $(wildcard $(SRC)/Data/Textures/*.cpp)\
        $(wildcard $(SRC)/Environment/*.cpp)\
        $(wildcard $(SRC)/Execution/*.cpp)\
        $(wildcard $(SRC)/Input/*.cpp)\
@@ -33,9 +33,10 @@ C_FLAGS = -w -Wl,-subsystem,console
 # Linker flags.
 L_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lopengl32 -lglu32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion -static
 
-# Flags as suggested in Stackoverflow for static linking: 
+# Flags as suggested on StackOverflow for static linking: 
 # http://stackoverflow.com/questions/17620884/static-linking-of-sdl2-libraries
-# -lmingw32 -lSDL2main -lSDL2 -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -static-libgcc
+# -lmingw32 -lSDL2main -lSDL2 -mwindows -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32
+# -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lversion -luuid -static-libgcc
 
 #This is the target that compiles our executable.
 all : $(OBJS)

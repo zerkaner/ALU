@@ -38,20 +38,28 @@ class SimpleTexture : public Texture {
     int _storedWidth;   // Actual width in memory.
     int _storedHeight;  // Actual height in memory.
   
+    /** Initialize the texture.
+     * @param data Image data array.
+     * @param resX Horizontal texture resolution.
+     * @param resY Vertical texture resolution.
+     * @param cmp Image components [RGB/A] (24 bit: 3, 32 bit: 4). */
+    void InitTexture(unsigned char* data, int resX, int resY, int cmp);
+
   public:
 
-    /** Create an empty texture. Loading must be performed by calling "InitFromSurface(...)"! 
-     * @param width Texture width.
-     * @param height Texture height. */
-    SimpleTexture(int width, int height);
+    /** Create a texture with given image data (preloaded). 
+     * @param data Image data array.
+     * @param resX Horizontal texture resolution.
+     * @param resY Vertical texture resolution.
+     * @param cmp Image components [RGB/A] (24 bit: 3, 32 bit: 4). */
+    SimpleTexture(unsigned char* data, int resX, int resY, int cmp);
     
+    /** Load a texture from a file.
+     * @param filename The file to load from. */
+    SimpleTexture(const char* filename);
+
     /** Delete the texture and free the memory. */
     ~SimpleTexture();
-    
-    /** Upload the SDL_Surface content to the GPU memory.
-     * @param surface Pointer to the SDL_Surface structure.
-     * @return Success flag. */
-    bool InitFromSurface(SDL_Surface* surface);
 
     /* Getter functions implementations. */
     unsigned int ID()       const { return _id; }
@@ -95,9 +103,3 @@ class TextureSlice : public Texture {
     int OffsetY()           const { return _offsetY; }
     const Texture* Parent() const { return _parent; }
 };
-
-
-/** Create a new texture, given a SDL_Surface object (classless method). 
- * @param surface SDL surface reference. 
- * @return Pointer to the new texture. */
-Texture* TextureFromSurface(SDL_Surface* surface);
