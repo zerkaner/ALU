@@ -1,8 +1,7 @@
 #pragma once
-#include "InputController.h"
-#include <SDL.h>
-
-using namespace InputSymbols;
+#include "IControllerModule.h"
+#include <vector>
+struct SDL_Window;
 
 
 /** This class listens at user input and sends it to a processing unit. */
@@ -10,20 +9,24 @@ class InputListener {
 
   private:
     SDL_Window** _window;           // Pointer to SDL window handler.
-    InputController* _controller;   // Receiver of the parsed input.
     int _relOldX, _relOldY;         // Mouse position for rel->abs pointer reset.
     bool _relSkip = false;          // Skip flag for warp mouse event.      
     MouseMode _mouseMode;           // current mouse mode (normal, relative, trapped).
     bool _trapMouse;                // Mouse trap mode. If enabled, arrow cannot leave window.
-    int _scrollDir[2];              // Last scroll direction. Used to determine scroll changes.
-
+    int _scrollDir[2];              // Last scroll direction. Used to determine scroll changes.   
+    std::vector<IControllerModule*> _controllers;  // List with attached controllers.   
+ 
 
   public:   
 
     /** Create a new SDL2 input listener.
-     * @param controller The controller to send events to. 
      * @param window Address of pointer to SDL window handler. */
-    InputListener(InputController* controller, SDL_Window** window);
+    InputListener(SDL_Window** window);
+
+
+    /** Add a controller module to the subscriber list.
+     * @param module The controller to add. */
+    void AddControllerModule(IControllerModule* module);
 
 
     /** Switch for relative mouse mouse (+/- instead of coordinates).

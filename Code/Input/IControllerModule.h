@@ -1,5 +1,7 @@
 #pragma once
-#include "InputController.h"
+#include "InputSymbols.h"
+using namespace InputSymbols;
+
 
 /** Base module, specifies called functions (to be overwritten by concrete controller). */
 class IControllerModule {

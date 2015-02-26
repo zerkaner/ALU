@@ -10,7 +10,7 @@
 //#include <stdio.h>
 
 
-/** This stopwatch offers OS-independant time measurement. */
+/** This stopwatch offers OS-independent time measurement. */
 class Stopwatch {
 
   private:

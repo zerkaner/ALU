@@ -2,8 +2,6 @@
 #include "../IControllerModule.h"
 #include <Visualization/Engine.h>
 
-using namespace InputSymbols;
-
 
 /** This controller is intended for FPS-like camera movement. */
 class EngineController : public IControllerModule {

@@ -10,12 +10,6 @@
 Camera::Camera() {}
 
 
-/** Initialize a camera at given position (x,y,z) and with optional pitch and yaw. */
-Camera::Camera(float posX, float posY, float posZ, float yaw, float pitch) {
-  //SetPosition(posX, posY, posZ, yaw, pitch);
-}
-
-
 /** Restrict pitch value to interval (-90° -> 90°). 
   * @param pitch New pitch value. */
 void Camera::SetPitch(float pitch) {

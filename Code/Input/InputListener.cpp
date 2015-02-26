@@ -1,21 +1,23 @@
 #include "InputListener.h"
 #include <Data/StatsInfo.h>
+#include <SDL.h>
 using namespace StatsInfo;
 
 
-/** Create a new SDL2 input listener. 
- * @param controller The controller to send events to.
- * @param window Address of pointer to SDL window handler. */
-InputListener::InputListener(InputController* controller, SDL_Window** window) :
-  _controller(controller), _window(window) {
-  _controller->SetListenerReference(this);
-  _scrollDir[0] = 0;  _scrollDir[1] = 0;
+InputListener::InputListener(SDL_Window** window) : _window(window) {
+  _scrollDir[0] = 0;
+  _scrollDir[1] = 0;
   _trapMouse = true;
 }
 
 
-/** Switch for relative mouse mouse (+/- instead of coordinates).
-  * @param enabled On/off flag. */
+
+void InputListener::AddControllerModule(IControllerModule* module) {
+  _controllers.push_back(module);
+}
+
+
+
 void InputListener::SetRelativeMouseMode(bool enabled) {    
   if (enabled) _mouseMode = MODE_RELATIVE;
   else         _mouseMode = MODE_NORMAL;
@@ -28,7 +30,7 @@ void InputListener::SetRelativeMouseMode(bool enabled) {
 }
 
 
-/** Evaluates the SDL events. */
+
 void InputListener::EvaluateEvents() {
       
   SDL_Event event;                  // Storage for SDL input.
@@ -37,14 +39,18 @@ void InputListener::EvaluateEvents() {
 
       // A mouse button was pressed.
       case SDL_MOUSEBUTTONDOWN: {
-        _controller->MouseButtonPressed((MouseButton)event.button.button);
+        for (unsigned int i = 0; i < _controllers.size(); i ++) {
+          _controllers[i]->MouseButtonPressed((MouseButton)event.button.button);
+        }
         break;
       }
 
 
       // The mouse button was released.
       case SDL_MOUSEBUTTONUP: {
-        _controller->MouseButtonReleased((MouseButton)event.button.button);
+        for (unsigned int i = 0; i < _controllers.size(); i ++) {
+          _controllers[i]->MouseButtonReleased((MouseButton)event.button.button);
+        }        
         break;
       }
 
@@ -73,7 +79,9 @@ void InputListener::EvaluateEvents() {
         
         // Relative mouse movement (the easy case ...)
         if (_mouseMode == MODE_RELATIVE) {
-          _controller->MouseMove(event.motion.xrel, event.motion.yrel, MODE_RELATIVE);
+          for (unsigned int i = 0; i < _controllers.size(); i ++) {
+            _controllers[i]->MouseMove(event.motion.xrel, event.motion.yrel, MODE_RELATIVE);
+          }
           break;
         }
 
@@ -87,28 +95,40 @@ void InputListener::EvaluateEvents() {
         
           // Mouse arrow within the boundaries.
           if (limits[0] == 0 && limits[1] == 0) {  
-            _controller->MouseMove(event.motion.x, event.motion.y, MODE_NORMAL);
-            _scrollDir[0] = 0;  _scrollDir[1] = 0;
+            for (unsigned int i = 0; i < _controllers.size(); i ++) {
+              _controllers[i]->MouseMove(event.motion.x, event.motion.y, MODE_NORMAL);
+            }
+            _scrollDir[0] = 0;
+            _scrollDir[1] = 0;
           }
 
           // Boundary mode. Check for changes here.
           else if (limits[0] != _scrollDir[0] || limits[1] != _scrollDir[1]) {
 
             // Send scroll event and take current values as new reference.
-            _controller->MouseMove(limits[0], limits[1], MODE_SCROLL);
-            _scrollDir[0] = limits[0];  _scrollDir[1] = limits[1]; 
+            for (unsigned int i = 0; i < _controllers.size(); i ++) {
+              _controllers[i]->MouseMove(limits[0], limits[1], MODE_SCROLL);
+            }
+            _scrollDir[0] = limits[0];
+            _scrollDir[1] = limits[1]; 
           }        
         }
 
         // We have no mouse trap enabled. Just send event.
-        else _controller->MouseMove(event.motion.x, event.motion.y, MODE_NORMAL);
+        else {
+          for (unsigned int i = 0; i < _controllers.size(); i ++) {
+            _controllers[i]->MouseMove(event.motion.x, event.motion.y, MODE_NORMAL);
+          }
+        }
         break;
       }
 
 
       // Mouse wheel was turned (only up/down currently supported).
       case SDL_MOUSEWHEEL: {
-        _controller->MouseWheelTurned(event.wheel.y);
+        for (unsigned int i = 0; i < _controllers.size(); i ++) {
+          _controllers[i]->MouseWheelTurned(event.wheel.y);
+        }        
         break;
       }
 
@@ -122,15 +142,25 @@ void InputListener::EvaluateEvents() {
         if      (event.key.keysym.mod & KMOD_CTRL)  mod = InputSymbols::CTRL;
         else if (event.key.keysym.mod & KMOD_SHIFT) mod = InputSymbols::SHIFT;
         else if (event.key.keysym.mod & KMOD_ALT)   mod = InputSymbols::ALT;
-        if (event.type == SDL_KEYDOWN) _controller->KeyPressed((Key) event.key.keysym.sym, mod);
-        else _controller->KeyReleased((Key) event.key.keysym.sym, mod);
+        if (event.type == SDL_KEYDOWN) {
+          for (unsigned int i = 0; i < _controllers.size(); i ++) {
+            _controllers[i]->KeyPressed((Key) event.key.keysym.sym, mod);
+          }
+        }
+        else {
+          for (unsigned int i = 0; i < _controllers.size(); i ++) {
+            _controllers[i]->KeyReleased((Key) event.key.keysym.sym, mod);
+          }
+        }
         break;
       }
 
 
       // Delegate window quit command to controller for shutdown operations.
       case SDL_QUIT: {
-        _controller->ExitCalled();
+        for (unsigned int i = 0; i < _controllers.size(); i ++) {
+          _controllers[i]->ExitCalled();
+        }
         break;
       }
 
@@ -141,5 +171,7 @@ void InputListener::EvaluateEvents() {
   }
 
   // All events are done. Send Process() call to controller modules.
-  _controller->Process();
+  for (unsigned int i = 0; i < _controllers.size(); i ++) {
+    _controllers[i]->Process();
+  }  
 }

@@ -33,10 +33,6 @@ class Camera {
     Camera();
 
 
-    /** Initialize a camera at given position (x,y,z) and with optional pitch and yaw. */
-    Camera(float posX, float posY, float posZ, float yaw=0.0f, float pitch=0.0f);
-
-
     /** Moves the camera around. Calculates the new position based on the
      *  current heading and the supplied mouse/keyboard offset input.
      * @param xIn X delta input (mouse/kbd. x-axis, -: left, +: right).

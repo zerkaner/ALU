@@ -21,7 +21,6 @@
     <ClCompile Include="..\Code\Execution\ALU.cpp" />
     <ClCompile Include="..\Code\Execution\SystemTest.cpp" />
     <ClCompile Include="..\Code\Execution\World.cpp" />
-    <ClCompile Include="..\Code\Input\InputController.cpp" />
     <ClCompile Include="..\Code\Input\InputListener.cpp" />
     <ClCompile Include="..\Code\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="..\Code\UserInterface\TextWriter.cpp" />
@@ -58,8 +57,8 @@
     <ClInclude Include="..\Code\Input\ControllerModules\EngineController.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\ExecutionController.h" />
     <ClInclude Include="..\Code\Input\IControllerModule.h" />
-    <ClInclude Include="..\Code\Input\InputController.h" />
     <ClInclude Include="..\Code\Input\InputListener.h" />
+    <ClInclude Include="..\Code\Input\InputSymbols.h" />
     <ClInclude Include="..\Code\Physics\IPhysicsModule.h" />
     <ClInclude Include="..\Code\Physics\Modules\DragModule.h" />
     <ClInclude Include="..\Code\Physics\Modules\GravityModule.h" />

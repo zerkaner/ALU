@@ -1,19 +1,30 @@
 #include <Agents/TestAgent.h>
-#include <Environment/HeightmapTerrain.h>
 #include <Data/StatsInfo.h>
+#include <Environment/HeightmapTerrain.h>
 #include <Execution/ALU.h>
+#include <Input/IControllerModule.h>
+#include <Input/ControllerModules/CameraControllerFPS.h>
+#include <Input/ControllerModules/CameraControllerRTS.h>
+#include <Input/ControllerModules/EngineController.h>
+#include <Input/ControllerModules/ExecutionController.h>
 
 
 /** Create a new runtime. */
 ALU::ALU() : 
   _stopwatch(Stopwatch()),
   _world(World()),
-  _camera(Camera(12, -7, 2, 0, -10)),
+  _camera(Camera()),
   _interface(UserInterface()),
   _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface, _world.GetEnvironment())),
-  _controller(InputController(this, &_camera, &_3dEngine)),
-  _listener(InputListener(&_controller, _3dEngine.GetWindowHandle())) {
+  _listener(InputListener(_3dEngine.GetWindowHandle())) {
 
+  // Add controller modules.
+  _listener.AddControllerModule(new ExecutionController(this));
+  _listener.AddControllerModule(new CameraControllerRTS(&_camera, &_listener));  
+  _listener.AddControllerModule(new EngineController(&_3dEngine));
+  
+  // Initial camera position.
+  _camera.SetPosition(6, 6, 4, 211, -30);
 
   // Create some test agents.
   new TestAgent(&_world, _world.GetEnvironment(), Vector(2.0f, 2.0f, 0.5f));
