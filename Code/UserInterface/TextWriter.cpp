@@ -79,9 +79,7 @@ TextWriter::~TextWriter() {
 
 void TextWriter::WriteText(char* text, int x, int y) {
    
-  // Enable blending (transparent overlay) and font texture.  
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE, GL_DST_COLOR);
+  // Enable font texture.  
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, _font.Texture);
       
@@ -102,8 +100,5 @@ void TextWriter::WriteText(char* text, int x, int y) {
 		x += c->width;
   }
   glEnd();
-
-  // Disable blending and texture.
-  glDisable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
 }

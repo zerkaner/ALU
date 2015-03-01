@@ -13,8 +13,8 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* ca
   _camera(camera), _ui(ui), _world(world) {
   
   // Initialize the SDL video subsystem.   
-  if (SDL_Init (SDL_INIT_VIDEO) != 0) printf ("[ERROR] SDL initialization failed.\n");
-  else                                printf ("SDL system initialized.\n");
+  if (SDL_Init(SDL_INIT_VIDEO) != 0) printf("[ERROR] SDL initialization failed.\n");
+  else                               printf("SDL system initialized.\n");
   
   // Create the window and the OpenGL context handler.
   _window = SDL_CreateWindow (winname, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -26,13 +26,17 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* ca
   else                    printf ("Created OpenGL context handler.\n");
   
   // OpenGL initialization.
-  glClearColor (0.0f, 0.0f, 0.0f, 1.0f);              // Set clear color.
-  glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Highest quality desired.
-  glShadeModel (GL_SMOOTH); // Shading type 'smooth' (def.). Other option: 'flat'. 
-  glEnable (GL_DEPTH_TEST); // Enable depth test (to avoid rendering hidden points).
-  glDepthFunc (GL_LEQUAL);  // Only render points with less or equal depth (def.: GL_LESS). 
-  glClearDepth (1.0f);      // Set depth buffer clearing value to maximum.  
-  
+  glEnable(GL_ALPHA_TEST);      // Enable check for transparent surfaces.
+  glEnable(GL_BLEND);           // Enable blending (texture transparency).
+  glEnable(GL_DEPTH_TEST);      // Enable depth test (to avoid rendering hidden points).   
+  glAlphaFunc(GL_GREATER, 0.5); // Alpha testing threshold.
+  glBlendFunc(0x0302, 0x0303);  // Blending function: Source alpha to (1 - source alpha).
+  glDepthFunc(GL_LEQUAL);       // Only render points with less or equal depth (def.: GL_LESS).
+  glShadeModel(GL_SMOOTH);      // Shading type 'smooth' (def.). Other option: 'flat'. 
+
+  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Highest quality desired.
+
+
   // Initialize viewport and resolution.
   SetResolution (width, height, fullscreen); 
 }
@@ -64,20 +68,20 @@ void Engine::SetResolution (int width, int height, bool fullscreen) {
   }
 
   // Update the OpenGL viewport and adjust the user perspective.
-  SDL_GetWindowSize (_window, &_width, &_height);
-  glViewport (0, 0, _width, _height); 
+  SDL_GetWindowSize(_window, &_width, &_height);
+  glViewport(0, 0, _width, _height); 
   StatsInfo::WINDOW_X = _width;
   StatsInfo::WINDOW_Y = _height;
-  glMatrixMode (GL_PROJECTION);
-  glLoadIdentity ();
-  gluPerspective(40.0, (double) _width/_height, 1.0, 1000.0),
-  glMatrixMode (GL_MODELVIEW);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(40.0, (double) _width/_height, 1.0, 750.0),
+  glMatrixMode(GL_MODELVIEW);
 }
 
 
 
-void Engine::Render () {
-  glClear (0x4100);    // Clear current buffer (color & depth buffer bit).
+void Engine::Render() {
+  glClear(0x4100);     // Clear current buffer (color & depth buffer bit).
   glLoadIdentity();    // Reset model matrix.
   _camera->Update();   // Position calculation and camera update.
   _world->Draw();      // Draw the world.
@@ -99,5 +103,5 @@ void Engine::Render () {
   glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
 
-  SDL_GL_SwapWindow (_window);   // Swap active and standby buffers.
+  SDL_GL_SwapWindow(_window);   // Swap active and standby buffers.
 }

@@ -20,18 +20,8 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
     TestAgent(World* world, Environment* env, Vector pos) : SpatialAgent(world, env) {
       RL = this;
       Data->Position = pos;
-      
-      if (pos.X >= 4) {
-        Data->Model = new Model3D("models/Bear.m4");
-        Data->Model->Textures = new SimpleTexture("models/bear.tga");
-        Data->Model->ScaleModel(0.03f);
-      }
-      else { 
-        Data->Model = new Model3D("models/Cube.m4");
-        Data->Model->ScaleModel(0.60f);
-      }
-
-      Data->Model->RenderingMode = Model3D::DIRECT;
+      Data->Model = new Model3D("models/Cube.m4");
+      Data->Model->ScaleModel(0.60f);
       AddToEnvironment();
     }
 

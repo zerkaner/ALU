@@ -19,7 +19,7 @@ void GLDrawer::Draw(Object3D* obj) {
 
   //TODO Move lighting somewhere else. Maybe as a Engine.Add() function. 
   glEnable (GL_LIGHT0);
-  float lightpos [] = {20.0f, 20.0f, 30.0f, 1.0f};    // Position. 4th is directional (0) or positional. 
+  float lightpos [] = {35.0f, 50.0f, 40.0f, 1.0f};    // Position. 4th is directional (0) or positional. 
   float diffuseLight [] = {0.8f, 0.8f, 0.8f, 1.0f};   // Color for diffuse light (RGBA code).
   float ambientLight [] = {0.2f, 0.2f, 0.2f, 1.0f};   // Color for ambient (environmental) light.
   float specularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};   // Specular (reflected) light.

@@ -13,6 +13,7 @@ Model3D::Model3D() {
 
 Model3D::Model3D(const char* filepath) {
   LoadFile(filepath);
+  RenderingMode = Model3D::DIRECT;
   Textures = NULL;
 }
 

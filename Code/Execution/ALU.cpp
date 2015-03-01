@@ -1,10 +1,12 @@
-#include <Agents/TestAgent.h>
+#include <Agents/TestAgent.h>   // DBG
+#include <Data/Object3D.h>      // DBG
 #include <Data/StatsInfo.h>
-#include <Environment/HeightmapTerrain.h>
+#include <Data/Textures/Texture.h>          // DBG
+#include <Environment/HeightmapTerrain.h>   // DBG
 #include <Execution/ALU.h>
 #include <Input/IControllerModule.h>
-#include <Input/ControllerModules/CameraControllerFPS.h>
-#include <Input/ControllerModules/CameraControllerRTS.h>
+#include <Input/ControllerModules/CameraControllerFPS.h>  // DBG
+#include <Input/ControllerModules/CameraControllerRTS.h>  // DBG
 #include <Input/ControllerModules/EngineController.h>
 #include <Input/ControllerModules/ExecutionController.h>
 
@@ -24,12 +26,37 @@ ALU::ALU() :
   _listener.AddControllerModule(new EngineController(&_3dEngine));
   
   // Initial camera position.
-  _camera.SetPosition(6, 6, 4, 211, -30);
+  _camera.SetPosition(10, 13, 6, 205, -13);
 
   // Create some test agents.
   new TestAgent(&_world, _world.GetEnvironment(), Vector(2.0f, 2.0f, 0.5f));
   new TestAgent(&_world, _world.GetEnvironment(), Vector(4.0f, 1.0f, 0.5f));
   _world.GetEnvironment()->AddObject(new HeightmapTerrain("formats/heightfield2.raw"));
+
+
+  Object3D* obj = new Object3D();
+  obj->Position = Vector(7, 3, 0.2f);
+  obj->Model = new Model3D("models/Tree01.m4");
+  obj->Model->Textures = new SimpleTexture("textures/Tree-1.png");
+  obj->Model->ScaleModel(0.0015f);
+  _world.GetEnvironment()->AddObject(obj);
+
+
+  obj = new Object3D();
+  obj->Position = Vector(1, 6, 0.2f);
+  obj->Model = new Model3D("models/Tree02.m4");
+  obj->Model->Textures = new SimpleTexture("textures/Tree-1.png");
+  obj->Model->ScaleModel(0.0015f);
+  _world.GetEnvironment()->AddObject(obj);
+
+
+  obj = new Object3D();
+  obj->Position = Vector(5, 6, 0.2f);
+  obj->Heading.X = -25.0f;
+  obj->Model = new Model3D("models/Bear.m4");
+  obj->Model->Textures = new SimpleTexture("textures/Bear.tga");
+  obj->Model->ScaleModel(0.01f);
+  _world.GetEnvironment()->AddObject(obj);
 }
 
 
