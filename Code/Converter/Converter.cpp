@@ -149,10 +149,10 @@ void Converter::ReadMDX() {
     while (dbuf != 'SBVU') fread(&dbuf, sizeof(DWORD), 1, _fp);
     fread(&geoset->nrT, sizeof(DWORD), 1, _fp);
     totalT += geoset->nrT;
-    geoset->textures = new Float2[geoset->nrT];
+    geoset->texVects = new Float2[geoset->nrT];
     for (i = 0; i < geoset->nrT; i ++) {
-      fread(&geoset->textures[i].X, sizeof(float), 1, _fp);
-      fread(&geoset->textures[i].Y, sizeof(float), 1, _fp);
+      fread(&geoset->texVects[i].X, sizeof(float), 1, _fp);
+      fread(&geoset->texVects[i].Y, sizeof(float), 1, _fp);
     }
 
     // Add new geoset.
@@ -304,7 +304,7 @@ void Converter::ReadOBJ() {
       geoset->nrG = counters[curGeo].g;
       geoset->vertices = vertices;
       geoset->normals = normals;
-      geoset->textures = textures;
+      geoset->texVects = textures;
       geoset->geometries = geometries;
       model.Geosets.push_back(geoset);
       

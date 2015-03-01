@@ -1,4 +1,6 @@
 #pragma once
+#include "Textures/Texture.h"
+
 
 /** Type definitions. */
 typedef unsigned char  BYTE;  // 8 bit.
@@ -18,7 +20,7 @@ struct Character {
 
 /** Font structure. */
 struct Font {
-	unsigned int Texture;
+	unsigned int TextureID;
 	int Width, Height;
 	int Start, End;
 	Character* Characters;
@@ -75,8 +77,9 @@ struct Geoset {
   long nrV, nrN, nrT, nrG;
   Float3* vertices;     // Coordinate of a vertex.
   Float3* normals;      // Normal vector that shows a vertex's orientation.
-  Float2* textures;     // Vector to the texture slice of a point.  
-  Geometry* geometries;
+  Float2* texVects;     // Vectors to the texture slice of a point.  
+  Geometry* geometries; // Geoset geometries.
+  Texture* texture;     // Texture of this geoset.
 };
 
 

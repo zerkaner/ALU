@@ -19,7 +19,7 @@ TextWriter::TextWriter(char* filename) {
   }
 
   fread(&_font, sizeof(Font), 1, file);        // Read in font structure.
-  glGenTextures(1, &_font.Texture);            // Generate OpenGL texture number.     
+  glGenTextures(1, &_font.TextureID);          // Generate OpenGL texture number.     
   int nrChars = _font.End - _font.Start + 1;   // Get number of characters.
   _font.Characters = new Character[nrChars];   // Allocate memory for characters.
   fread(_font.Characters, sizeof(Character), nrChars, file);	// Read in characters.     
@@ -48,7 +48,7 @@ TextWriter::TextWriter() {
 void TextWriter::InitializeDefaultFont() {
   printf("[TextWriter] Using built-in font.\n");
   _font = CreateDefaultFont();         // Set up default font from archive.
-  glGenTextures(1, &_font.Texture);    // Generate OpenGL texture number.
+  glGenTextures(1, &_font.TextureID);  // Generate OpenGL texture number.
   InitializeTexture(defTexture);       // Initialize default texture.
 }
 
@@ -57,7 +57,7 @@ void TextWriter::InitializeDefaultFont() {
 void TextWriter::InitializeTexture(unsigned char* texture) {
 	
   // Set texture attributes.
-	glBindTexture(GL_TEXTURE_2D, _font.Texture);
+	glBindTexture(GL_TEXTURE_2D, _font.TextureID);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
   glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -81,7 +81,7 @@ void TextWriter::WriteText(char* text, int x, int y) {
    
   // Enable font texture.  
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, _font.Texture);
+  glBindTexture(GL_TEXTURE_2D, _font.TextureID);
       
   // Use quad mode to draw each character.
   glBegin(GL_QUADS);

@@ -21,8 +21,6 @@ class Model3D {
     RenderingMode RenderingMode;    // Current rendering mode.
     std::vector<Geoset*> Geosets;   // List with all geosets.
     Material* Materials;            // Material pointer.
-    Texture* Textures;              // Pointer to textures.  
-    //TODO What about multiple textures?!
 
     /** Create an empty model. */
     Model3D();

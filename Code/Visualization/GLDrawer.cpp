@@ -77,22 +77,24 @@ void GLDrawer::Draw(Object3D* obj) {
         
     case Model3D::DIRECT: {  // Direct CPU rendering.
       glEnable(GL_LIGHTING);
-         
-      if (mdl->Textures != NULL) {
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, mdl->Textures->ID()); 
-      }
 
-      glBegin(GL_TRIANGLES);
       for (int g, t, i = 0; i < size; i ++) {
         geoset = mdl->Geosets[i];
-        if (!geoset->enabled) continue;
+        if (!geoset->enabled) continue; 
+
+        // Load and set texture, if available.
+        if (geoset->texture != NULL) {
+          glEnable(GL_TEXTURE_2D);
+          glBindTexture(GL_TEXTURE_2D, geoset->texture->ID()); 
+        }
+
+        glBegin(GL_TRIANGLES);
         for (g = 0; g < geoset->nrG; g ++) {
           for (t = 0; t < 3; t ++) {
             tri = &geoset->geometries[g];
             glTexCoord2f(
-              geoset->textures[tri->tIdx[t]].X,
-              geoset->textures[tri->tIdx[t]].Y
+              geoset->texVects[tri->tIdx[t]].X,
+              geoset->texVects[tri->tIdx[t]].Y
             );                         
             glNormal3f(
               geoset->normals[tri->nIdx[t]].X,
@@ -106,10 +108,11 @@ void GLDrawer::Draw(Object3D* obj) {
             );                
           }
         }
+        glEnd();  
+        if (geoset->texture != NULL) glDisable(GL_TEXTURE_2D);
       }          
-      glEnd();
-      
-      if (mdl->Textures != NULL) glDisable(GL_TEXTURE_2D);
+       
+
       glDisable(GL_LIGHTING);
       break;
     }

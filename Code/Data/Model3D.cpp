@@ -14,7 +14,6 @@ Model3D::Model3D() {
 Model3D::Model3D(const char* filepath) {
   LoadFile(filepath);
   RenderingMode = Model3D::DIRECT;
-  Textures = NULL;
 }
 
 
@@ -30,8 +29,9 @@ void Model3D::ClearGeosets() {
   for (unsigned int i = 0; i < Geosets.size(); i ++) {
     delete[] Geosets[i]->vertices;
     delete[] Geosets[i]->normals;
-    delete[] Geosets[i]->textures;
+    delete[] Geosets[i]->texVects;
     delete[] Geosets[i]->geometries;
+    delete[] Geosets[i]->texture;
     delete Geosets[i];
   }
   Geosets.clear();
@@ -89,10 +89,10 @@ void Model3D::LoadFile(const char* filepath) {
 
     // Read texture coordinates.
     fread(&Geosets[g]->nrT, sizeof(long), 1, fp);
-    Geosets[g]->textures = (Float2*) calloc(Geosets[g]->nrT, sizeof(Float2));
+    Geosets[g]->texVects = (Float2*) calloc(Geosets[g]->nrT, sizeof(Float2));
     for (i = 0; i < Geosets[g]->nrT; i ++) {
-      fread(&Geosets[g]->textures[i].X, sizeof(float), 1, fp);
-      fread(&Geosets[g]->textures[i].Y, sizeof(float), 1, fp);
+      fread(&Geosets[g]->texVects[i].X, sizeof(float), 1, fp);
+      fread(&Geosets[g]->texVects[i].Y, sizeof(float), 1, fp);
     }
 
     // Read geometries.
@@ -162,8 +162,8 @@ void Model3D::WriteFile(const char* filepath) {
     // Write texture coordinates.
     fwrite(&Geosets[g]->nrT, sizeof(long), 1, fp);
     for (i = 0; i < Geosets[g]->nrT; i ++) {
-      fwrite(&Geosets[g]->textures[i].X, sizeof(float), 1, fp);
-      fwrite(&Geosets[g]->textures[i].Y, sizeof(float), 1, fp);
+      fwrite(&Geosets[g]->texVects[i].X, sizeof(float), 1, fp);
+      fwrite(&Geosets[g]->texVects[i].Y, sizeof(float), 1, fp);
     }
 
     // Write geometries.
@@ -178,6 +178,9 @@ void Model3D::WriteFile(const char* filepath) {
         }        
       }
     }
+
+    // Set texture reference (dummy: NULL).
+    Geosets[g]->texture = NULL;
   }
 
   // Close file stream and quit.
@@ -322,7 +325,7 @@ void Model3D::Echo(bool fileOutput, const char* filename) {
       fprintf (fp, "   - Textures: %d\n", Geosets[i]->nrT);
       for (int j = 0; j < Geosets[i]->nrT; j ++) {
         fprintf (fp, "     [%02d] %8.4f, %8.4f\n", j, 
-          Geosets[i]->textures[j].X, Geosets[i]->textures[j].Y);
+          Geosets[i]->texVects[j].X, Geosets[i]->texVects[j].Y);
       }
 
       // Geometry indices output.

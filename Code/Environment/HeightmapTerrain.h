@@ -2,7 +2,7 @@
 #pragma warning(disable: 4996) // Skip fopen warnings.
 
 #include <Data/Object3D.h>
-#include <Data/Textures/Texture.h>
+#include <Data/Textures/ImageLoader.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -46,7 +46,7 @@ class HeightmapTerrain : public Object3D {
       (geoset->nrV = geoset->nrN = geoset->nrT = nrVNT); geoset->nrG = nrG;
       geoset->vertices   = new Float3[nrVNT];
       geoset->normals    = new Float3[nrVNT];
-      geoset->textures   = new Float2[nrVNT];
+      geoset->texVects   = new Float2[nrVNT];
       geoset->geometries = new Geometry[nrG];
            
       long cntVNT = 0, cntG = 0;  // Counter for array iteration.
@@ -65,9 +65,8 @@ class HeightmapTerrain : public Object3D {
             geoset->vertices[cntVNT].X = (float) valX;
             geoset->vertices[cntVNT].Y = (float) valY;
             geoset->vertices[cntVNT].Z = valZ;
-            //TODO Calculate and set also normals!
-            geoset->textures[cntVNT].X = (float) valX/_width;
-            geoset->textures[cntVNT].Y = (float) valY/_height;
+            geoset->texVects[cntVNT].X = (float) valX/_width;
+            geoset->texVects[cntVNT].Y = (float) valY/_height;
 
             // Set up geometry. Triggers on '2' and '5'.
             if (i%3 == 2) {
@@ -112,7 +111,7 @@ class HeightmapTerrain : public Object3D {
       Position = Vector(-5, -5, -10);
       Model = new Model3D();
       Model->Geosets.push_back(LoadHeightmap(filename));
-      Model->Textures = new SimpleTexture("textures/Terrain.jpg");
+      Model->Geosets[0]->texture = ImageLoader::LoadTexture("Other/Terrain.jpg");
       Model->CalculateNormals();
       Model->RenderingMode = Model3D::DIRECT;
       Model->ScaleModel(0.04f);

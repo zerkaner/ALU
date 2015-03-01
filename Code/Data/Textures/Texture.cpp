@@ -1,5 +1,4 @@
 #include "Texture.h"
-#include "stb_image.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <stdio.h>
@@ -25,27 +24,6 @@ Texture* Texture::Slice(int x, int y, int width, int height) {
 
 
 SimpleTexture::SimpleTexture(unsigned char* data, int resX, int resY, int cmp) {
-  InitTexture(data, resX, resY, cmp);
-}
-
-
-
-SimpleTexture::SimpleTexture(const char* filename) {
-  FILE* fp = fopen(filename, "rb");
-  if (fp != NULL) {
-    int x, y, cmp;  // Stores x, y resolution and components.
-    unsigned char* data = stbi_load_from_file(fp, &x, &y, &cmp, 0);
-    fclose(fp);
-    InitTexture(data, x, y, cmp);
-  }
-
-  // Print error message.
-  else printf("[Texture] Error! Could not open file '%s'!\n", filename);
-}
-
-
-
-void SimpleTexture::InitTexture(unsigned char* data, int resX, int resY, int cmp) {
 
   // Take care of the byteorder for RGB-masks.
   uint32_t rmask, gmask, bmask, amask;
@@ -87,9 +65,10 @@ void SimpleTexture::InitTexture(unsigned char* data, int resX, int resY, int cmp
   }
     
 
-  // Copy pixels to surface object. 
+  // Copy pixels to surface object and set members. 
   memcpy(sf->pixels, data, cmp * resX * resY);
-  free(data);
+  _data = data;
+  _components = cmp;
 
   // Create an OpenGL texture from the SDL surface.
   _id = 0;
@@ -123,6 +102,7 @@ void SimpleTexture::InitTexture(unsigned char* data, int resX, int resY, int cmp
 
 SimpleTexture::~SimpleTexture () {
   if (_id) glDeleteTextures(1, &_id);
+  free(_data);
 }
 
 

@@ -20,7 +20,7 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
     TestAgent(World* world, Environment* env, Vector pos) : SpatialAgent(world, env) {
       RL = this;
       Data->Position = pos;
-      Data->Model = new Model3D("models/Cube.m4");
+      Data->Model = new Model3D("M4/Cube.m4");
       Data->Model->ScaleModel(0.60f);
       AddToEnvironment();
     }
