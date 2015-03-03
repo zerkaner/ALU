@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "stb_image.h"
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <stdio.h>
@@ -23,7 +24,7 @@ Texture* Texture::Slice(int x, int y, int width, int height) {
 
 
 
-SimpleTexture::SimpleTexture(unsigned char* data, int resX, int resY, int cmp) {
+SimpleTexture::SimpleTexture(unsigned char* rawdata, unsigned long size) {
 
   // Take care of the byteorder for RGB-masks.
   uint32_t rmask, gmask, bmask, amask;
@@ -42,6 +43,9 @@ SimpleTexture::SimpleTexture(unsigned char* data, int resX, int resY, int cmp) {
       isLE = true;
   #endif
 
+  int resX, resY, cmp;  // Stores x, y resolution and components.
+  unsigned char* imagedata = stbi_load_from_memory(rawdata, size, &resX, &resY, &cmp, 0);
+
 
   // Create the surface and determine RGB(A) / BGR(A) format (OpenGL code).  
   SDL_Surface* sf;
@@ -59,16 +63,18 @@ SimpleTexture::SimpleTexture(unsigned char* data, int resX, int resY, int cmp) {
       break;
     
     default: 
-      free(data); 
+      free(rawdata); 
+      free(imagedata); 
       printf("[Texture] Error! Texture has invalid components (%d)!\n", cmp);
       return;
   }
     
 
   // Copy pixels to surface object and set members. 
-  memcpy(sf->pixels, data, cmp * resX * resY);
-  _data = data;
-  _components = cmp;
+  memcpy(sf->pixels, imagedata, cmp * resX * resY);
+  free(imagedata);
+  _data = rawdata;
+  _size = size;
 
   // Create an OpenGL texture from the SDL surface.
   _id = 0;

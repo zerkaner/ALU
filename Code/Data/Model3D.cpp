@@ -1,6 +1,7 @@
 #pragma warning(disable: 4996) // Skip MSVC warnings.
 #include "Model3D.h"
 #include "Primitives.h"
+#include "Textures/Texture.h"
 #include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,22 +20,28 @@ Model3D::Model3D(const char* filepath) {
 
 
 Model3D::~Model3D() {
-  ClearGeosets();
+  ClearModel();
 }
 
 
 
-void Model3D::ClearGeosets() {
+void Model3D::ClearModel() {
+  
   // Clear all arrays of the geoset structures. 
   for (unsigned int i = 0; i < Geosets.size(); i ++) {
     delete[] Geosets[i]->vertices;
     delete[] Geosets[i]->normals;
     delete[] Geosets[i]->texVects;
     delete[] Geosets[i]->geometries;
-    delete[] Geosets[i]->texture;
     delete Geosets[i];
   }
   Geosets.clear();
+
+  // Delete textures.
+  for (unsigned int i = 0; i < Textures.size(); i ++) {
+    delete Textures[i];
+  }
+  Textures.clear();
 }
 
 
@@ -42,7 +49,7 @@ void Model3D::ClearGeosets() {
 void Model3D::LoadFile(const char* filepath) {
   
   // Unload previous model data (if existent).
-  if (Geosets.size() > 0) ClearGeosets();
+  if (Geosets.size() > 0) ClearModel();
 
   // Try to open the file.
   printf("Loading file '%s' ", filepath);
@@ -54,9 +61,9 @@ void Model3D::LoadFile(const char* filepath) {
       
   // Echo file size.
   fseek(fp, 0L, SEEK_END);
-  long bytes = ftell(fp);
+  unsigned long bytes = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
-  printf("[%d bytes] ", bytes);
+  printf("[%lu bytes] ", bytes);
 
 
   // Read number of geosets, create structure and loop over them.
@@ -65,9 +72,10 @@ void Model3D::LoadFile(const char* filepath) {
   for (int i, j, g = 0; g < nrGeosets; g ++) {
     Geosets.push_back(new Geoset());
 
-    // Read identifier and rendering status.
-    fread(&Geosets[g]->id,      sizeof(int),  1, fp);
-    fread(&Geosets[g]->enabled, sizeof(bool), 1, fp);
+    // Read identifier, texture association and rendering status.
+    fread(&Geosets[g]->id,        sizeof(int),  1, fp);
+    fread(&Geosets[g]->textureID, sizeof(int),  1, fp);
+    fread(&Geosets[g]->enabled,   sizeof(bool), 1, fp);
 
     // Read vertices.
     fread(&Geosets[g]->nrV, sizeof(long), 1, fp);
@@ -116,6 +124,17 @@ void Model3D::LoadFile(const char* filepath) {
     }
   }
 
+  // Read textures from file.
+  int nrTextures;
+  fread(&nrTextures, sizeof(int), 1, fp);
+  for(int t = 0; t < nrTextures; t ++) {
+    unsigned long size;
+    fread(&size, sizeof(unsigned long), 1, fp);
+    BYTE* data = (BYTE*) calloc(size, sizeof(BYTE));
+    fread(data, sizeof(BYTE), size, fp);    
+    Textures.push_back(new SimpleTexture(data, size));
+  }
+
   // Close file stream and quit.
   fclose(fp);
   printf("[OK]\n");
@@ -139,9 +158,10 @@ void Model3D::WriteFile(const char* filepath) {
   fwrite(&nrGeosets, sizeof(int), 1, fp);
   for (int i, j, g = 0; g < nrGeosets; g ++) {
   
-    // Write identifier and rendering status.
-    fwrite(&Geosets[g]->id,      sizeof(int),  1, fp);
-    fwrite(&Geosets[g]->enabled, sizeof(bool), 1, fp);
+    // Write identifier, texture association and rendering status.
+    fwrite(&Geosets[g]->id,        sizeof(int),  1, fp);
+    fwrite(&Geosets[g]->textureID, sizeof(int),  1, fp);
+    fwrite(&Geosets[g]->enabled,   sizeof(bool), 1, fp);
 
     // Write vertices.
     fwrite(&Geosets[g]->nrV, sizeof(long), 1, fp);
@@ -178,13 +198,20 @@ void Model3D::WriteFile(const char* filepath) {
         }        
       }
     }
+  }
 
-    // Set texture reference (dummy: NULL).
-    Geosets[g]->texture = NULL;
+  // Write textures to file.
+  int texSize = Textures.size();
+  fwrite(&texSize, sizeof(int), 1, fp);
+  for(int t = 0; t < texSize; t ++) {
+    unsigned long size = Textures[t]->Size();
+    BYTE* data = Textures[t]->Data();
+    fwrite(&size, sizeof(unsigned long), 1, fp);   
+    fwrite(data, sizeof(BYTE), size, fp);
   }
 
   // Close file stream and quit.
-  printf("[%d bytes out]\n", ftell(fp));
+  printf("[%lu bytes out]\n", (unsigned long) ftell(fp));
   fclose(fp);
 }
 

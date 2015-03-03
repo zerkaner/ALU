@@ -2,6 +2,7 @@
 #include <Converter/Converter.h>
 #include <Data/Model3D.h>
 #include <Data/Primitives.h>
+#include <Data/Textures/Texture.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -40,7 +41,7 @@ void Converter::StartConversion (const char* filename) {
 
   // Print error and return on unrecognized file format.
   if (fileformat == -1) {
-    printf("\nError reading file \"%s\"! Please make sure it has a proper ending.\n"
+    printf("\nError reading file '%s'! Please make sure it has a proper ending.\n"
            "Formats currently supported: .glf, .mdl, .mdx, .obj, .raw, .ms3d\n", filename);
     return;
   }
@@ -48,15 +49,15 @@ void Converter::StartConversion (const char* filename) {
   // Try to open filestream.
   _fp = fopen(filename, (fileformat < nrBinary)? "rb" : "r");
   if (_fp == NULL) {
-    printf("\nError opening file \"%s\"!\n", filename);
+    printf("\nError opening file '%s'!\n", filename);
     return;
   }
 
   // Get the length of the file and print status output.
   fseek(_fp, 0L, SEEK_END);
-  long bytes = ftell(_fp);
+  unsigned long bytes = ftell(_fp);
   fseek(_fp, 0L, SEEK_SET);
-  printf("\nOpening file \"%s\" [%d bytes].\n", filename, bytes);
+  printf("\nOpening file '%s' [%lu bytes].\n", filename, bytes);
 
 
   // Execute corresponding converter function.
@@ -88,12 +89,81 @@ void Converter::ReadMDX() {
   printf("MDX converter loaded.\n");
  
   // Create variables and 3D model.
-  DWORD dbuf = 0x00;          // Read-in buffer.
+  DWORD dbuf = 0x00;          // "Read-in and discard" buffer.
   DWORD remaining;            // Geoset byte size.
+  DWORD chunkSize;            // Work storage for various chunk size read-ins.
   Model3D model = Model3D();  // Empty model.
   int i;
   int totalV = 0, totalN = 0, totalT = 0, totalG = 0;
   int idCounter = 0;
+
+
+  // Scan for 'MTLS' - materials codeblock.
+  while (dbuf != 'SLTM') fread(&dbuf, sizeof(DWORD), 1, _fp);
+  fread(&chunkSize, sizeof(DWORD), 1, _fp);   // Read total material chunk size.
+  DWORD inclSize;                             // Material inclusive size storage.
+  std::vector<DWORD> texIDs;
+
+  // Read all materials.
+  for (unsigned int i = 0; i < chunkSize; i += inclSize) {
+    fread(&inclSize, sizeof(DWORD), 1, _fp);  // Read 'InclusiveSize'.
+    fread(&dbuf, sizeof(DWORD), 1, _fp);      // 'Priority Plane'.
+    fread(&dbuf, sizeof(DWORD), 1, _fp);      // 'Flags'.      
+    fread(&dbuf, sizeof(DWORD), 1, _fp);      // Skip the 'LAYS' keyword.
+    DWORD nrLayers;                           // Number of layers following.
+    fread(&nrLayers, sizeof(DWORD), 1, _fp);  // Read number of layers.
+
+    // Read all layers of current material.
+    for (unsigned int l = 0; l < nrLayers; l ++) {
+      DWORD lInclSize;
+      fread(&lInclSize, sizeof(DWORD), 1, _fp); // Read layer inclusive size.
+      fread(&dbuf, sizeof(DWORD), 1, _fp);      // 'FilterMode'.
+      fread(&dbuf, sizeof(DWORD), 1, _fp);      // 'ShadingFlags'.
+      fread(&dbuf, sizeof(DWORD), 1, _fp);      // 'TextureID'.
+      texIDs.push_back(dbuf);                   // Save the texture ID for later association.
+
+      // Because we don't need all the following stuff at the moment, we just skip it.
+      long remaining = lInclSize - 4*sizeof(DWORD);
+      fseek(_fp, remaining, SEEK_CUR);
+      //fread(&dbuf, sizeof(DWORD), 1, _fp);      // 'TextureAnimationID'.
+      //fread(&dbuf, sizeof(DWORD), 1, _fp);      // 'CoordID'.
+      //fread(&dbuf, sizeof(float), 1, _fp);      // 'Alpha'.
+      // Read material alpha structure.
+      // Read material texture ID structure.    
+    }
+  }
+
+
+  // Scan for 'TEXS' - textures codeblock.
+  while (dbuf != 'SXET') fread(&dbuf, sizeof(DWORD), 1, _fp);
+  fread(&chunkSize, sizeof(DWORD), 1, _fp);
+
+  // Iterate over all texture paths.
+  for (unsigned int t = 0; t < chunkSize/268; t ++) {
+    fread(&dbuf, sizeof(DWORD), 1, _fp);      // Read (and discard) 'Replaceable ID'.    
+    char texPath[260];
+    fread(&texPath, sizeof(char), 260, _fp);  // Read texture path.
+    if(texPath[0] != '\0') {
+      printf("Loading texture '%s' ", texPath);
+      
+      // Try to open file stream.
+      FILE* texReader = fopen(texPath, "rb");
+      if (texReader != NULL) {
+        fseek(texReader, 0L, SEEK_END);          //| Read image size
+        unsigned long bytes = ftell(texReader);  //| and output.
+        printf("[%lu bytes] ", bytes);
+        unsigned char* rawData = new unsigned char [bytes];
+        fseek(texReader, 0L, SEEK_SET); 
+        fread(rawData, sizeof(unsigned char), bytes, texReader);
+        model.Textures.push_back(new SimpleTexture(rawData, bytes));
+        fclose(texReader);
+        printf("[OK]\n");
+      }
+      else printf("[ERROR]\n");
+    }
+    fread(&dbuf, sizeof(DWORD), 1, _fp);      // Read 'Texture Flags' (also not used).    
+  }
+
 
   // Skip file to geoset definitions and read in size.
   while (dbuf != 'SOEG') fread(&dbuf, sizeof(DWORD), 1, _fp);  
@@ -102,6 +172,13 @@ void Converter::ReadMDX() {
     Geoset* geoset = new Geoset();
     geoset->enabled = true;
     geoset->id = idCounter;
+    
+    // Get associated texture from texture ID vector.
+    if ((unsigned int)geoset->id < texIDs.size()) geoset->textureID = texIDs[geoset->id];
+    else {
+      printf("[ERROR] Texture association failed. No entry for geoset %d!\n", idCounter);
+      geoset->textureID = -1;
+    }
 
     // Read and reduce remaining size.
     fread(&dbuf, sizeof(DWORD), 1, _fp);
@@ -172,8 +249,9 @@ void Converter::ReadMDX() {
          " - Vertices  : %d\n"
          " - Normals   : %d\n"
          " - Textures  : %d\n"
+         " - TexCoords : %d\n"
          " - Geometries: %d\n", 
-           model.Geosets.size(), totalV, totalN, totalT, totalG);
+           model.Geosets.size(), totalV, totalN, model.Textures.size(), totalT, totalG);
 
   // Write model to disk.
   model.WriteFile(_savename);

@@ -11,7 +11,7 @@ class Texture {
     /* Various getter functions. */
     virtual unsigned int ID()       const = 0;
     virtual unsigned char* Data()   const = 0;
-    virtual int Components()        const = 0;
+    virtual unsigned long Size()    const = 0;
     virtual int Width()             const = 0;
     virtual int Height()            const = 0;
     virtual int StoredWidth()       const = 0;
@@ -35,8 +35,8 @@ class SimpleTexture : public Texture {
   
   private:
     unsigned int _id;     // OpenGL ID of texture.
-    unsigned char* _data; // Texture data array.
-    int _components;      // Image components [RGB/A].
+    unsigned char* _data; // Image data array.
+    unsigned long _size;  // Texture data array size.
     int _width;           // Texture width.
     int _height;          // Texture height.
     int _storedWidth;     // Actual width in memory.
@@ -47,10 +47,8 @@ class SimpleTexture : public Texture {
 
     /** Create a texture with given image data (preloaded). 
      * @param data Image data array.
-     * @param resX Horizontal texture resolution.
-     * @param resY Vertical texture resolution.
-     * @param cmp Image components [RGB/A] (24 bit: 3, 32 bit: 4). */
-    SimpleTexture(unsigned char* data, int resX, int resY, int cmp);
+     * @param size Texture data array size. */
+    SimpleTexture(unsigned char* data, unsigned long size);
 
     /** Delete the texture and free the memory. */
     ~SimpleTexture();
@@ -58,7 +56,7 @@ class SimpleTexture : public Texture {
     /* Getter functions implementations. */
     unsigned int ID()       const { return _id; }
     unsigned char* Data()   const { return _data; }
-    int Components()        const { return _components; }
+    unsigned long Size()    const { return _size; }
     int Width()             const { return _width; }
     int Height()            const { return _height; }
     int StoredWidth()       const { return _storedWidth; }
@@ -92,7 +90,7 @@ class TextureSlice : public Texture {
     /* Getter functions implementations. */
     unsigned int ID()       const { return _parent->ID(); }
     unsigned char* Data()   const { return _parent->Data(); }
-    int Components()        const { return _parent->Components(); }
+    unsigned long Size()    const { return _parent->Size(); }
     int Width()             const { return _width; }
     int Height()            const { return _height; }
     int StoredWidth()       const { return _parent->StoredWidth(); }

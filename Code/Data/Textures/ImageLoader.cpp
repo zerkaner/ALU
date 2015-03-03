@@ -1,19 +1,22 @@
+#pragma warning(disable: 4996) // Skip MSVC warnings.
 #include "ImageLoader.h"
 #include "Texture.h"
-#include "stb_image.h"
-#include <SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 
 Texture* ImageLoader::LoadTexture(const char* filename) { 
   FILE* fp = fopen(filename, "rb");
   if (fp != NULL) {
-    int x, y, cmp;  // Stores x, y resolution and components.
-    unsigned char* data = stbi_load_from_file(fp, &x, &y, &cmp, 0);
+
+    fseek(fp, 0L, SEEK_END);
+    unsigned long rawSize = ftell(fp);
+    unsigned char* rawData = new unsigned char [rawSize];
+    fseek(fp, 0L, SEEK_SET);
+    fread(rawData, sizeof (unsigned char), rawSize, fp);
     fclose(fp);
-    return new SimpleTexture(data, x, y, cmp);
+
+    return new SimpleTexture(rawData, rawSize);
   }
 
   // Print error message.

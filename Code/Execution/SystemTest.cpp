@@ -28,7 +28,7 @@ int main (int argc, char** argv) {
   }
   
   // Delay exit (for debug reasons), then return. 
-  printf("Press any key to exit.");
-  getchar();
+  //printf("Press any key to exit.");
+  //getchar();
   return 0;
 }

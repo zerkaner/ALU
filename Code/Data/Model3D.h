@@ -10,8 +10,8 @@ class Model3D {
 
   private:
 
-    /** Clears all current geosets (for deletion or model reload). */
-    void ClearGeosets();
+    /** Clears all current geosets and textures (for deletion or model reload). */
+    void ClearModel();
 
   public:
 
@@ -21,6 +21,7 @@ class Model3D {
     RenderingMode RenderingMode;    // Current rendering mode.
     std::vector<Geoset*> Geosets;   // List with all geosets.
     Material* Materials;            // Material pointer.
+    std::vector<Texture*> Textures; // Model texture storage.
 
     /** Create an empty model. */
     Model3D();

@@ -37,18 +37,21 @@ ALU::ALU() :
   Object3D* obj = new Object3D();
   obj->Position = Vector(7, 3, 0.2f);
   obj->Model = new Model3D("M4/Tree01.m4");
-  obj->Model->Geosets[0]->texture = ImageLoader::LoadTexture("MDX/Textures/TreeTrunk01.png");
-  obj->Model->Geosets[1]->texture = ImageLoader::LoadTexture("MDX/Textures/TreeCanopy01.png");
   obj->Model->ScaleModel(0.0015f);
+  _world.GetEnvironment()->AddObject(obj);
+
+  
+  obj = new Object3D();
+  obj->Position = Vector(1, 1.5f, 0.2f);
+  obj->Model = new Model3D("M4/Tree03.m4");
+  obj->Model->ScaleModel(0.008f);
+  obj->Heading.X = 25.0f;
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
   obj->Position = Vector(1, 6, 0.2f);
   obj->Model = new Model3D("M4/Tree04.m4");
-  obj->Model->Geosets[0]->texture = ImageLoader::LoadTexture("MDX/Textures/TreeCanopy02.png");
-  obj->Model->Geosets[1]->texture = ImageLoader::LoadTexture("MDX/Textures/TreeTrunk02.png");
-  obj->Model->Geosets[2]->texture = ImageLoader::LoadTexture("MDX/Textures/Grass01.png");
   obj->Model->ScaleModel(0.003f);
   _world.GetEnvironment()->AddObject(obj);
 
@@ -57,8 +60,6 @@ ALU::ALU() :
   obj->Position = Vector(5, 6, 0.2f);
   obj->Heading.X = -25.0f;
   obj->Model = new Model3D("M4/Bear.m4");
-  obj->Model->Geosets[0]->texture = ImageLoader::LoadTexture("MDX/Textures/BearSkin.jpg");
-  obj->Model->Geosets[1]->enabled = false;
   obj->Model->ScaleModel(0.01f);
   _world.GetEnvironment()->AddObject(obj);
 }

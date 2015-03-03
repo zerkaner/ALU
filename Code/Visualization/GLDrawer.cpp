@@ -83,9 +83,9 @@ void GLDrawer::Draw(Object3D* obj) {
         if (!geoset->enabled) continue; 
 
         // Load and set texture, if available.
-        if (geoset->texture != NULL) {
+        if (geoset->textureID != -1) {
           glEnable(GL_TEXTURE_2D);
-          glBindTexture(GL_TEXTURE_2D, geoset->texture->ID()); 
+          glBindTexture(GL_TEXTURE_2D, mdl->Textures[geoset->textureID]->ID()); 
         }
 
         glBegin(GL_TRIANGLES);
@@ -109,7 +109,7 @@ void GLDrawer::Draw(Object3D* obj) {
           }
         }
         glEnd();  
-        if (geoset->texture != NULL) glDisable(GL_TEXTURE_2D);
+        if (geoset->textureID != -1) glDisable(GL_TEXTURE_2D);
       }          
        
 

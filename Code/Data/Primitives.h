@@ -1,5 +1,4 @@
 #pragma once
-#include "Textures/Texture.h"
 
 
 /** Type definitions. */
@@ -73,13 +72,12 @@ struct Geometry {
 struct Geoset {
   int id;
   bool enabled;
-  int materialID;
-  long nrV, nrN, nrT, nrG;
-  Float3* vertices;     // Coordinate of a vertex.
-  Float3* normals;      // Normal vector that shows a vertex's orientation.
-  Float2* texVects;     // Vectors to the texture slice of a point.  
-  Geometry* geometries; // Geoset geometries.
-  Texture* texture;     // Texture of this geoset.
+  int textureID;            // Texture of this geoset.
+  long nrV, nrN, nrT, nrG;  // Number of vertices, normals, texture vectors and geometries.
+  Float3* vertices;         // Coordinate of a vertex.
+  Float3* normals;          // Normal vector that shows a vertex's orientation.
+  Float2* texVects;         // Vectors to the texture slice of a point.  
+  Geometry* geometries;     // Geoset geometries.
 };
 
 
