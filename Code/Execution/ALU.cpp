@@ -35,7 +35,7 @@ ALU::ALU() :
 
 
   Object3D* obj = new Object3D();
-  obj->Position = Vector(7, 3, 0.2f);
+  obj->Position = Vector(8, 3, 0.2f);
   obj->Model = new Model3D("M4/Tree01.m4");
   obj->Model->ScaleModel(0.0015f);
   _world.GetEnvironment()->AddObject(obj);
@@ -50,7 +50,7 @@ ALU::ALU() :
 
 
   obj = new Object3D();
-  obj->Position = Vector(1, 6, 0.2f);
+  obj->Position = Vector(0.8f, 8.8f, 0.2f);
   obj->Model = new Model3D("M4/Tree04.m4");
   obj->Model->ScaleModel(0.003f);
   _world.GetEnvironment()->AddObject(obj);
@@ -61,6 +61,22 @@ ALU::ALU() :
   obj->Heading.X = -25.0f;
   obj->Model = new Model3D("M4/Bear.m4");
   obj->Model->ScaleModel(0.01f);
+  _world.GetEnvironment()->AddObject(obj);
+
+
+  obj = new Object3D();
+  obj->Position = Vector(1, 7.2f, 0.1f);
+  obj->Model = new Model3D("M4/Timberwolf.m4");
+  obj->Model->ScaleModel(0.01f);
+  _world.GetEnvironment()->AddObject(obj);
+
+
+  obj = new Object3D();
+  obj->Position = Vector(1, 5.5f, 0.05f);
+  obj->Model = new Model3D("M4/Stable.m4");
+  obj->Model->ScaleModel(0.007f);
+  obj->Heading.X = 80.0f;
+
   _world.GetEnvironment()->AddObject(obj);
 }
 

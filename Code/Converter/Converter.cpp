@@ -172,13 +172,6 @@ void Converter::ReadMDX() {
     Geoset* geoset = new Geoset();
     geoset->enabled = true;
     geoset->id = idCounter;
-    
-    // Get associated texture from texture ID vector.
-    if ((unsigned int)geoset->id < texIDs.size()) geoset->textureID = texIDs[geoset->id];
-    else {
-      printf("[ERROR] Texture association failed. No entry for geoset %d!\n", idCounter);
-      geoset->textureID = -1;
-    }
 
     // Read and reduce remaining size.
     fread(&dbuf, sizeof(DWORD), 1, _fp);
@@ -221,6 +214,28 @@ void Converter::ReadMDX() {
     fread(&dbuf, sizeof(DWORD), 1, _fp);  // Skip 'GNDX'.
     fread(&dbuf, sizeof(DWORD), 1, _fp);  // Read vertex group numbers.
     for (i = dbuf; i > 0; i --) fread(&dbuf, sizeof(BYTE), 1, _fp);
+
+
+    // Scan for 'MATS' - Material association codeblock.
+    while (dbuf != 'STAM') fread(&dbuf, sizeof(DWORD), 1, _fp);
+    fread(&dbuf, sizeof(DWORD), 1, _fp);  // Read number of matrix indexes (we ignore them).
+    for (i = dbuf; i > 0; i --) fread(&dbuf, sizeof(DWORD), 1, _fp); 
+    fread(&dbuf, sizeof(DWORD), 1, _fp);  // This is our material ID!
+
+    // Get associated texture from texture ID vector.
+    if (dbuf < texIDs.size()) {
+      if (texIDs[dbuf] < model.Textures.size()) geoset->textureID = texIDs[dbuf];
+      else {
+        printf("[ERROR] Texture association failed. Entry %d is invalid (only %d texture%s)!\n",
+               texIDs[dbuf], model.Textures.size(), (model.Textures.size() > 1)? "s" : "");
+        geoset->textureID = -1;      
+      }
+    }
+    else {
+      printf("[ERROR] Texture association failed. No texture entry for material ID %lu!\n", dbuf);
+      geoset->textureID = -1;
+    }
+
 
     // Skip to texture coordinates [UVBS].
     while (dbuf != 'SBVU') fread(&dbuf, sizeof(DWORD), 1, _fp);
