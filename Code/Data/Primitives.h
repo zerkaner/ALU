@@ -26,6 +26,12 @@ struct Font {
 };
 
 
+/* Four-dimensional float structure (e.g. for RGBA). */
+struct Float4 {
+  float X, Y, Z, W;
+};
+
+
 /** Float structure for three-dimensional data. */
 struct Float3 {
   float X, Y, Z;  
@@ -90,4 +96,28 @@ struct Material {
   long  textureSize;
   char* textureData;
   char  textureName[80];  // Later direct storage.
+};
+
+
+
+//TODO Work-in-Progress (Blizzard MDX data).
+
+struct AnimSet {
+  int Size;             // Number of values (array sizes). 
+  short Interpolation;  // Interpolation type (0: none, 1: linear, 2: Hermite, 3: Bezier).
+  int GlobalSeqID;      // Global sequence ID.
+  long* Time;           // Timestep in animation.
+  Float4* Values;       // Value: 3D vector (with bank angle on 4th for rotation spec [= quaternion]). 
+  Float4* InTan;        //| Angles used for Hermite and 
+  Float4* OutTan;       //| Bezier interpolation.
+};
+
+
+struct Bone {
+  char Name[80];
+  int ID;
+  int ParentID;
+  AnimSet* Translation = 0;
+  AnimSet* Rotation    = 0;
+  AnimSet* Scaling     = 0;
 };

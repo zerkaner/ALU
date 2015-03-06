@@ -1,0 +1,247 @@
+
+// Version information.
+struct VersionChunk {
+  DWORD 'VERS';
+  DWORD ChunkSize;
+  DWORD Version;  // Currently 800
+};
+
+
+// Model information.
+struct ModelChunk {
+  DWORD 'MODL';
+  DWORD ChunkSize;
+  CHAR[80] Name;
+  CHAR[260] AnimationFileName;
+  FLOAT BoundsRadius;
+  FLOAT3 MinimumExtent;
+  FLOAT3 MaximumExtent;
+  DWORD BlendTime;
+};
+
+
+// Sequences.
+struct SequenceChunk {
+  DWORD 'SEQS';
+  DWORD ChunkSize;
+  struct Sequence[NrOfSequences] {      // NrOfSequences = ChunkSize / 132
+    CHAR[80] Name;
+    DWORD IntervalStart;
+    DWORD IntervalEnd;
+    FLOAT MoveSpeed;
+    DWORD Flags;   // 0 - Looping, 1 - NonLooping
+    FLOAT Rarity;
+    DWORD SyncPoint;
+    FLOAT BoundsRadius;
+    FLOAT3 MinimumExtent;
+    FLOAT3 MaximumExtent;
+  };
+};
+
+
+// Global sequences (always playing, regardless of model action).
+struct GlobalSequenceChunk {
+  DWORD 'GLBS';
+  DWORD ChunkSize;
+  struct GlobalSequence[NrOfGlobalSeqs] { // NrOfGlobalSeqs = ChunkSize / 4
+    DWORD Duration;
+  };
+};
+
+
+// Textures.
+struct TextureChunk {
+  DWORD 'TEXS';
+  DWORD ChunkSize;
+  struct Texture[NrOfTextures] {      //NrOfTextures = ChunkSize / 268
+    DWORD ReplaceableId;
+    CHAR[260] FileName;
+    DWORD Flags;              // #1 - WrapWidth, #2 - WrapHeight
+  };
+};
+
+
+// Geosets.
+struct GeosetChunk {
+  DWORD 'GEOS';
+  DWORD ChunkSize;
+  struct Geoset[NrOfGeosets] {
+    DWORD InclusiveSize;    
+    DWORD 'VRTX';
+    DWORD NrOfVertexPositions;
+    struct VertexPosition[NrOfVertexPositions] {
+      FLOAT3 Position;
+    };    
+    DWORD 'NRMS';
+    DWORD NrOfVertexNormals;
+    struct VertexNormal[NrOfVertexNormals] {
+      FLOAT3 Normal;
+    };
+    DWORD 'PTYP';
+    DWORD NrOfFaceTypeGroups;
+    struct FaceTypeGroup[NrOfFaceTypeGroups] {
+      DWORD FaceType; //4 - Triangles                                      
+    };
+    DWORD 'PCNT';
+    DWORD NrOfFaceGroups;
+    struct FaceGroup[NrOfFaceGroups] {
+      DWORD NrOfIndexes;
+    };
+    DWORD 'PVTX';
+    DWORD TotalNrOfIndexes;
+    struct Face[TotalNrOfFaces] { // TotalNrOfFaces = TotalNrOfIndexes / 3
+      WORD[3] VertexIndices;
+    };
+    DWORD 'GNDX';
+    DWORD NrOfVertexGroups;
+    struct VertexGroup[NrOfVertexGroups] {
+      BYTE MatrixGroup;
+    };
+    DWORD 'MTGC';
+    DWORD NrOfMatrixGroups;
+    struct MatrixGroup[NrOfMatrixGroups] {
+      DWORD MatrixGroupSize;
+    };
+    DWORD 'MATS';
+    DWORD NrOfMatrixIndexes;
+    struct MatrixIndex[NrOfMatrixIndexes] {
+      DWORD MatrixIndex;
+    };
+    DWORD MaterialId;
+    DWORD SelectionGroup;
+    DWORD SelectionFlags;  // 0: None, 4: Unselectable
+    FLOAT BoundsRadius;
+    FLOAT3 MinimumExtent;
+    FLOAT3 MaximumExtent;
+    DWORD NrOfExtents;
+    struct Extent[NrOfExtents] {
+      FLOAT3 MinimumExtent;
+      FLOAT3 MaximumExtent;
+    };
+    DWORD 'UVAS';
+    DWORD NrOfTextureVertexGroups;
+    DWORD 'UVBS';
+    DWORD NrOfVertexTexturePositions;
+    struct VertexTexturePosition[NrOfVertexTexturePositions] {
+      FLOAT2 TexturePosition;
+    };
+  };
+};
+
+
+// Node (the base for some of the objects).
+struct Node {
+  DWORD InclusiveSize;
+  CHAR[80] Name;
+  DWORD ObjectId;
+  DWORD ParentId;
+  DWORD Flags;                         
+
+  // Animated geoset translation.
+  struct GeosetTranslation {
+    DWORD 'KGTR';
+    DWORD NrOfTracks;
+    DWORD InterpolationType; // 0 - None, 1 - Linear, 2 - Hermite, 3 - Bezier
+    DWORD GlobalSequenceId;
+    struct TranslationTrack[NrOfTracks] {
+      DWORD Time;
+      FLOAT3 Translation;
+      if(InterpolationType > 1) {
+        FLOAT3 InTan;
+        FLOAT3 OutTan;
+      }
+    };
+  };
+
+  // Animated geoset rotation.
+  struct GeosetRotation {
+    DWORD 'KGRT';
+    DWORD NrOfTracks;
+    DWORD InterpolationType; // 0 - None, 1 - Linear, 2 - Hermite, 3 - Bezier
+    DWORD GlobalSequenceId;
+    struct RotationTrack[NrOfTracks] {
+      DWORD Time;
+      FLOAT4 Rotation;
+      if(InterpolationType > 1) {
+        FLOAT4 InTan;
+        FLOAT4 OutTan;
+      }
+    };
+  };
+
+  // Animated geoset scaling. 
+  struct GeosetScaling {
+    DWORD 'KGSC';
+    DWORD NrOfTracks;
+    DWORD InterpolationType; // 0 - None, 1 - Linear, 2 - Hermite, 3 - Bezier
+    DWORD GlobalSequenceId;
+    struct ScalingTrack[NrOfTracks] {
+      DWORD Time;
+      FLOAT3 Scaling;
+      if(InterpolationType > 1) {
+        FLOAT3 InTan;
+        FLOAT3 OutTan;
+      }
+    };
+  };
+};
+
+
+// Materials.
+struct MaterialChunk {
+  DWORD 'MTLS';
+  DWORD ChunkSize;
+  struct Material[NrOfMaterials] {
+    DWORD InclusiveSize;
+    DWORD PriorityPlane;
+    DWORD Flags; // 1: ConstantColor, 8: SortPrim.NearZ, 16: SortPrim.FarZ
+                 // 32: FullResolution
+    // Layers.
+    struct LayerChunk {
+      DWORD 'LAYS';
+      DWORD NrOfLayers;
+      struct Layer[NrOfLayers] {
+        DWORD InclusiveSize;    
+        DWORD FilterMode; // 0-None, 1-Transp., 2-Blend, 3-Additive, 4-AddAlpha
+                          // 5-Modulate, 6-Modulate2x 
+        DWORD ShadingFlags; // 1: Unshaded, 2: SphereEnvMap, 16: TwoSided,
+                            // 32: Unfogged, 64: NoDepthTest, 128: NoDepthSet    
+        DWORD TextureId;
+        DWORD TextureAnimationId;                     
+        DWORD CoordId;
+        FLOAT Alpha;
+   
+        {MaterialAlpha}
+        {MaterialTextureId}
+      };
+    };
+  };
+};
+
+
+// Geoset animations.
+struct GeosetAnimationChunk {
+  DWORD 'GEOA';
+  DWORD ChunkSize;
+  struct GeosetAnimation[NrOfGeosetAnimations] {
+    DWORD InclusiveSize;
+    FLOAT Alpha;
+    DWORD Flags;            //#1 - DropShadow, 2 - Color
+    FLOAT3 Color;
+    DWORD GeosetId;
+    {GeosetAlpha}
+    {GeosetColor}
+  };
+};
+
+
+// Bones.
+struct BoneChunk {
+  DWORD 'BONE';
+  DWORD ChunkSize;
+  struct Bone[NrOfBones] {
+    Node;
+    DWORD GeosetId;
+    DWORD GeosetAnimationId;
+  };
+};

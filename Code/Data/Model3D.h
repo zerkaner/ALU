@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+struct Bone;
 struct Geoset;
 struct Material;
 class Texture;
@@ -22,6 +23,7 @@ class Model3D {
     std::vector<Geoset*> Geosets;   // List with all geosets.
     Material* Materials;            // Material pointer.
     std::vector<Texture*> Textures; // Model texture storage.
+    std::vector<Bone*> Bones;       // Bones vector.
 
     /** Create an empty model. */
     Model3D();

@@ -250,23 +250,101 @@ void Converter::ReadMDX() {
     // Add new geoset.
     model.Geosets.push_back(geoset);
     idCounter ++;
-
-    // Scan to 'VRTX' (to skip the rubbish afterwards), then reset to proper start.
-    if (remaining > 0) {
-      while (dbuf != 'XTRV') fread(&dbuf, sizeof(DWORD), 1, _fp);
-      fseek(_fp, -8, SEEK_CUR);
-    }
   }
+
+
+  //_____________________________________________________________________________________[BONES]
+  // Scan for 'BONE' - animation bones codeblock.
+  while (dbuf != 'ENOB') fread(&dbuf, sizeof(DWORD), 1, _fp);
+  fread(&chunkSize, sizeof(DWORD), 1, _fp);   // Read total bone chunk size.
+
+  // Read the bone chunk.
+  for (unsigned int i = 0; i < chunkSize; i += inclSize) { 
+    Bone* bone = new Bone();
+    fread(&inclSize,       sizeof(DWORD), 1, _fp); // Read node structure total size.  
+    fread(&bone->Name,     sizeof(char), 80, _fp); // Read name of bone.
+    fread(&bone->ID,       sizeof(DWORD), 1, _fp); // Read 'ObjectID'.
+    fread(&bone->ParentID, sizeof(DWORD), 1, _fp); // Read 'ParentID'.
+    fread(&dbuf,           sizeof(DWORD), 1, _fp); // Skip 'Flags' (always 256).
+ 
+    // Calculate remaining bytes of current subset.
+    long remaining = inclSize - 4 * sizeof(DWORD) - 80 * sizeof(char);  
+    
+    // If available, read geoset transformation, rotation and scaling information.
+    while (remaining > 0) {
+      AnimSet* animSet = new AnimSet();
+      fread(&dbuf,                   sizeof(DWORD), 1, _fp); // Read block identifier.
+      fread(&animSet->Size,          sizeof(DWORD), 1, _fp); // Read element size.
+      fread(&animSet->Interpolation, sizeof(DWORD), 1, _fp); // Read interpolation type.
+      fread(&animSet->GlobalSeqID,   sizeof(DWORD), 1, _fp); // Read global sequence ID assignment.
+      remaining -= 4 * sizeof(DWORD);
+
+      animSet->Time = new long [animSet->Size];     // Allocate array for time progress.
+      animSet->Values = new Float4 [animSet->Size]; // Allocate values array.
+      for (int t = 0; t < animSet->Size; t ++) {
+        fread(&animSet->Time[t], sizeof(DWORD), 1, _fp);    // Read time slot.
+        fread(&animSet->Values[t], sizeof(Float3), 1, _fp); // Read 3D float value.
+        remaining -= sizeof(DWORD) + sizeof(Float3);
+
+        if (dbuf == 'TRGK') {
+          fread(&animSet->Values[t].W, sizeof(float), 1, _fp); // Read 4th value (bank angle).
+          remaining -= sizeof(float);
+        }
+
+        // Read [optional] tan value for Hermite and Bezier interpolation.
+        if (animSet->Interpolation > 1) {
+          animSet->InTan = new Float4();
+          animSet->OutTan = new Float4();
+          if (dbuf == 'TRGK') {
+            fread(&animSet->InTan, sizeof(Float4), 1, _fp);
+            fread(&animSet->OutTan, sizeof(Float4), 1, _fp);
+            remaining -= 2 * sizeof(Float4);
+          }
+          else {
+            fread(&animSet->InTan, sizeof(Float3), 1, _fp);
+            fread(&animSet->OutTan, sizeof(Float3), 1, _fp);
+            remaining -= 2 * sizeof(Float3);
+          }
+        }
+      }
+
+      // Write the constructed animation set to the corresponding pointer. 
+      switch (dbuf) {       
+        case 'RTGK': bone->Translation = animSet;  break; // 'KGTR' - Geoset translation block.   
+        case 'TRGK': bone->Rotation    = animSet;  break; // 'KGRT' - Geoset rotation block.
+        case 'CSGK': bone->Scaling     = animSet;  break; // 'KGSC' - Geoset scaling block.
+      }
+    }
+
+
+    fread(&dbuf, sizeof(DWORD), 1, _fp);   // Read 'GeosetID'.
+    fread(&dbuf, sizeof(DWORD), 1, _fp);   // Read 'GeosetAnimationID'.
+    inclSize += 2*sizeof(DWORD);           // Increase read size by these last two fields.
+    model.Bones.push_back(bone);
+  }
+
+  
+  /* // DEBUG OUTPUT - KEEP UNTIL ALL WORKS PROPERLY
+  for (unsigned int i = 0; i < bones.size(); i ++) {
+    printf("Bone [%d]: %s (%d - %d) T: %d | R: %d | S: %d \n", 
+           i, bones[i]->Name, bones[i]->ID, bones[i]->ParentID,
+           (bones[i]->Translation == 0)? 0 : bones[i]->Translation->Size, 
+           (bones[i]->Rotation == 0)? 0 : bones[i]->Rotation->Size, 
+           (bones[i]->Scaling == 0)? 0 : bones[i]->Scaling->Size);
+  }
+  */
+  
 
   // Print parser results.
   printf("Parser results:  \n"
          " - Geosets   : %d\n"
+         " - Textures  : %d\n"
+         " - Bones     : %d\n"
          " - Vertices  : %d\n"
          " - Normals   : %d\n"
-         " - Textures  : %d\n"
          " - TexCoords : %d\n"
          " - Geometries: %d\n", 
-           model.Geosets.size(), totalV, totalN, model.Textures.size(), totalT, totalG);
+           model.Geosets.size(), model.Textures.size(), model.Bones.size(), totalV, totalN, totalT, totalG);
 
   // Write model to disk.
   model.WriteFile(_savename);
