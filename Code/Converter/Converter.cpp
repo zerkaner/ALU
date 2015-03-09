@@ -93,11 +93,34 @@ void Converter::ReadMDX() {
   DWORD remaining;            // Geoset byte size.
   DWORD chunkSize;            // Work storage for various chunk size read-ins.
   Model3D model = Model3D();  // Empty model.
+  float fbuf;
   int i;
   int totalV = 0, totalN = 0, totalT = 0, totalG = 0;
   int idCounter = 0;
 
 
+  //_____________________________________________________________________________________[SEQUENCES]
+  // Scan for 'SEQS' - animation sequence codeblock.
+  while (dbuf != 'SQES') fread(&dbuf, sizeof(DWORD), 1, _fp);
+  fread(&chunkSize, sizeof(DWORD), 1, _fp);   // Read total sequence chunk size.
+  for (unsigned int i = 0; i < chunkSize/132; i ++) {
+    Sequence* seq = new Sequence();
+    fread(&seq->Name,          sizeof(char), 80, _fp);  // Read sequence name.
+    fread(&seq->IntervalStart, sizeof(DWORD), 1, _fp);  // Read first animation frame.
+    fread(&seq->IntervalEnd,   sizeof(DWORD), 1, _fp);  // Read last animation frame.
+    fread(&seq->MoveSpeed,     sizeof(float), 1, _fp);  // Read movement speed.
+    fread(&dbuf,               sizeof(DWORD), 1, _fp);  // Read flags (evaluation later). 
+    if (dbuf == 0) seq->Loop = true;                    // Flags: 0: Looping, 1: NonLooping.                 
+    fread(&fbuf,               sizeof(float), 1, _fp);  // Read 'Rarity' (whatever it is).
+    fread(&dbuf,               sizeof(DWORD), 1, _fp);  // Read 'SyncPoint' (probably n.y.i). 
+    fread(&seq->BoundsRadius,  sizeof(float), 1, _fp);  // Read bounds radius (broad phase CD).
+    fread(&seq->MinimumExtent, sizeof(Float3), 1, _fp); // Read 'Rarity' (whatever it is).
+    fread(&seq->MaximumExtent, sizeof(Float3), 1, _fp); // Read 'Rarity' (whatever it is).
+    model.Sequences.push_back(seq);
+  }
+
+
+  //_____________________________________________________________________________________[MATERIALS]
   // Scan for 'MTLS' - materials codeblock.
   while (dbuf != 'SLTM') fread(&dbuf, sizeof(DWORD), 1, _fp);
   fread(&chunkSize, sizeof(DWORD), 1, _fp);   // Read total material chunk size.
@@ -134,6 +157,7 @@ void Converter::ReadMDX() {
   }
 
 
+  //_____________________________________________________________________________________[TEXTURES]
   // Scan for 'TEXS' - textures codeblock.
   while (dbuf != 'SXET') fread(&dbuf, sizeof(DWORD), 1, _fp);
   fread(&chunkSize, sizeof(DWORD), 1, _fp);
@@ -165,6 +189,7 @@ void Converter::ReadMDX() {
   }
 
 
+  //_____________________________________________________________________________________[GEOSETS]
   // Skip file to geoset definitions and read in size.
   while (dbuf != 'SOEG') fread(&dbuf, sizeof(DWORD), 1, _fp);  
   fread(&remaining, sizeof(DWORD), 1, _fp);
@@ -339,12 +364,14 @@ void Converter::ReadMDX() {
   printf("Parser results:  \n"
          " - Geosets   : %d\n"
          " - Textures  : %d\n"
+         " - Sequences : %d\n"
          " - Bones     : %d\n"
          " - Vertices  : %d\n"
          " - Normals   : %d\n"
          " - TexCoords : %d\n"
          " - Geometries: %d\n", 
-           model.Geosets.size(), model.Textures.size(), model.Bones.size(), totalV, totalN, totalT, totalG);
+           model.Geosets.size(), model.Textures.size(), model.Sequences.size(),
+           model.Bones.size(), totalV, totalN, totalT, totalG);
 
   // Write model to disk.
   model.WriteFile(_savename);

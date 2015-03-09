@@ -3,6 +3,7 @@
 struct Bone;
 struct Geoset;
 struct Material;
+struct Sequence;
 class Texture;
 
 
@@ -19,11 +20,12 @@ class Model3D {
     /** An enumeration of available rendering modes. */
     enum RenderingMode {OFF, POINTS, MESH, DIRECT, VBO};
 
-    RenderingMode RenderingMode;    // Current rendering mode.
-    std::vector<Geoset*> Geosets;   // List with all geosets.
-    Material* Materials;            // Material pointer.
-    std::vector<Texture*> Textures; // Model texture storage.
-    std::vector<Bone*> Bones;       // Bones vector.
+    RenderingMode RenderingMode;      // Current rendering mode.
+    std::vector<Geoset*> Geosets;     // List with all geosets.
+    Material* Materials;              // Material pointer.
+    std::vector<Texture*> Textures;   // Model texture storage.
+    std::vector<Sequence*> Sequences; // Sequence vector.
+    std::vector<Bone*> Bones;         // Bones vector.
 
     /** Create an empty model. */
     Model3D();

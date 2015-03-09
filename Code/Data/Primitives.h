@@ -121,3 +121,15 @@ struct Bone {
   AnimSet* Rotation    = 0;
   AnimSet* Scaling     = 0;
 };
+
+
+struct Sequence {
+  char Name[80];
+  long IntervalStart;
+  long IntervalEnd;
+  bool Loop;  
+  float MoveSpeed;
+  float BoundsRadius;
+  Float3 MinimumExtent;
+  Float3 MaximumExtent;
+};
