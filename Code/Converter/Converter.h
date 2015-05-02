@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+class Model3D;
 
 
 /** Converter class that offers conversions from and to external formats. */
@@ -8,6 +9,7 @@ class Converter {
   private:
 
     FILE* _fp = NULL;       // File pointer for input stream.
+    Model3D* _model = NULL; // Empty model.
     const char* _savename;  // Path to output file (argument).
 
     struct LONG4 { long v = 0, n = 0, t = 0, g = 0; };  // For .OBJ file parsing.
@@ -25,6 +27,12 @@ class Converter {
     /** Load the file to convert. Detects file format and starts the responsible converter. 
      * @param filename Path to the file to open. */
     void StartConversion (const char* filename);
+
+    /** Saves the current model in JSON format instead of inbuilt M4 export. */
+    void SaveModelAsJson();
+
+    /** Aligns the (v/vn/vt) indices (needed for JSON export or usage in OpenGL 2+). */
+    void AlignIndices();
 
 
   public:

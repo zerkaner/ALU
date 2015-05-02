@@ -5,6 +5,8 @@
 #include <Data/Textures/Texture.h>
 #include <stdlib.h>
 #include <string.h>
+#include <map>
+#include <vector>
 
 
 Converter::Converter(int argc, char** argv) {
@@ -70,6 +72,13 @@ void Converter::StartConversion (const char* filename) {
 
   // Close input file stream after conversion.
   fclose(_fp);
+
+  // Write model to disk.
+  if (_model != NULL) {
+    if (strstr(_savename, ".json") != NULL) SaveModelAsJson(); // Save in JSON format.   
+	  else _model->WriteFile(_savename);                         // Default save as M4.
+	  delete _model;
+  }
 }
 
 
@@ -85,6 +94,152 @@ int StartsWith (const char* string, const char* prefix) {
 
 
 
+void Converter::SaveModelAsJson() {
+
+  // Try to open writer stream. Quit on failure.
+  FILE* writer = fopen(_savename, "w");
+  if (writer == NULL) {
+    printf("\nError writing to file '%s'!\n", _savename);
+    return;
+  }
+
+  // Prepare the model.
+  AlignIndices();
+
+  fprintf(writer, "{\n");
+  fprintf(writer, "  \"modelname\": \"\",\n");
+  fprintf(writer, "  \"geosets\": [\n");
+  for (unsigned int g = 0; g < _model->Geosets.size(); g++) {
+    Geoset* geoset = _model->Geosets[g];
+
+    // Write geoset ID and texture path.
+    fprintf(writer, "    {\n");
+    fprintf(writer, "      \"id\"       : \"geoset-%d\",\n", g);
+    fprintf(writer, "      \"texture\"  : \"\",\n");
+    
+    // Vertex output.
+    fprintf(writer, "      \"vertices\" : [");
+    for (int i = 0; i < geoset->nrV; i++) {
+      Float3 vertex = geoset->vertices[i];
+      fprintf(writer, "%f,%f,%f%s", vertex.X, vertex.Y, vertex.Z, (i < geoset->nrV - 1) ? "," : "");
+    }
+
+    // Normal vector output.
+    fprintf(writer, "],\n      \"normals\"  : [");
+    for (int i = 0; i < geoset->nrN; i++) {
+      Float3 normal = geoset->normals[i];
+      fprintf(writer, "%f,%f,%f%s", normal.X, normal.Y, normal.Z, (i < geoset->nrN - 1) ? "," : "");
+    }
+    
+    // Texture coordinates output.
+    fprintf(writer, "],\n      \"texcoords\": [");
+    for (int i = 0; i < geoset->nrT; i++) {
+      Float2 texCoord = geoset->texVects[i];
+      fprintf(writer, "%f,%f%s", texCoord.X, texCoord.Y, (i < geoset->nrT - 1) ? "," : "");
+    }
+
+    // Triangle indices output.
+    fprintf(writer, "],\n      \"indices\"  : [");
+    for (int i = 0; i < geoset->nrG; i++) {
+      Geometry tri = geoset->geometries[i];
+      fprintf(writer, "%d,%d,%d%s", tri.vIdx[0], tri.vIdx[1], tri.vIdx[2],(i < geoset->nrG - 1) ? "," : "");
+    }
+
+    fprintf(writer, "]\n    }%s\n", (g < _model->Geosets.size()-1)? "," : "");
+  }
+  fprintf(writer, "  ]\n}");
+
+
+  // Close output file stream.
+  printf("Written %d bytes to file '%s'.\n", ftell(writer), _savename);
+  fclose(writer);
+}
+
+
+
+void Converter::AlignIndices() {
+  printf("Aligning indices ... ");
+
+  // Intermediate structure to associate position-, normal- and texture vector.
+  struct Vertex { Float3 position; Float3 normal; Float2 texel; };
+  struct VertexIndex { 
+    int v, vn, vt;  
+    bool operator<(const VertexIndex& other) const {
+      char s1[20]; char s2[20];
+      sprintf(s1, "%d-%d-%d", v, vn, vt);
+      sprintf(s2, "%d-%d-%d", other.v, other.vn, other.vt);
+      return (strcmp(s1, s2) < 0);
+    }
+  };  // Indexing structure; corresponds to a face definition.
+
+  // Loop over all geosets.
+  for (unsigned int g = 0; g < _model->Geosets.size(); g++) {
+    Float3* vertices = _model->Geosets[g]->vertices;       //|
+    Float3* normals = _model->Geosets[g]->normals;         //| Just shortcuts 
+    Float2* texels = _model->Geosets[g]->texVects;         //| for easier access!
+    Geometry* triangles = _model->Geosets[g]->geometries;  //|
+
+    std::map<VertexIndex, int> indexMapping;  // Triangle indices to new (uniform) index mapping.
+    std::vector<Vertex> vertexBuffer;         // Buffer for rearranged vertices (interleaved v/n/t).
+    std::vector<int> indexBuffer;             // Buffer for the new indices.
+
+    for (int t = 0; t < _model->Geosets[g]->nrG; t++) { // Loops over all triangles.  
+      for (int i = 0; i < 3; i++) {                     // Loops over the three vertices of a triangle.
+
+        VertexIndex indices = VertexIndex();
+        indices.v  = triangles[t].vIdx[i];
+        indices.vn = triangles[t].nIdx[i];
+        indices.vt = triangles[t].tIdx[i];   
+
+        //const VertexIndex& vtxIndex = indices; // Define as constant to use as key!
+        int index = -1;
+
+        // If this <v,vn,vt> pair already has an index, we use it!
+        if (indexMapping.count(indices)) index = indexMapping[indices];
+        
+        else {  // Otherwise we append a new vertex and index.    
+          index = vertexBuffer.size();
+          Vertex vtx = Vertex();
+          vtx.position = vertices[indices.v];
+          vtx.normal = normals[indices.vn];
+          vtx.texel = texels[indices.vt];
+          vertexBuffer.push_back(vtx);
+          indexMapping[indices] = index;
+        }
+        indexBuffer.push_back(index);
+      }
+    }
+
+    // Set new array and element sizes.
+    _model->Geosets[g]->nrV = vertexBuffer.size();
+    _model->Geosets[g]->nrN = vertexBuffer.size();
+    _model->Geosets[g]->nrT = vertexBuffer.size();
+    delete[] vertices;   vertices = new Float3[vertexBuffer.size()];
+    delete[] normals;     normals = new Float3[vertexBuffer.size()];
+    delete[] texels;       texels = new Float2[vertexBuffer.size()];
+    
+    for (unsigned int i = 0; i < vertexBuffer.size(); i++) {
+      vertices[i] = vertexBuffer[i].position;
+      normals[i]  = vertexBuffer[i].normal;
+      texels[i]   = vertexBuffer[i].texel;
+    }
+    for (int i = 0; i <_model->Geosets[g]->nrG; i ++) {
+      triangles[i].symIndices = true;
+      triangles[i].vIdx[0] = triangles[i].nIdx[0] = triangles[i].tIdx[0] = indexBuffer[(i*3)];
+      triangles[i].vIdx[1] = triangles[i].nIdx[1] = triangles[i].tIdx[1] = indexBuffer[(i*3)+1];
+      triangles[i].vIdx[2] = triangles[i].nIdx[2] = triangles[i].tIdx[2] = indexBuffer[(i*3)+2];
+    }
+    
+    // Assign the new arrays to the original geoset pointer.
+    _model->Geosets[g]->vertices = vertices;
+    _model->Geosets[g]->normals = normals;
+    _model->Geosets[g]->texVects = texels;
+  }  
+  printf("[finished]\n");
+}
+
+
+
 void Converter::ReadMDX() {
   printf("MDX converter loaded.\n");
  
@@ -92,11 +247,11 @@ void Converter::ReadMDX() {
   DWORD dbuf = 0x00;          // "Read-in and discard" buffer.
   DWORD remaining;            // Geoset byte size.
   DWORD chunkSize;            // Work storage for various chunk size read-ins.
-  Model3D model = Model3D();  // Empty model.
   float fbuf;
   int i;
   int totalV = 0, totalN = 0, totalT = 0, totalG = 0;
   int idCounter = 0;
+  _model = new Model3D();
 
 
   //_____________________________________________________________________________________[SEQUENCES]
@@ -116,7 +271,7 @@ void Converter::ReadMDX() {
     fread(&seq->BoundsRadius,  sizeof(float), 1, _fp);  // Read bounds radius (broad phase CD).
     fread(&seq->MinimumExtent, sizeof(Float3), 1, _fp); // Read 'Rarity' (whatever it is).
     fread(&seq->MaximumExtent, sizeof(Float3), 1, _fp); // Read 'Rarity' (whatever it is).
-    model.Sequences.push_back(seq);
+    _model->Sequences.push_back(seq);
   }
 
 
@@ -179,7 +334,7 @@ void Converter::ReadMDX() {
         unsigned char* rawData = new unsigned char [bytes];
         fseek(texReader, 0L, SEEK_SET); 
         fread(rawData, sizeof(unsigned char), bytes, texReader);
-        model.Textures.push_back(new SimpleTexture(rawData, bytes));
+        _model->Textures.push_back(new SimpleTexture(rawData, bytes));
         fclose(texReader);
         printf("[OK]\n");
       }
@@ -249,10 +404,10 @@ void Converter::ReadMDX() {
 
     // Get associated texture from texture ID vector.
     if (dbuf < texIDs.size()) {
-      if (texIDs[dbuf] < model.Textures.size()) geoset->textureID = texIDs[dbuf];
+      if (texIDs[dbuf] < _model->Textures.size()) geoset->textureID = texIDs[dbuf];
       else {
         printf("[ERROR] Texture association failed. Entry %d is invalid (only %d texture%s)!\n",
-               texIDs[dbuf], model.Textures.size(), (model.Textures.size() > 1)? "s" : "");
+               texIDs[dbuf], _model->Textures.size(), (_model->Textures.size() > 1)? "s" : "");
         geoset->textureID = -1;      
       }
     }
@@ -273,7 +428,7 @@ void Converter::ReadMDX() {
     }
 
     // Add new geoset.
-    model.Geosets.push_back(geoset);
+    _model->Geosets.push_back(geoset);
     idCounter ++;
   }
 
@@ -345,7 +500,7 @@ void Converter::ReadMDX() {
     fread(&dbuf, sizeof(DWORD), 1, _fp);   // Read 'GeosetID'.
     fread(&dbuf, sizeof(DWORD), 1, _fp);   // Read 'GeosetAnimationID'.
     inclSize += 2*sizeof(DWORD);           // Increase read size by these last two fields.
-    model.Bones.push_back(bone);
+    _model->Bones.push_back(bone);
   }
 
   
@@ -370,11 +525,8 @@ void Converter::ReadMDX() {
          " - Normals   : %d\n"
          " - TexCoords : %d\n"
          " - Geometries: %d\n", 
-           model.Geosets.size(), model.Textures.size(), model.Sequences.size(),
-           model.Bones.size(), totalV, totalN, totalT, totalG);
-
-  // Write model to disk.
-  model.WriteFile(_savename);
+           _model->Geosets.size(), _model->Textures.size(), _model->Sequences.size(),
+           _model->Bones.size(), totalV, totalN, totalT, totalG);
 }
 
 
@@ -382,10 +534,10 @@ void Converter::ReadMDX() {
 void Converter::ReadOBJ() {
   printf ("OBJ converter loaded.\n");
 
-  int v, vn, vt;       // Index variables for faces match.
-  char buffer [256];   // Input buffer for file read-in.
-  char mtlfile [80];   // Material library file name.
-  
+  int v, vn, vt;          // Index variables for faces match.
+  char buffer [256];      // Input buffer for file read-in.
+  char mtlfile [80];      // Material library file name.
+  _model = new Model3D(); // Create model structure.
 
   // First run: Determine geosets and array sizes.
   int geos = 1;
@@ -420,8 +572,7 @@ void Converter::ReadOBJ() {
   }
 
   // Allocate heap memory for first run, also create model.
-  int curGeo = 0;
-  Model3D model = Model3D();  
+  int curGeo = 0;  
   Float3*   vertices   = (Float3*)   calloc(counters[curGeo].v, sizeof(Float3));
   Float3*   normals    = (Float3*)   calloc(counters[curGeo].n, sizeof(Float3));
   Float2* textures     = (Float2*)   calloc(counters[curGeo].t, sizeof(Float2));
@@ -462,18 +613,26 @@ void Converter::ReadOBJ() {
         indices = (long*) realloc (indices, count * sizeof(long));
 
         // Dereference the vertices, normals and texture crap.
-        if (sscanf(splitPtr, "%d/%d/%d", &v, &vt, &vn) == 3) {
+        if (sscanf(splitPtr, "%d/%d/%d", &v, &vt, &vn) == 3) {  // Vertex, texel and normal.
           geometries[curG].vIdx [count-1] = v  - foV;
           geometries[curG].nIdx [count-1] = vn - foN;
           geometries[curG].tIdx [count-1] = vt - foT;      
           //TODO What if there are no n or t vrtx?
         }
-        else if (sscanf(splitPtr, "%d//%d", &v, &vn) == 2) {
+        else if (sscanf(splitPtr, "%d//%d", &v, &vn) == 2) {    // Vertex and normal.
           geometries[curG].vIdx[count-1] = v  - foV;
           geometries[curG].nIdx[count-1] = vn - foN;
+          geometries[curG].tIdx[count-1] = 0;
+        }        
+        else if (sscanf(splitPtr, "%d/%d", &v, &vt) == 2) {     // Vertex and texel.
+          geometries[curG].vIdx[count-1] = v  - foV;
+          geometries[curG].nIdx[count-1] = 0;
+          geometries[curG].tIdx[count-1] = vt - foT;
         }
-        else if (sscanf(splitPtr, "%d", &v) == 1) {
+        else if (sscanf(splitPtr, "%d", &v) == 1) {             // Vertex only.
           geometries[curG].vIdx[count-1] =  v - foV;
+          geometries[curG].nIdx[count-1] =  0;
+          geometries[curG].tIdx[count-1] =  0;
         }
         else count --;
 
@@ -504,7 +663,7 @@ void Converter::ReadOBJ() {
       geoset->normals = normals;
       geoset->texVects = textures;
       geoset->geometries = geometries;
-      model.Geosets.push_back(geoset);
+      _model->Geosets.push_back(geoset);
       
       curGeo ++;
       foV += curV; foN += curN; foT += curT;  // Increase faces offset
@@ -526,12 +685,9 @@ void Converter::ReadOBJ() {
           " - Vertices  : %d\n"
           " - Normals   : %d\n"
           " - Materials : %d\n"
-          " - Tex Coords: %d\n"
+          " - TexCoords : %d\n"
           " - Geometries: %d\n", 
             geos, tV, tN, materials.size(), tT, tG);
-
-  // Write model to disk.
-  model.WriteFile(_savename);
 }
 
 
@@ -542,7 +698,7 @@ void Converter::ReadGLF() {
   // Try to open writer stream. Quit on failure.
   FILE* writer = fopen(_savename, "w");
   if (writer == NULL) {
-    printf ("\nError writing to file \"%s\"!\n", _savename);
+    printf ("\nError writing to file '%s'!\n", _savename);
     return;
   }
 
@@ -595,6 +751,6 @@ void Converter::ReadGLF() {
   fprintf(writer, "\n};\n");
 
   // Close output file stream.
-  printf ("Written %d bytes to file \"%s\".\n", ftell(writer), _savename);  
+  printf ("Written %d bytes to file '%s'.\n", ftell(writer), _savename);  
   fclose(writer);
 }

@@ -357,12 +357,13 @@ void Model3D::Echo(bool fileOutput, const char* filename) {
 
       // Geometry indices output.
       fprintf (fp, "   - Geometries: %d\n", Geosets[i]->nrG);
+      fprintf (fp, "     Note: Output in .obj style (v/vt/vn), but indices reduced by one to match array fields.\n");
       for (int j = 0; j < Geosets[i]->nrG; j ++) {
         fprintf (fp, "     [%02d]", j);
         for (int k = 0; k < 3; k ++) {
           fprintf (fp, "  %d/%d/%d", Geosets[i]->geometries[j].vIdx[k], 
-                                     Geosets[i]->geometries[j].nIdx[k], 
-                                     Geosets[i]->geometries[j].tIdx[k]);
+                                     Geosets[i]->geometries[j].tIdx[k], 
+                                     Geosets[i]->geometries[j].nIdx[k]);
         }       
         fprintf (fp, "\n");
       }
