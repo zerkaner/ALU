@@ -8,9 +8,11 @@ class Converter {
 
   private:
 
-    FILE* _fp = NULL;       // File pointer for input stream.
-    Model3D* _model = NULL; // Empty model.
-    const char* _savename;  // Path to output file (argument).
+    FILE* _fp = NULL;        // File pointer for input stream.
+    Model3D* _model = NULL;  // Empty model.
+    const char* _savename;   // Path to output file (argument).
+    char _scaleAxis = ' ';   // Scaling axis (optional set).
+    float _scaleVal = -1.0f; // Scaling value (optional set).
 
     struct LONG4 { long v = 0, n = 0, t = 0, g = 0; };  // For .OBJ file parsing.
 
@@ -34,6 +36,8 @@ class Converter {
     /** Aligns the (v/vn/vt) indices (needed for JSON export or usage in OpenGL 2+). */
     void AlignIndices();
 
+    /** Parse the scaling parameter. */
+    void ParseScalingParam(char arg[]);
 
   public:
 

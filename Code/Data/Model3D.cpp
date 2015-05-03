@@ -218,6 +218,7 @@ void Model3D::WriteFile(const char* filepath) {
 
 
 void Model3D::ScaleModel(float factor) {
+  printf("Scaling model by factor '%6.4f'.\n", factor);
   for (unsigned int i = 0; i < Geosets.size(); i ++) {
     for (int v = 0; v < Geosets[i]->nrV; v ++) {
       Geosets[i]->vertices[v].X *= factor;
@@ -225,6 +226,47 @@ void Model3D::ScaleModel(float factor) {
       Geosets[i]->vertices[v].Z *= factor;
     }
   }
+}
+
+
+
+/* Internal helper function to get vector value based on axis. */
+float _getValue(Float3 vtx, char axis) {
+  switch (axis) {
+  case 'X': case 'x': return vtx.X;
+  case 'Y': case 'y': return vtx.Y;
+  case 'Z': case 'z': return vtx.Z;
+  default: return -1.0f;
+  }
+}
+
+
+
+void Model3D::ScaleModelToExtent(char axis, float value) {
+  printf("Scaling model to extent '%f' on axis '%c'.\n", value, axis);
+  if (value <= 0) {
+    printf("Model scaling failed: Value is '%f' (must be greater than 0).\n", value);
+    return;
+  }
+  if (!(axis=='x' || axis=='y' || axis=='z' || axis=='X' || axis=='Y' || axis=='Z')) {
+    printf("Model scaling failed: Axis '%c' invalid (supported: x, y, z).\n", axis);
+    return;    
+  }
+  
+  // Get minimal and maximal value.
+  float minVal, maxVal;
+  minVal = maxVal = _getValue(Geosets[0]->vertices[0], axis);
+  for (unsigned int i = 0; i < Geosets.size(); i++) {
+    for (int v = 0; v < Geosets[i]->nrV; v++) {
+      float val = _getValue(Geosets[i]->vertices[v], axis);
+      if (val > maxVal) maxVal = val;
+      else if (val < minVal) minVal = val;
+    }
+  }
+
+  // Calculate maximal extents and perform scaling based on desired value. 
+  float factor = value / (maxVal - minVal);
+  ScaleModel(factor);
 }
 
 

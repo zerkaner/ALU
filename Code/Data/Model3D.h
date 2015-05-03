@@ -55,6 +55,12 @@ class Model3D {
     void ScaleModel(float factor);
 
 
+    /** Scale to model to a specific extent.
+     * @param axis The axis to use as reference.
+     * @param value The total extent on that axis. */
+    void ScaleModelToExtent(char axis, float value);
+
+
     /** (Re-)Calculate surface normals. */
     void CalculateNormals();
 

@@ -6,13 +6,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <map>
+#include <string>
 #include <vector>
 
 
 Converter::Converter(int argc, char** argv) {
-      
-  // If parameter syntax is valid, start file conversion.
-  if (argc == 2) {
+  
+  // Scaling argument supplied. Read it first, then start conversion.
+  if (argc == 3 && (strstr(argv[0], "--scale=") != NULL)) {
+    ParseScalingParam(argv[0]);
+    _savename = argv[2];
+    StartConversion(argv[1]);   
+  }
+
+  // Only source and target specified.  
+  else if (argc == 2) {
     _savename = argv[1];
     StartConversion(argv[0]);
   }  
@@ -73,8 +81,13 @@ void Converter::StartConversion (const char* filename) {
   // Close input file stream after conversion.
   fclose(_fp);
 
-  // Write model to disk.
+  // Model conversion successful. Apply transformatons, then write it to disk.
   if (_model != NULL) {
+
+    // Look out for scaling parameter.
+    if (_scaleAxis != ' ' && _scaleVal > 0) _model->ScaleModelToExtent(_scaleAxis, _scaleVal);
+    else if (_scaleVal > 0) _model->ScaleModel(_scaleVal);
+
     if (strstr(_savename, ".json") != NULL) SaveModelAsJson(); // Save in JSON format.   
 	  else _model->WriteFile(_savename);                         // Default save as M4.
 	  delete _model;
@@ -94,6 +107,20 @@ int StartsWith (const char* string, const char* prefix) {
 
 
 
+void Converter::ParseScalingParam(char arg[]) {
+  char* splitPtr = strtok(arg, "=");  
+  splitPtr = strtok(NULL, "=");         // Now we have everything after "scale=".    
+  if (strstr(splitPtr, ":") != NULL) {  
+    splitPtr = strtok(splitPtr, ":");   //| If an axis is supplied, we now have it
+    _scaleAxis = splitPtr[0];           //| (it is before ':') and advance once more.    
+    splitPtr = strtok(NULL, ":");       
+  }                                 
+  else splitPtr = strtok(splitPtr, ":"); // Otherwise we already are at the value.  
+  sscanf(splitPtr, "%f", &_scaleVal);
+}
+
+
+
 void Converter::SaveModelAsJson() {
 
   // Try to open writer stream. Quit on failure.
@@ -103,8 +130,17 @@ void Converter::SaveModelAsJson() {
     return;
   }
 
-  // Prepare the model.
-  AlignIndices();
+  // Check for asymmetric indices. Yes, the flag definitely belongs somewhere else ...
+  bool aligned = true;
+  for (unsigned int g = 0; g < _model->Geosets.size(); g++) {
+    for (int t = 0; t < _model->Geosets[g]->nrG; t++) {
+      if (!_model->Geosets[g]->geometries[t].symIndices) {
+        aligned = false;
+        break;
+      }
+    }
+  }
+  if (!aligned) AlignIndices();
 
   fprintf(writer, "{\n");
   fprintf(writer, "  \"modelname\": \"\",\n");
