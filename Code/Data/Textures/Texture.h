@@ -12,6 +12,7 @@ class Texture {
     virtual unsigned int ID()       const = 0;
     virtual unsigned char* Data()   const = 0;
     virtual unsigned long Size()    const = 0;
+    virtual const char* Name()      const = 0;
     virtual int Width()             const = 0;
     virtual int Height()            const = 0;
     virtual int StoredWidth()       const = 0;
@@ -37,6 +38,7 @@ class SimpleTexture : public Texture {
     unsigned int _id;     // OpenGL ID of texture.
     unsigned char* _data; // Image data array.
     unsigned long _size;  // Texture data array size.
+    const char* _name;    // Name of texture (file path).
     int _width;           // Texture width.
     int _height;          // Texture height.
     int _storedWidth;     // Actual width in memory.
@@ -47,8 +49,9 @@ class SimpleTexture : public Texture {
 
     /** Create a texture with given image data (preloaded). 
      * @param data Image data array.
-     * @param size Texture data array size. */
-    SimpleTexture(unsigned char* data, unsigned long size);
+     * @param size Texture data array size.
+     * @param name Name of texture (file path). */
+    SimpleTexture(unsigned char* data, unsigned long size, const char* name);
 
     /** Delete the texture and free the memory. */
     ~SimpleTexture();
@@ -57,6 +60,7 @@ class SimpleTexture : public Texture {
     unsigned int ID()       const { return _id; }
     unsigned char* Data()   const { return _data; }
     unsigned long Size()    const { return _size; }
+    const char* Name()      const { return _name; }
     int Width()             const { return _width; }
     int Height()            const { return _height; }
     int StoredWidth()       const { return _storedWidth; }
@@ -91,6 +95,7 @@ class TextureSlice : public Texture {
     unsigned int ID()       const { return _parent->ID(); }
     unsigned char* Data()   const { return _parent->Data(); }
     unsigned long Size()    const { return _parent->Size(); }
+    const char* Name()      const { return _parent->Name(); }
     int Width()             const { return _width; }
     int Height()            const { return _height; }
     int StoredWidth()       const { return _parent->StoredWidth(); }

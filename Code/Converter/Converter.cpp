@@ -142,16 +142,25 @@ void Converter::SaveModelAsJson() {
   }
   if (!aligned) AlignIndices();
 
+  // Split file name from the full save path.
+  char temp[20];
+  strcpy(temp, _savename);
+  char* modelname = strtok((char*)temp, "\\/");
+  char* probePtr;
+  while ((probePtr = strtok(NULL, "\\/")) != NULL) modelname = probePtr;
+
+  // Write JSON file head.
   fprintf(writer, "{\n");
-  fprintf(writer, "  \"modelname\": \"\",\n");
+  fprintf(writer, "  \"modelname\": \"%s\",\n", modelname);
   fprintf(writer, "  \"geosets\": [\n");
   for (unsigned int g = 0; g < _model->Geosets.size(); g++) {
     Geoset* geoset = _model->Geosets[g];
 
-    // Write geoset ID and texture path.
+    // Write geoset ID and texture path (if texture exists).
     fprintf(writer, "    {\n");
     fprintf(writer, "      \"id\"       : \"geoset-%d\",\n", g);
-    fprintf(writer, "      \"texture\"  : \"\",\n");
+    fprintf(writer, "      \"texture\"  : \"%s\",\n",
+      (geoset->textureID != -1)? _model->Textures[geoset->textureID]->Name() : "");
     
     // Vertex output.
     fprintf(writer, "      \"vertices\" : [");
@@ -356,8 +365,8 @@ void Converter::ReadMDX() {
   // Iterate over all texture paths.
   for (unsigned int t = 0; t < chunkSize/268; t ++) {
     fread(&dbuf, sizeof(DWORD), 1, _fp);      // Read (and discard) 'Replaceable ID'.    
-    char texPath[260];
-    fread(&texPath, sizeof(char), 260, _fp);  // Read texture path.
+    char* texPath = (char*) calloc(260, sizeof(char));
+    fread(texPath, sizeof(char), 260, _fp);   // Read texture path.
     if(texPath[0] != '\0') {
       printf("Loading texture '%s' ", texPath);
       
@@ -370,7 +379,7 @@ void Converter::ReadMDX() {
         unsigned char* rawData = new unsigned char [bytes];
         fseek(texReader, 0L, SEEK_SET); 
         fread(rawData, sizeof(unsigned char), bytes, texReader);
-        _model->Textures.push_back(new SimpleTexture(rawData, bytes));
+        _model->Textures.push_back(new SimpleTexture(rawData, bytes, texPath));
         fclose(texReader);
         printf("[OK]\n");
       }
@@ -698,6 +707,7 @@ void Converter::ReadOBJ() {
       geoset->vertices = vertices;
       geoset->normals = normals;
       geoset->texVects = textures;
+      geoset->textureID = -1;
       geoset->geometries = geometries;
       _model->Geosets.push_back(geoset);
       

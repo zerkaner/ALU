@@ -24,7 +24,8 @@ Texture* Texture::Slice(int x, int y, int width, int height) {
 
 
 
-SimpleTexture::SimpleTexture(unsigned char* rawdata, unsigned long size) {
+SimpleTexture::SimpleTexture(unsigned char* rawdata, unsigned long size, const char* name) {
+  _name = name;
 
   // Take care of the byteorder for RGB-masks.
   uint32_t rmask, gmask, bmask, amask;

@@ -16,7 +16,7 @@ Texture* ImageLoader::LoadTexture(const char* filename) {
     fread(rawData, sizeof (unsigned char), rawSize, fp);
     fclose(fp);
 
-    return new SimpleTexture(rawData, rawSize);
+    return new SimpleTexture(rawData, rawSize, filename);
   }
 
   // Print error message.
