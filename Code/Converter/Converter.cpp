@@ -202,20 +202,27 @@ void Converter::SaveModelAsJson() {
 
 
 
+/** The following two structures belong to the AlignIndices() function 
+ *  but have to be declared outside to be GCC (C++ 2003) compliant. **/
+
+/** Intermediate structure to associate position-, normal- and texture vector. */
+struct Vertex { Float3 position; Float3 normal; Float2 texel; };
+
+/** Indexing structure; corresponds to a face definition. */
+struct VertexIndex {
+  int v, vn, vt;
+  bool operator<(const VertexIndex& other) const {
+    char s1[20]; char s2[20];
+    sprintf(s1, "%d-%d-%d", v, vn, vt);
+    sprintf(s2, "%d-%d-%d", other.v, other.vn, other.vt);
+    return (strcmp(s1, s2) < 0);
+  }
+};
+
+
+
 void Converter::AlignIndices() {
   printf("Aligning indices ... ");
-
-  // Intermediate structure to associate position-, normal- and texture vector.
-  struct Vertex { Float3 position; Float3 normal; Float2 texel; };
-  struct VertexIndex { 
-    int v, vn, vt;  
-    bool operator<(const VertexIndex& other) const {
-      char s1[20]; char s2[20];
-      sprintf(s1, "%d-%d-%d", v, vn, vt);
-      sprintf(s2, "%d-%d-%d", other.v, other.vn, other.vt);
-      return (strcmp(s1, s2) < 0);
-    }
-  };  // Indexing structure; corresponds to a face definition.
 
   // Loop over all geosets.
   for (unsigned int g = 0; g < _model->Geosets.size(); g++) {
@@ -236,7 +243,6 @@ void Converter::AlignIndices() {
         indices.vn = triangles[t].nIdx[i];
         indices.vt = triangles[t].tIdx[i];   
 
-        //const VertexIndex& vtxIndex = indices; // Define as constant to use as key!
         int index = -1;
 
         // If this <v,vn,vt> pair already has an index, we use it!
