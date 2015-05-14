@@ -3,6 +3,7 @@
 #endif
 
 #include <Converter/Converter.h>
+#include <Converter/DBC.h>
 #include <Execution/ALU.h>
 #include <stdio.h>
 
@@ -13,6 +14,11 @@ int main (int argc, char** argv) {
   // Run converter on parameter "--conv". 
   if (argc > 1 && (strcmp(argv[1], "--conv") == 0)) {
     Converter(argc - 2, &argv[2]);
+  }
+
+  // "--load": Start the MPQ-DBC-M2 parsing toolchain [work has just begun!].
+  else if (argc > 1 && (strcmp(argv[1], "--load") == 0)) {
+    DBCParser(argc - 2, &argv[2]);
   }
 
   // Normal system start-up.

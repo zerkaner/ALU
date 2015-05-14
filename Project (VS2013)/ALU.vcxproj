@@ -39,6 +39,7 @@
     <ClInclude Include="..\Code\Agents\SpatialAgent.h" />
     <ClInclude Include="..\Code\Agents\TestAgent.h" />
     <ClInclude Include="..\Code\Converter\Converter.h" />
+    <ClInclude Include="..\Code\Converter\DBC.h" />
     <ClInclude Include="..\Code\Data\Model3D.h" />
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />

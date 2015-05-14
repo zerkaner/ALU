@@ -224,5 +224,8 @@
     <ClInclude Include="..\Code\Data\Textures\ImageLoader.h">
       <Filter>Data\Textures</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Converter\DBC.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
