@@ -4,6 +4,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
+
+
+namespace DBCFields {
+  enum InfoDBC  { INFO_MODEL = 1, INFO_EXTRA = 3, INFO_TEX1 = 6, INFO_TEX2, INFO_TEX3 };
+  enum ModelDBC { MODEL_PATH = 2 };
+  enum DataDBC  { DATA_RACE=1, DATA_SEX, DATA_SKIN, DATA_FACE, DATA_HAIR, DATA_HAIRCOL, DATA_BEARD, // NPC body.
+                  DATA_HELM, DATA_SHOULDER, DATA_SHIRT, DATA_CUIRASS, DATA_BELT, DATA_LEGS,         //| Equipment
+                  DATA_BOOTS, DATA_WRIST, DATA_GLOVES, DATA_TABARD, DATA_CAPE, DATA_TEX=20 };       //| configuration.
+
+  /** Result structure for a single DBC query. */
+  struct DBCEntry {
+    int columns, size, stringCount;
+    DWORD* content;
+    char** strings;
+  };
+
+  /** Model data container (assembled by queries over multiple DBCs). */
+  struct ModelData {
+    int id;
+    char* model;
+    std::vector<char*> textures;
+    bool configured = false;   // If set to 'true', the following fields will be used: 
+    int race;                  // Model race.
+    int sex;                   // 1: female, 0: male
+    int body[5];               // Model configuration (skin, face, hair, haircolor, beard).
+    int equip[11];             // Equipment configuration (reference IDs).
+    std::vector<int> geosets;  // Geosets to render (for common character models). 
+  };
+};
+
+using namespace DBCFields;
 
 
 /** Parser class for deferencing Blizzards DBC (database cache) files. */
@@ -21,27 +53,43 @@ class DBCParser {
     }
 
 
-    struct DBCEntry {
-      int columns, size, stringCount;
-      DWORD* content;
-      char** strings;
-    };
+
 
 
     void Test() {
+      ModelData* modeldata = FetchNPCInformation(7274);
 
-      int id = 43;
-      int strs[3] = {2};
-      DBCEntry* entry = ReadDataFromDBC(_dbcModel, id, 0, 1, strs);
+      if (modeldata != NULL) {
+        printf("Parser debug report:\n");
+        printf(" - ID       : %d\n", modeldata->id);
+        printf(" - Modelpath: '%s'\n", modeldata->model);
+        if (modeldata->configured) {
+          printf(" - Race     : %d\n", modeldata->race);
+          printf(" - Sex      : %d\n", modeldata->sex);
+          printf(" - Skin     : %d\n", modeldata->body[0]);
+          printf(" - Face     : %d\n", modeldata->body[1]);
+          printf(" - Hairstyle: %d\n", modeldata->body[2]);
+          printf(" - Haircolor: %d\n", modeldata->body[3]);
+          printf(" - Beard    : %d\n", modeldata->body[4]);
+          printf("-------------------\n");
+          printf(" - Helmet   : %d\n", modeldata->equip[0]);
+          printf(" - Shoulder : %d\n", modeldata->equip[1]);
+          printf(" - Shirt    : %d\n", modeldata->equip[2]);
+          printf(" - Chest    : %d\n", modeldata->equip[3]);
+          printf(" - Belt     : %d\n", modeldata->equip[4]);
+          printf(" - Legs     : %d\n", modeldata->equip[5]);
+          printf(" - Boots    : %d\n", modeldata->equip[6]);
+          printf(" - Wrist    : %d\n", modeldata->equip[7]);
+          printf(" - Gloves   : %d\n", modeldata->equip[8]);
+          printf(" - Tabard   : %d\n", modeldata->equip[9]);
+          printf(" - Cape     : %d\n", modeldata->equip[10]);
+          printf("-------------------\n");
+        }
 
-      if (entry != NULL) {
-        printf("Gefunden! Cols: %d, Size total: %d\n", entry->columns, entry->size);
-        for (int j = 0; j < entry->columns; j ++) {
-          if (j > 0) printf(" | ");
-          if      (j == 2) printf("%s", entry->strings[0]);
-          //else if (j == 20) printf("%s", entry->strings[1]);
-          //else if (j == 8) printf("%s", entry->strings[2]);
-          else           printf("%lu", entry->content[j]);
+        printf(" - Textures : ");
+        for (unsigned int i = 0; i < modeldata->textures.size(); i ++) {
+          if (i != 0) printf(", ");
+          printf("'%s'", modeldata->textures[i]);
         }
         printf("\n");
       }
@@ -51,14 +99,83 @@ class DBCParser {
     }
 
 
+
+    /** Retrieves data for a creature (NPC).
+     * @param id The ID of the creature to fetch. 
+     * @return A model data structure with all information for M2 processing. */
+    ModelData* FetchNPCInformation(int id) {
+
+      // Try to read base model information.
+      int textures[3] = {INFO_TEX1, INFO_TEX2, INFO_TEX3};
+      DBCEntry* baseinfo = ReadDataFromDBC(_dbcInfo, id, 3, textures);
+      if (baseinfo == NULL) {
+        printf("[DBCParser] Error, creature '%d' does not exist!\n", id);
+        return NULL;
+      }
+
+      // Create model data structure, set ID and textures.
+      ModelData* modeldata = new ModelData();
+      modeldata->id = id;
+      for (int i = 0; i < 3; i ++) {
+        if (baseinfo->strings[i][0] != '\0') {
+          modeldata->textures.push_back(baseinfo->strings[i]);
+        }
+      }
+
+      // Query model path.
+      int modelID = baseinfo->content[INFO_MODEL];
+      int modelPathCol[1] = {MODEL_PATH};
+      DBCEntry* model = ReadDataFromDBC(_dbcModel, modelID, 1, modelPathCol);
+      modeldata->model = model->strings[0];
+
+
+      // Get additional data, such as geosets to load and equipment.
+      int dataID = baseinfo->content[INFO_EXTRA];
+      if (dataID != 0) {
+        int texturePathCol[1] = {DATA_TEX};
+        DBCEntry* data = ReadDataFromDBC(_dbcExtra, dataID, 1, texturePathCol);
+        if (data != NULL) {
+          modeldata->configured = true;
+          modeldata->race = data->content[DATA_RACE];
+          modeldata->sex  = data->content[DATA_SEX];
+          modeldata->body[0] = data->content[DATA_SKIN];
+          modeldata->body[1] = data->content[DATA_FACE];
+          modeldata->body[2] = data->content[DATA_HAIR];
+          modeldata->body[3] = data->content[DATA_HAIRCOL];
+          modeldata->body[4] = data->content[DATA_BEARD];
+          modeldata->equip[0] = data->content[DATA_HELM];
+          modeldata->equip[1] = data->content[DATA_SHOULDER];
+          modeldata->equip[2] = data->content[DATA_SHIRT];
+          modeldata->equip[3] = data->content[DATA_CUIRASS];
+          modeldata->equip[4] = data->content[DATA_BELT];
+          modeldata->equip[5] = data->content[DATA_LEGS];
+          modeldata->equip[6] = data->content[DATA_BOOTS];
+          modeldata->equip[7] = data->content[DATA_WRIST];
+          modeldata->equip[8] = data->content[DATA_GLOVES];
+          modeldata->equip[9] = data->content[DATA_TABARD];
+          modeldata->equip[10] = data->content[DATA_CAPE];
+          if (data->strings[0][0] != '\0') modeldata->textures.push_back(data->strings[0]);
+        }
+        else printf("[DBCParser] Error loading additional data (%d) for model %d!\n", dataID, id);
+        delete data;
+      }
+
+
+      // Clear query structures.
+      delete baseinfo;
+      delete model;
+      return modeldata;
+    }
+
+
+
     /** Reads a single data row from a DBC file and returns it with its properties.
      * @param filepath Path to the DBC file to load. 
      * @param key The key of the row to search for.
-     * @param keyCol The column where the given key shall be found.
      * @param resolveStr Number of strings to resolve (use '0' to disable).
      * @param strPos Integer array with the column indices of the strings to resolve ('null', if none). 
      * @return The content of the data row (with the associated properties). */
-    DBCEntry* ReadDataFromDBC(const char* filepath, int key, int keyCol, int resolveStr, int* strPos) {
+    DBCEntry* ReadDataFromDBC(const char* filepath, int key, int resolveStr, int* strPos) {
       DBCEntry* result = NULL;
 
       // Try to open filestream.
@@ -83,7 +200,7 @@ class DBCParser {
       // Loop over all entries until found.
       for (unsigned int i = 0; i < dbcHeader.rows; i ++) {
         fread(content, sizeof(DWORD), dbcHeader.columns, fp);
-        if (content[keyCol] == key) {
+        if (content[0] == key) {
           found = true;
           break;
         }
