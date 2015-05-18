@@ -43,8 +43,10 @@ class DBCParser {
 
   private:
     const char* _dbcInfo  = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CreatureDisplayInfo.dbc";
+    const char* _dbcItems = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/ItemDisplayInfo.dbc";
     const char* _dbcExtra = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CreatureDisplayInfoExtra.dbc";
     const char* _dbcModel = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CreatureModelData.dbc";
+    const char* _dbcHair  = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CharHairGeosets.dbc";
 
   public:
     
@@ -84,6 +86,12 @@ class DBCParser {
           printf(" - Tabard   : %d\n", modeldata->equip[9]);
           printf(" - Cape     : %d\n", modeldata->equip[10]);
           printf("-------------------\n");
+          printf(" - Geosets  : ");
+          for (unsigned int i = 0; i < modeldata->geosets.size(); i ++) {
+            if (i != 0) printf(", ");
+            printf("'%d'", modeldata->geosets[i]);
+          }
+          printf("\n");
         }
 
         printf(" - Textures : ");
@@ -154,6 +162,25 @@ class DBCParser {
           modeldata->equip[8] = data->content[DATA_GLOVES];
           modeldata->equip[9] = data->content[DATA_TABARD];
           modeldata->equip[10] = data->content[DATA_CAPE];
+
+          // Load hair style geosets.
+          int hairKeyCols[3] = {1, 2, 3};  //| Three keys: Race, sex and style type.
+          int haitKeyVals[3] = {modeldata->race, modeldata->sex, modeldata->body[2]};
+          DBCEntry* hair = ReadDataFromDBC(_dbcHair, 3, hairKeyCols, haitKeyVals, 0, NULL);
+          if (hair != NULL) {
+            modeldata->geosets.push_back(hair->content[4]);
+            delete hair;
+          }
+
+
+          // Items in Schleife laden.
+          // Für jedes Item != 0, Modell und Geoset-IDs auslesen.
+
+
+          //TODO What about the other geosets?
+          // Face (?), armor, ...
+
+          // Load specific NPC textures.
           if (data->strings[0][0] != '\0') modeldata->textures.push_back(data->strings[0]);
         }
         else printf("[DBCParser] Error loading additional data (%d) for model %d!\n", dataID, id);
@@ -168,14 +195,28 @@ class DBCParser {
     }
 
 
+    /** Reads a single data row from a DBC file and returns it with its properties.
+    * @param filepath Path to the DBC file to load.
+    * @param key The key of the row to search for.
+    * @param resolveStr Number of strings to resolve (use '0' to disable).
+    * @param strPos Integer array with the column indices of the strings to resolve ('null', if none).
+    * @return The content of the data row (with the associated properties). */
+    DBCEntry* ReadDataFromDBC(const char* filepath, int key, int resolveStr, int* strPos) {
+      int cols[1] = {0};
+      int vals[1] = {key};
+      return ReadDataFromDBC(filepath, 1, cols, vals, resolveStr, strPos);
+    }
+
 
     /** Reads a single data row from a DBC file and returns it with its properties.
      * @param filepath Path to the DBC file to load. 
-     * @param key The key of the row to search for.
+     * @param keys The number of keys (array sizes).
+     * @param cols Key columns.
+     * @param vals Key values.
      * @param resolveStr Number of strings to resolve (use '0' to disable).
      * @param strPos Integer array with the column indices of the strings to resolve ('null', if none). 
      * @return The content of the data row (with the associated properties). */
-    DBCEntry* ReadDataFromDBC(const char* filepath, int key, int resolveStr, int* strPos) {
+    DBCEntry* ReadDataFromDBC(const char* filepath, int keys, int* cols, int* vals, int resolveStr, int* strPos) {
       DBCEntry* result = NULL;
 
       // Try to open filestream.
@@ -196,11 +237,20 @@ class DBCParser {
       if (dbcHeader.size / 4 != dbcHeader.columns) printf("Warning: Field size != 4!\n");
       DWORD* content = (DWORD*) calloc(dbcHeader.columns, sizeof(DWORD));
       bool found = false;
+      bool skip;
 
       // Loop over all entries until found.
       for (unsigned int i = 0; i < dbcHeader.rows; i ++) {
         fread(content, sizeof(DWORD), dbcHeader.columns, fp);
-        if (content[0] == key) {
+        skip = false;
+        for (int k = 0; k < keys; k ++) { 
+          if (content[cols[k]] != vals[k]) { // Compare current key values.
+            skip = true;                     // Skip on first mismatch.
+            continue;                        // Leave comparison loop.
+          }
+        }
+        // All values matched: Found!
+        if (!skip) {
           found = true;
           break;
         }
