@@ -17,7 +17,7 @@ ALU::ALU() :
   _world(World()),
   _camera(Camera()),
   _interface(UserInterface()),
-  _3dEngine(Engine("ALU-Testlauf", 640, 480, false, &_camera, &_interface, _world.GetEnvironment())),
+  _3dEngine(Engine("ALU-Testlauf", 800, 600, false, &_camera, &_interface, _world.GetEnvironment())),
   _listener(InputListener(_3dEngine.GetWindowHandle())) {
 
   // Add controller modules.
@@ -26,7 +26,8 @@ ALU::ALU() :
   _listener.AddControllerModule(new EngineController(&_3dEngine));
   
   // Initial camera position.
-  _camera.SetPosition(10, 13, 6, 205, -13);
+  _camera.SetPosition(11, 8.4f, 2, 250, -13);
+
 
   // Create some test agents.
   new TestAgent(&_world, _world.GetEnvironment(), Vector(2.0f, 2.0f, 0.5f));
@@ -37,14 +38,12 @@ ALU::ALU() :
   Object3D* obj = new Object3D();
   obj->Position = Vector(8, 3, 0.2f);
   obj->Model = new Model3D("M4/Tree01.m4");
-  obj->Model->ScaleModel(0.0015f);
   _world.GetEnvironment()->AddObject(obj);
 
   
   obj = new Object3D();
   obj->Position = Vector(1, 1.5f, 0.2f);
   obj->Model = new Model3D("M4/Tree03.m4");
-  obj->Model->ScaleModel(0.008f);
   obj->Heading.X = 25.0f;
   _world.GetEnvironment()->AddObject(obj);
 
@@ -52,7 +51,6 @@ ALU::ALU() :
   obj = new Object3D();
   obj->Position = Vector(0.8f, 8.8f, 0.2f);
   obj->Model = new Model3D("M4/Tree04.m4");
-  obj->Model->ScaleModel(0.003f);
   _world.GetEnvironment()->AddObject(obj);
 
 
@@ -60,23 +58,24 @@ ALU::ALU() :
   obj->Position = Vector(5, 6, 0.2f);
   obj->Heading.X = -25.0f;
   obj->Model = new Model3D("M4/Bear.m4");
-  obj->Model->ScaleModel(0.01f);
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
   obj->Position = Vector(1, 7.2f, 0.1f);
   obj->Model = new Model3D("M4/Timberwolf.m4");
-  obj->Model->ScaleModel(0.01f);
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
   obj->Position = Vector(1, 5.5f, 0.05f);
   obj->Model = new Model3D("M4/Stable.m4");
-  obj->Model->ScaleModel(0.007f);
   obj->Heading.X = 80.0f;
+  _world.GetEnvironment()->AddObject(obj);
 
+  obj = new Object3D();
+  obj->Position = Vector(7.5f, 7.5f, 0.05f);
+  obj->Model = new Model3D("test.m4");
   _world.GetEnvironment()->AddObject(obj);
 }
 

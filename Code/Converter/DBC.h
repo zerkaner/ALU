@@ -6,6 +6,8 @@
 #include <string.h>
 #include <vector>
 
+#include "M2Loader.h"
+
 
 namespace DBCFields {
   enum InfoDBC  { INFO_MODEL = 1, INFO_EXTRA = 3, INFO_TEX1 = 6, INFO_TEX2, INFO_TEX3 };
@@ -51,7 +53,8 @@ class DBCParser {
   public:
     
     DBCParser(int argc, char** argv) {
-      Test();
+      //Test();
+      M2Loader();
     }
 
 
