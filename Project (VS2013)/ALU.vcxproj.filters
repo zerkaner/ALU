@@ -230,5 +230,8 @@
     <ClInclude Include="..\Code\Converter\M2Loader.h">
       <Filter>Converter</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Agents\ModelTestAgent.h">
+      <Filter>Agents</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

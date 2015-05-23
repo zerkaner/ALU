@@ -8,6 +8,8 @@ namespace InputSymbols {
   enum MouseButton {LEFT=1, MIDDLE, RIGHT, MOUSE4, MOUSE5};
   enum Modifier    {NONE, CTRL, SHIFT, ALT};
   enum Key {   
+
+    // https://wiki.libsdl.org/SDLKeycodeLookup // SDL Keycode Lookup Table.
     KEY_0=48, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9,   // Numeric input.
 
     KEY_A=97, KEY_B, KEY_C, KEY_D, KEY_E, KEY_F, KEY_G, KEY_H, KEY_I, //| Default character input.
@@ -25,6 +27,6 @@ namespace InputSymbols {
     KEY_CTRL_L=1073742048, KEY_SHIFT_L, KEY_ALT_L,     // Modifier keys.
     KEY_WIN, KEY_CTRL_R, KEY_SHIFT_R, KEY_ALT_R,
 
-    KEY_TAB=9, KEY_ENTER=13, KEY_DELETE=127
+    KEY_TAB=9, KEY_ENTER=13, KEY_SPACE=32, KEY_DELETE=127
   };
 }

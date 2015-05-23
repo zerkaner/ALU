@@ -41,7 +41,7 @@ class M2Loader {
       
       // After successful conversion write model to disk.
       if (model != NULL) {
-        model->Echo();
+        model->Echo(true);
         model->WriteFile("test.m4");
         delete model;
       }
@@ -126,9 +126,58 @@ class M2Loader {
       }
 
 
+      // Set up model and set stream to right position. 
+      Model3D* model = new Model3D();            
+      fseek(fp, offSubmeshes, SEEK_SET);
+
+      short sVtx, sTri;   // Variables for 16-bit integer read-in (start of vertices / geometries).
+      int ptrVtx, ptrTri; // Pointer to the current offset (increased by above value after each iteration).
+
+      // Read all submeshes and build the geosets.
+      for (int i = 0; i < nrSubmeshes; i ++) {
+        Geoset* geoset = new Geoset();             // Create new geoset.
+        fread(&geoset->id, sizeof(int), 1, fp);    // Read geoset ID.
+        fread(&sVtx, sizeof(short), 1, fp);        // Start index of vertices.
+        fread(&geoset->nrV, sizeof(short), 1, fp); // Amount of vertices.
+        fread(&sTri, sizeof(short), 1, fp);        // Geometry start index.
+        fread(&geoset->nrG, sizeof(short), 1, fp); // Number of geometries (WARNING: reduce it by 3).
+        geoset->nrG /= 3;
+        geoset->nrN = geoset->nrV;  //| For every vertex exists also 
+        geoset->nrT = geoset->nrV;  //| a normal vector and a texel.
+
+        // Allocate memory for the arrays.
+        geoset->vertices   =   (Float3*) calloc(geoset->nrV, sizeof(Float3));
+        geoset->normals    =   (Float3*) calloc(geoset->nrN, sizeof(Float3));
+        geoset->texVects   =   (Float2*) calloc(geoset->nrT, sizeof(Float2));
+        geoset->geometries = (Geometry*) calloc(geoset->nrG, sizeof(Geometry));
+
+        // Copy vector arrays from the global lists to these local arrays.
+        memcpy(geoset->vertices,   &vertices[sVtx],     sizeof(Float3) * geoset->nrV);
+        memcpy(geoset->normals,    &normals[sVtx],      sizeof(Float3) * geoset->nrN);
+        memcpy(geoset->texVects,   &textures[sVtx],     sizeof(Float2) * geoset->nrT);      
+        memcpy(geoset->geometries, &geometries[sTri/3], sizeof(Geometry) * geoset->nrG);
+
+        // For the geometries, it gets now a little bit tricky. The global referencing doesn't work anymore!
+        for (int geom = 0; geom < geoset->nrG; geom ++) {
+          for (int cmp = 0; cmp < 3; cmp ++) {
+            geoset->geometries[geom].vIdx[cmp] -= sVtx;  //| Reduce all index
+            geoset->geometries[geom].nIdx[cmp] -= sVtx;  //| components by the
+            geoset->geometries[geom].tIdx[cmp] -= sVtx;  //| current vertex offset!
+          }       
+        }
+
+
+        fseek(fp, 36, SEEK_CUR);  // Skip the bones (until animation is integrated later). 
+        printf("[%d]: ID: %d, sVtx: %d, nrV: %d | sTri: %d, nrG: %d\n", i, geoset->id, sVtx, geoset->nrV, sTri, geoset->nrG);
+
+        geoset->textureID = -1;
+        model->Geosets.push_back(geoset);        // Write geoset to model.
+      }
+
+
       //TODO Submeshes, textures and all that stuff. Now, just a test!!
 
-      Model3D* model = new Model3D();
+      /*
       Geoset* geoset = new Geoset();
       model->Geosets.push_back(geoset);
       geoset->id = 0;
@@ -140,7 +189,7 @@ class M2Loader {
       geoset->normals = normals;
       geoset->texVects = textures;
       geoset->textureID = -1;
-
+      */
       printf(
         "***** %s *****\n"
         "- Vertices : %d @ %d\n"

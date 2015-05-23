@@ -1,5 +1,6 @@
-#include <Agents/TestAgent.h>   // DBG
-#include <Data/Object3D.h>      // DBG
+#include <Agents/TestAgent.h>     // DBG
+#include <Agents/ModelTestAgent.h>// DBG
+#include <Data/Object3D.h>        // DBG
 #include <Data/StatsInfo.h>
 #include <Data/Textures/ImageLoader.h>      // DBG
 #include <Environment/HeightmapTerrain.h>   // DBG
@@ -73,10 +74,8 @@ ALU::ALU() :
   obj->Heading.X = 80.0f;
   _world.GetEnvironment()->AddObject(obj);
 
-  obj = new Object3D();
-  obj->Position = Vector(7.5f, 7.5f, 0.05f);
-  obj->Model = new Model3D("test.m4");
-  _world.GetEnvironment()->AddObject(obj);
+  IControllerModule* agent = new ModelTestAgent(&_world, _world.GetEnvironment(), new Model3D("test.m4"), Vector(7.5f, 7.5f, 0.05f));
+  _listener.AddControllerModule(agent);
 }
 
 

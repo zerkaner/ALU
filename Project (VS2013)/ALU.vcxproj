@@ -32,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h" />
+    <ClInclude Include="..\Code\Agents\ModelTestAgent.h" />
     <ClInclude Include="..\Code\Agents\Perception\PerceptionUnit.h" />
     <ClInclude Include="..\Code\Agents\Perception\Sensor.h" />
     <ClInclude Include="..\Code\Agents\Reasoning\IAgentLogic.h" />
