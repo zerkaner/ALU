@@ -3,7 +3,7 @@
 #endif
 
 #include <Converter/Converter.h>
-#include <Converter/DBC.h>
+#include <Converter/DBCParser.h>
 #include <Execution/ALU.h>
 #include <stdio.h>
 
@@ -18,10 +18,7 @@ int main (int argc, char** argv) {
 
   // "--load": Start the MPQ-DBC-M2 parsing toolchain [work has just begun!].
   else if (argc > 1 && (strcmp(argv[1], "--load") == 0)) {
-    DBCParser(argc - 2, &argv[2]);
-    ALU* alu = new ALU(); //TODO Teststart.
-    alu->Start();
-    delete(alu);
+    DBCParser(argc - 2, &argv[2]); 
   }
 
   // Normal system start-up.

@@ -99,6 +99,12 @@
     <ClCompile Include="..\Code\Data\Textures\ImageLoader.cpp">
       <Filter>Data\Textures</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Converter\M2Loader.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\DBCParser.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h">
@@ -224,14 +230,14 @@
     <ClInclude Include="..\Code\Data\Textures\ImageLoader.h">
       <Filter>Data\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Converter\DBC.h">
-      <Filter>Converter</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Converter\M2Loader.h">
       <Filter>Converter</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Agents\ModelTestAgent.h">
       <Filter>Agents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\DBCParser.h">
+      <Filter>Converter</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

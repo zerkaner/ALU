@@ -17,7 +17,7 @@ class ModelTestAgent : public SpatialAgent, public IAgentLogic, public IControll
       RL = this;
       Data->Position = pos;
       Data->Model = model;
-      Data->Model->Geosets[0]->enabled = true;
+      //Data->Model->Geosets[0]->enabled = true;
       AddToEnvironment();
     }
 
@@ -43,13 +43,13 @@ class ModelTestAgent : public SpatialAgent, public IAgentLogic, public IControll
         case KEY_N: 
           geoset --;
           if (geoset < 0) geoset = Data->Model->Geosets.size() - 1;
-          printf("Switching to geoset %d\n", geoset);
+          printf("\nGeoset %d [%d].", geoset, Data->Model->Geosets[geoset]->id);
           break;        
         
         case KEY_M: 
           geoset ++;
           if (geoset == Data->Model->Geosets.size()) geoset = 0;
-          printf("Switching to geoset %d\n", geoset);
+          printf("\nGeoset %d [%d].", geoset, Data->Model->Geosets[geoset]->id);
           break;
       }
     }
