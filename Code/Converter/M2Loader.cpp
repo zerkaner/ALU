@@ -2,6 +2,7 @@
 #include <Converter/M2Loader.h>
 #include <Data/Primitives.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 Model3D* M2Loader::LoadM2(FILE* fp) {

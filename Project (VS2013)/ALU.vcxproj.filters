@@ -239,5 +239,8 @@
     <ClInclude Include="..\Code\Converter\DBCParser.h">
       <Filter>Converter</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Converter\MPQReader.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
