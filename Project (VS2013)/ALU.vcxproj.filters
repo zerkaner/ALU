@@ -105,6 +105,9 @@
     <ClCompile Include="..\Code\Converter\DBCParser.cpp">
       <Filter>Converter</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Converter\MPQReader.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h">

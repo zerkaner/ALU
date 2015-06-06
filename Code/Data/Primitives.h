@@ -4,8 +4,8 @@
 /** Type definitions. */
 typedef unsigned char  BYTE;      // 8 bit.
 typedef unsigned short WORD;      // 16 bit.
-typedef unsigned long DWORD;      // 32 bit.
-typedef unsigned long long QWORD; // 64 bit.
+typedef unsigned long DWORD;      // 32 bit [Langwort].
+typedef unsigned long long QWORD; // 64 bit [Quadwort].
 typedef unsigned int uint;
 
 
