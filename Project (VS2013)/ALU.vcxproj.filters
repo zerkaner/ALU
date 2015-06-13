@@ -43,6 +43,9 @@
     <Filter Include="Data\Textures">
       <UniqueIdentifier>{1df3deb3-a954-4782-89d9-9681c005de42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Compression">
+      <UniqueIdentifier>{bb0650bf-b71c-4dda-b44e-ed66d4bc0ccb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp">
@@ -107,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Converter\MPQReader.cpp">
       <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Compression\Archiver.cpp">
+      <Filter>Data\Compression</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +250,12 @@
     </ClInclude>
     <ClInclude Include="..\Code\Converter\MPQReader.h">
       <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Compression\Archiver.h">
+      <Filter>Data\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Compression\Miniz.h">
+      <Filter>Data\Compression</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

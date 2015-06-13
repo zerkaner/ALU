@@ -40,7 +40,9 @@ struct MPQArchive {
 class MPQReader {
 
   private:   
-    long _cryptTable[1280];   // Crypt table array.
+    long _cryptTable[1280];      // Crypt table array.
+    MPQArchive* _archive = NULL; // Link to the currently open archive.
+    FILE* _fp = NULL;            // Archive input file stream.
 
 
     /** Set up the encryption hash table. */
@@ -75,14 +77,50 @@ class MPQReader {
     MPQArchive* OpenArchive(FILE* fp);
 
 
-    void Test();
+    /** Reads a MPQ file sector and decompresses / decrypts the content, if needed. 
+     * @param destination Memory pointer where to store the content of this sector. 
+     * @param fp Input file stream (correctly positioned). 
+     * @param sectorSize Size of sector. Also used to determine if compression is applied (sector size < data size).
+     * @param dataSize Size of (decompressed) content. 
+     * @return Reading and decompression success indicator. */
+    bool ReadSector(void* destination, FILE* fp, int sectorSize, int dataSize);
+
+
+    /** Reads a file from a MPQ archive.
+     * @param fp File stream to use as input (set to the archive).
+     * @param archive Pointer to the MPQ archive to read.
+     * @param filename Name of the file to extract.
+     * @param filesize Pointer to a variable to store the file size in.
+     * @return The unified file data or 'NULL' on failure. */
+    BYTE* ReadFile(FILE* fp, MPQArchive* archive, char* filename, DWORD* filesize);
 
 
   public:
 
-    /** Instantiate a new reader. */
-    MPQReader() {
-      PrepareCryptTable();
-      Test();
-    }
+    /** Instantiate a new MPQ archive reader and keeps the connection open.
+     * @param archivePath Full path to the MPQ archive to open. */
+    MPQReader(const char* archivePath);
+
+
+    /** Destructor, calls Close() method. */
+    ~MPQReader();
+
+
+    /** Extracts a file from the archive.
+    * @param filename The name of the file to extract.
+    * @param filesize Pointer for file size storage [return value].
+    * @return The acquired file data or 'NULL', if file could not be read. */
+    BYTE* ExtractFile(char* filename, DWORD* filesize);
+
+
+    /** Closes an opened archive and releases reserved memory. */
+    void Close();
+
+
+    /** Opens an archive for a single file extraction. 
+     * @param archivePath Path to the archive to open.
+     * @param filename The name of the file to extract.
+     * @param filesize Pointer for file size storage [return value].
+     * @return The acquired file data or 'NULL', if file could not be read. */
+    static BYTE* ExtractFileFromArchive(const char* archivePath, char* filename, DWORD* filesize);
 };
