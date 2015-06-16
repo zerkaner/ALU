@@ -257,5 +257,8 @@
     <ClInclude Include="..\Code\Data\Compression\Miniz.h">
       <Filter>Data\Compression</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Converter\MemoryStream.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 #pragma once
+#include <Converter/MemoryStream.h>
 #include <Data/Primitives.h>
 #include <vector>
 
@@ -48,41 +49,46 @@ using namespace DBCFields;
 class DBCParser {
 
   private:
-    const char* _dbcInfo  = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CreatureDisplayInfo.dbc";
-    const char* _dbcItems = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/ItemDisplayInfo.dbc";
-    const char* _dbcExtra = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CreatureDisplayInfoExtra.dbc";
-    const char* _dbcModel = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CreatureModelData.dbc";
-    const char* _dbcHair  = "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CharHairGeosets.dbc";
-    const char* _dbcFacial= "C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/DBC/CharacterFacialHairStyles.dbc";
+    MemoryStream* _dbcInfo;   // CreatureDisplayInfo.dbc: Base model information with indices to the other tables.
+    MemoryStream* _dbcItems;  // ItemDisplayInfo.dbc: Item properties and additional models.
+    MemoryStream* _dbcExtra;  // CreatureDisplayInfoExtra.dbc: Contains model configurations for NPCs.
+    MemoryStream* _dbcModel;  // CreatureModelData.dbc: Main model data information.
+    MemoryStream* _dbcHair;   // CharHairGeosets.dbc: Tells us which geosets to use for the hair. 
+    MemoryStream* _dbcFacial; // CharacterFacialHairStyles.dbc: Information about beards, markings and jewelry.
 
-    void Test();
 
     /** Reads a single data row from a DBC file and returns it with its properties.
-     * @param filepath Path to the DBC file to load.
+     * @param dbc Memory stream to the DBC file to use.
      * @param key The key of the row to search for.
      * @param resolveStr Number of strings to resolve (use '0' to disable).
      * @param strPos Integer array with the column indices of the strings to resolve ('null', if none).
      * @return The content of the data row (with the associated properties). */
-    DBCEntry* ReadDataFromDBC(const char* filepath, int key, int resolveStr, int* strPos);
+    DBCEntry* ReadDataFromDBC(MemoryStream* dbc, int key, int resolveStr, int* strPos);
 
 
     /** Reads a single data row from a DBC file and returns it with its properties.
-     * @param filepath Path to the DBC file to load. 
+     * @param dbc Memory stream to the DBC file to use.
      * @param keys The number of keys (array sizes).
      * @param cols Key columns.
      * @param vals Key values.
      * @param resolveStr Number of strings to resolve (use '0' to disable).
      * @param strPos Integer array with the column indices of the strings to resolve ('null', if none). 
      * @return The content of the data row (with the associated properties). */
-    DBCEntry* ReadDataFromDBC(const char* filepath, int keys, int* cols, int* vals, int resolveStr, int* strPos);
+    DBCEntry* ReadDataFromDBC(MemoryStream* dbc, int keys, int* cols, int* vals, int resolveStr, int* strPos);
 
 
   public:
+
+    void Test();
     
     /** Create a new DBC parser.
      * @param argc Argument counter. 
      * @param argv String array with parameters. */
     DBCParser(int argc, char** argv);
+
+
+    /** Destructor call to free DBC memory. */
+    ~DBCParser();
 
 
     /** Retrieves data for a creature (NPC).
@@ -99,6 +105,4 @@ class DBCParser {
     /** Load item information for a model.
      * @param modeldata The model container with item IDs set. */
     void FetchItemInformationForModel(ModelData* modeldata);
-
-
 };

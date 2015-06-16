@@ -30,6 +30,7 @@ void MPQReader::Close() {
   if (_archive != NULL) {
     free(_archive->hashtable);
     free(_archive->blocktable);
+    free(_archive);
     _archive = NULL;
   }
   if (_fp != NULL) {

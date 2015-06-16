@@ -1,20 +1,60 @@
 #pragma warning(disable: 4996)
 #include <Converter/DBCParser.h>
 #include <Converter/M2Loader.h>
+#include <Converter/MPQReader.h>
 #include <Execution/ALU.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
+
+
 
 
 DBCParser::DBCParser(int argc, char** argv) {
-  Test();
+  
+  // Read DBC files from MPQ archive.
+  MPQReader reader = MPQReader("C:/Games/World of Warcraft 2.4.3 [8606]/Data/deDE/patch-deDE.mpq");
+  _dbcItems  = new MemoryStream(&reader, "DBFilesClient\\ItemDisplayInfo.dbc");
+  _dbcInfo   = new MemoryStream(&reader, "DBFilesClient\\CreatureDisplayInfo.dbc");
+  _dbcExtra  = new MemoryStream(&reader, "DBFilesClient\\CreatureDisplayInfoExtra.dbc");
+  _dbcModel  = new MemoryStream(&reader, "DBFilesClient\\CreatureModelData.dbc");
+  _dbcHair   = new MemoryStream(&reader, "DBFilesClient\\CharHairGeosets.dbc");
+  _dbcFacial = new MemoryStream(&reader, "DBFilesClient\\CharacterFacialHairStyles.dbc");
+  reader.Close();
+}
+
+
+
+DBCParser::~DBCParser() {
+  delete _dbcItems;
+  delete _dbcInfo;
+  delete _dbcExtra;
+  delete _dbcModel;
+  delete _dbcHair;
+  delete _dbcFacial;
+}
+
+
+
+char* StringReplace(char* c_str, const char* c_from, const char* c_to) {
+  std::string str(c_str);
+  std::string from(c_from);
+  std::string to(c_to);
+  size_t start_pos = str.find(from);
+  if (start_pos != std::string::npos) {
+    str.replace(start_pos, from.length(), to);
+  }
+  char* arr = (char*) malloc(str.size() + 1);
+  arr[str.size()] = '\0';
+  memcpy(arr, str.c_str(), str.size());
+  return arr;
 }
 
 
 
 void DBCParser::Test() {
-  ModelData* modeldata = FetchNPCInformation(13189);
+  ModelData* modeldata = FetchNPCInformation(7274);
 
   if (modeldata != NULL) {
     FetchItemInformationForModel(modeldata);   // Load item data.
@@ -68,13 +108,14 @@ void DBCParser::Test() {
     printf("\n");
 
 
-
-    // Acquire file pointer. (Now direct loading, later MPQ-access.)
-    FILE* fpM2 = fopen("C:/Users/Jan Dalski/Downloads/Warcraft 3 Mod-Tools/01 - M2-Exporte/NightelfFemale.m2", "rb");
-
+    const char* archive = "C:/Games/World of Warcraft 2.4.3 [8606]/Data/common.mpq";
+    DWORD filesize;
+    BYTE* data = MPQReader::ExtractFileFromArchive(archive, modeldata->model, &filesize);
+    MemoryStream modelstream = MemoryStream(data, filesize);
+    
     // Start model loader!
-    Model3D* model = M2Loader().LoadM2(fpM2);
-
+    Model3D* model = M2Loader().LoadM2(&modelstream);    
+    
     // Enable the needed geosets (maybe later we'll delete the rest).
     for (unsigned int i = 0; i < model->Geosets.size(); i ++) {
       for (unsigned int j = 0; j < modeldata->geosets.size(); j ++) {
@@ -85,11 +126,9 @@ void DBCParser::Test() {
       }
     }
 
-
     // Close model file stream.
     model->WriteFile("test.m4");
-    delete model;
-    fclose(fpM2);
+    delete model; 
   }
 
   else printf("Dat gibt's hier nicht!\n");
@@ -122,11 +161,14 @@ ModelData* DBCParser::FetchNPCInformation(int id) {
     }
   }
 
-  // Query model path.
+  // Query model path (and replace .mdx with actual ending .m2).
   int modelID = baseinfo->content[INFO_MODEL];
   int modelPathCol[1] = {MODEL_PATH};
   DBCEntry* model = ReadDataFromDBC(_dbcModel, modelID, 1, modelPathCol);
   modeldata->model = model->strings[0];
+  char* shortenedPath = StringReplace(modeldata->model, ".mdx", ".m2");
+  free(modeldata->model);
+  modeldata->model = shortenedPath;
 
 
   // Get additional data, such as geosets to load and equipment.
@@ -258,40 +300,35 @@ void DBCParser::FetchItemInformationForModel(ModelData* modeldata) {
 
 
 
-DBCEntry* DBCParser::ReadDataFromDBC(const char* filepath, int key, int resolveStr, int* strPos) {
+DBCEntry* DBCParser::ReadDataFromDBC(MemoryStream* dbc, int key, int resolveStr, int* strPos) {
   int cols[1] = {0};
   int vals[1] = {key};
-  return ReadDataFromDBC(filepath, 1, cols, vals, resolveStr, strPos);
+  return ReadDataFromDBC(dbc, 1, cols, vals, resolveStr, strPos);
 }
 
 
 
-DBCEntry* DBCParser::ReadDataFromDBC(const char* filepath, int keys, int* cols, int* vals, int resolveStr, int* strPos) {
+DBCEntry* DBCParser::ReadDataFromDBC(MemoryStream* dbc, int keys, int* cols, int* vals, int resolveStr, int* strPos) {
   DBCEntry* result = NULL;
-
-  // Try to open filestream.
-  FILE* fp = fopen(filepath, "rb");
-  if (fp == NULL) {
-    printf("\nError opening file '%s'!\n", filepath);
-    return NULL;
-  }
+  dbc->Seek(MemoryStream::START); // (Re)Set stream to beginning.
 
   // Stores file header information.
   struct DBCHeader { DWORD rows, columns, size, strSize; };
 
   DWORD dbuf;
   DBCHeader dbcHeader;
-  fread(&dbuf, sizeof(DWORD), 1, fp);           // Skip 'WDBC'.
-  fread(&dbcHeader, sizeof(DBCHeader), 1, fp);  // Read file header.
+  dbc->Read(&dbuf, sizeof(DWORD));          // Skip 'WDBC'.
+  dbc->Read(&dbcHeader, sizeof(DBCHeader)); // Read file header.
 
   if (dbcHeader.size / 4 != dbcHeader.columns) printf("Warning: Field size != 4!\n");
   DWORD* content = (DWORD*) calloc(dbcHeader.columns, sizeof(DWORD));
   bool found = false;
   bool skip;
 
+
   // Loop over all entries until found.
   for (unsigned int i = 0; i < dbcHeader.rows; i ++) {
-    fread(content, sizeof(DWORD), dbcHeader.columns, fp);
+    dbc->Read(content, sizeof(DWORD) * dbcHeader.columns);
     skip = false;
     for (int k = 0; k < keys; k ++) {
       if (content[cols[k]] != vals[k]) { // Compare current key values.
@@ -316,11 +353,12 @@ DBCEntry* DBCParser::ReadDataFromDBC(const char* filepath, int keys, int* cols, 
     // Resolve strings, if asked for. First of all, move the file pointer accordingly.
     if (resolveStr > 0) {
       long offset = 5 * sizeof(DWORD) + dbcHeader.rows * dbcHeader.size;
-      fseek(fp, offset, SEEK_SET);
+      dbc->Seek(MemoryStream::START, offset);
 
       // We need multiple iterations, so we copy the file content to speed things up.
       char* text = (char*) calloc(dbcHeader.strSize, sizeof(char));
-      fread(text, sizeof(char), dbcHeader.strSize, fp);
+      dbc->Read(text, sizeof(char) * dbcHeader.strSize-1);
+      text[dbcHeader.strSize - 1] = '\0'; // Set final terminator.
 
       // Setup string storage in result structure.
       result->strings = (char**) calloc(resolveStr, sizeof(char*));
@@ -339,6 +377,5 @@ DBCEntry* DBCParser::ReadDataFromDBC(const char* filepath, int keys, int* cols, 
     }
   }
 
-  fclose(fp);     // Close file pointer.
   return result;  // Return the results.
 }
