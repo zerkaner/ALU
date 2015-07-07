@@ -6,6 +6,7 @@
 #include <Converter/DBCParser.h>
 #include <Converter/MPQReader.h>
 #include <Execution/ALU.h>
+#include <Execution/test.h>
 #include <stdio.h>
 
 // [Converter test] --conv ..\Output\cali10.glf ..\Output\out.txt
@@ -19,7 +20,8 @@ int main (int argc, char** argv) {
 
   // "--load": Start the MPQ-DBC-M2 parsing toolchain [work has just begun!].
   else if (argc > 1 && (strcmp(argv[1], "--load") == 0)) {
-    DBCParser(argc - 2, &argv[2]).Test();
+    //TODO DBCParser(argc - 2, &argv[2]).Test();
+    test();
   }
 
   // Normal system start-up.

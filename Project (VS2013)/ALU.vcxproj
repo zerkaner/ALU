@@ -64,6 +64,7 @@
     <ClInclude Include="..\Code\Environment\Quadtree.h" />
     <ClInclude Include="..\Code\Execution\ALU.h" />
     <ClInclude Include="..\Code\Execution\Stopwatch.h" />
+    <ClInclude Include="..\Code\Execution\test.h" />
     <ClInclude Include="..\Code\Execution\World.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerFPS.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerRTS.h" />

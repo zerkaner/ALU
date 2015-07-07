@@ -260,5 +260,8 @@
     <ClInclude Include="..\Code\Converter\MemoryStream.h">
       <Filter>Converter</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Execution\test.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
