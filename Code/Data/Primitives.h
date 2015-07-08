@@ -88,6 +88,13 @@ struct Geoset {
 };
 
 
+/** The mesh holds a number of geosets and thereby constitutes the look of the model. */
+struct Mesh {
+  int nrElements;    // Number of elements.
+  Geoset** geosets;  // Geoset pointer array.
+};
+
+
 /** Material structure, containing a texture and various reflection settings. */
 struct Material {
   char  identifier[20];

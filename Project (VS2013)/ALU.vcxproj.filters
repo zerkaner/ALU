@@ -263,5 +263,11 @@
     <ClInclude Include="..\Code\Execution\test.h">
       <Filter>Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\Code\Data\AnimationManager.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\RenderModeController.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

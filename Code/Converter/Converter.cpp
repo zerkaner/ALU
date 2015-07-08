@@ -320,8 +320,8 @@ void Converter::ReadMDX() {
     fread(&fbuf,               sizeof(float), 1, _fp);  // Read 'Rarity' (whatever it is).
     fread(&dbuf,               sizeof(DWORD), 1, _fp);  // Read 'SyncPoint' (probably n.y.i). 
     fread(&seq->BoundsRadius,  sizeof(float), 1, _fp);  // Read bounds radius (broad phase CD).
-    fread(&seq->MinimumExtent, sizeof(Float3), 1, _fp); // Read 'Rarity' (whatever it is).
-    fread(&seq->MaximumExtent, sizeof(Float3), 1, _fp); // Read 'Rarity' (whatever it is).
+    fread(&seq->MinimumExtent, sizeof(Float3), 1, _fp); // Read minimum animation extent.
+    fread(&seq->MaximumExtent, sizeof(Float3), 1, _fp); // Read maximum animation extent.
     _model->Sequences.push_back(seq);
   }
 
@@ -555,15 +555,15 @@ void Converter::ReadMDX() {
   }
 
   
-  /* // DEBUG OUTPUT - KEEP UNTIL ALL WORKS PROPERLY
-  for (unsigned int i = 0; i < bones.size(); i ++) {
+  // DEBUG OUTPUT - KEEP UNTIL ALL WORKS PROPERLY
+  for (unsigned int i = 0; i < _model->Bones.size(); i ++) {
     printf("Bone [%d]: %s (%d - %d) T: %d | R: %d | S: %d \n", 
-           i, bones[i]->Name, bones[i]->ID, bones[i]->ParentID,
-           (bones[i]->Translation == 0)? 0 : bones[i]->Translation->Size, 
-           (bones[i]->Rotation == 0)? 0 : bones[i]->Rotation->Size, 
-           (bones[i]->Scaling == 0)? 0 : bones[i]->Scaling->Size);
+      i, _model->Bones[i]->Name, _model->Bones[i]->ID, _model->Bones[i]->ParentID,
+      (_model->Bones[i]->Translation == 0) ? 0 : _model->Bones[i]->Translation->Size,
+      (_model->Bones[i]->Rotation    == 0) ? 0 : _model->Bones[i]->Rotation->Size,
+      (_model->Bones[i]->Scaling     == 0) ? 0 : _model->Bones[i]->Scaling->Size);
   }
-  */
+  
   
 
   // Print parser results.

@@ -8,14 +8,7 @@
 void GLDrawer::Draw(Object3D* obj) {
 
   // Instant skip, if no model is assigned or it is disabled.
-  if (obj->Model == NULL || obj->Model->RenderingMode == Model3D::OFF) return;
-
-  // Temporary variables for easier access.
-  int size = obj->Model->Geosets.size();
-  Model3D* mdl = obj->Model;
-  Geoset* geoset;
-  Geometry* tri;
-
+  if (obj->Model == NULL || obj->Model->DisplayMode == Model3D::OFF) return;
 
   //TODO Move lighting somewhere else. Maybe as a Engine.Add() function. 
   glEnable (GL_LIGHT0);
@@ -28,7 +21,6 @@ void GLDrawer::Draw(Object3D* obj) {
   glLightfv (GL_LIGHT0, GL_AMBIENT, ambientLight);    // Set ambient light.
   glLightfv (GL_LIGHT0, GL_SPECULAR, specularLight);  // Set specular light. 
 
-
   glPushMatrix();    // Use designated matrix for object rendering.
   
   // Displace and rotate model based on position and orientation vector.
@@ -36,14 +28,21 @@ void GLDrawer::Draw(Object3D* obj) {
   glRotatef(obj->Heading.X, 0.0f, 0.0f, -1.0f);   // Rotate on z [height]-Axis (set yaw).       
   glRotatef(obj->Heading.Y, 1.0f, 0.0f, 0.0f);    // Rotate on x-Axis (set pitch).  
   
+  // Temporary variables for easier access.
+  Model3D* mdl = obj->Model;
+  Mesh* mesh = mdl->GetMesh();
+  Geoset* geoset;
+  Geometry* tri;
+
 
   // Draw on selected rendering mode.  
-  switch (mdl->RenderingMode) {
+  switch (mdl->DisplayMode) {
        
     case Model3D::POINTS: {  // Output point cloud.
       glBegin(GL_POINTS);
-      for (int i = 0; i < size; i ++) {
-        geoset = mdl->Geosets[i];
+      for (int i = 0; i < mesh->nrElements; i ++) {
+        geoset = mesh->geosets[i];
+        if (!geoset->enabled) continue;
         for (int v = 0; v < geoset->nrV; v ++) {
           glVertex3f(
             geoset->vertices[v].X, 
@@ -57,8 +56,9 @@ void GLDrawer::Draw(Object3D* obj) {
     }
         
     case Model3D::MESH: {  // Draw a triangle mesh. 
-      for (int g, t, i = 0; i < size; i ++) {
-        geoset = mdl->Geosets[i];
+      for (int g, t, i = 0; i < mesh->nrElements; i ++) {
+        geoset = mesh->geosets[i];
+        if (!geoset->enabled) continue;
         for (g = 0; g < geoset->nrG; g ++) {
           glBegin(GL_LINE_LOOP);
           for (t = 0; t < 3; t ++) {
@@ -77,9 +77,8 @@ void GLDrawer::Draw(Object3D* obj) {
         
     case Model3D::DIRECT: {  // Direct CPU rendering.
       glEnable(GL_LIGHTING);
-
-      for (int g, t, i = 0; i < size; i ++) {
-        geoset = mdl->Geosets[i];
+      for (int g, t, i = 0; i < mesh->nrElements; i ++) {
+        geoset = mesh->geosets[i];
         if (!geoset->enabled) continue; 
 
         // Load and set texture, if available.

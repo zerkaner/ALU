@@ -48,6 +48,7 @@
     <ClInclude Include="..\Code\Converter\M2Loader.h" />
     <ClInclude Include="..\Code\Converter\MemoryStream.h" />
     <ClInclude Include="..\Code\Converter\MPQReader.h" />
+    <ClInclude Include="..\Code\Data\AnimationManager.h" />
     <ClInclude Include="..\Code\Data\Compression\Archiver.h" />
     <ClInclude Include="..\Code\Data\Compression\Miniz.h" />
     <ClInclude Include="..\Code\Data\Model3D.h" />
@@ -70,6 +71,7 @@
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerRTS.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\EngineController.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\ExecutionController.h" />
+    <ClInclude Include="..\Code\Input\ControllerModules\RenderModeController.h" />
     <ClInclude Include="..\Code\Input\IControllerModule.h" />
     <ClInclude Include="..\Code\Input\InputListener.h" />
     <ClInclude Include="..\Code\Input\InputSymbols.h" />

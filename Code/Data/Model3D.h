@@ -3,7 +3,9 @@
 struct Bone;
 struct Geoset;
 struct Material;
+struct Mesh;
 struct Sequence;
+class AnimationManager;
 class Texture;
 
 
@@ -15,12 +17,14 @@ class Model3D {
     /** Clears all current geosets and textures (for deletion or model reload). */
     void ClearModel();
 
+
   public:
 
     /** An enumeration of available rendering modes. */
     enum RenderingMode {OFF, POINTS, MESH, DIRECT, VBO};
 
-    RenderingMode RenderingMode;      // Current rendering mode.
+    AnimationManager* AnimManager;    // Model animation calculator.    
+    RenderingMode DisplayMode;        // Current rendering mode.
     std::vector<Geoset*> Geosets;     // List with all geosets.
     Material* Materials;              // Material pointer.
     std::vector<Texture*> Textures;   // Model texture storage.
@@ -64,7 +68,12 @@ class Model3D {
     /** (Re-)Calculate surface normals. */
     void CalculateNormals();
 
+
+    /** Returns the current mesh of this model.
+     * @return Model representation with animations taken into account. */
+    Mesh* GetMesh();
     
+
     /** Outputs the model properties to console or text file. 
      * @param fileOutput If set to 'true', detailed output will be written to a text file.
      * @param filename Name of the output file [default: output.txt]. */

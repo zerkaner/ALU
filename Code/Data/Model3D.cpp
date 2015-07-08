@@ -1,5 +1,6 @@
 #pragma warning(disable: 4996) // Skip MSVC warnings.
 #include "Model3D.h"
+#include "AnimationManager.h"
 #include "Primitives.h"
 #include "Textures/Texture.h"
 #include <cmath>
@@ -14,7 +15,7 @@ Model3D::Model3D() {
 
 Model3D::Model3D(const char* filepath) {
   LoadFile(filepath);
-  RenderingMode = Model3D::DIRECT;
+  DisplayMode = Model3D::DIRECT;
 }
 
 
@@ -42,6 +43,13 @@ void Model3D::ClearModel() {
     delete Textures[i];
   }
   Textures.clear();
+}
+
+
+
+Mesh* Model3D::GetMesh() {
+  if (AnimManager == NULL) AnimManager = new AnimationManager(this);
+  return AnimManager->AdvanceAnimation();
 }
 
 
@@ -138,6 +146,10 @@ void Model3D::LoadFile(const char* filepath) {
   // Close file stream and quit.
   fclose(fp);
   printf("[OK]\n");
+
+
+  // Set up the animation manager.
+  AnimManager = new AnimationManager(this);
 }
 
 

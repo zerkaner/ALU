@@ -10,6 +10,7 @@
 #include <Input/ControllerModules/CameraControllerRTS.h>  // DBG
 #include <Input/ControllerModules/EngineController.h>
 #include <Input/ControllerModules/ExecutionController.h>
+#include <Input/ControllerModules/RenderModeController.h>
 
 
 /** Create a new runtime. */
@@ -25,6 +26,7 @@ ALU::ALU() :
   _listener.AddControllerModule(new ExecutionController(this));
   _listener.AddControllerModule(new CameraControllerRTS(&_camera, &_listener));  
   _listener.AddControllerModule(new EngineController(&_3dEngine));
+  _listener.AddControllerModule(new RenderModeController(&(_world.GetEnvironment()->Objects.Objects)));
   
   // Initial camera position.
   _camera.SetPosition(11, 8.4f, 2, 250, -13);
@@ -34,7 +36,6 @@ ALU::ALU() :
   new TestAgent(&_world, _world.GetEnvironment(), Vector(2.0f, 2.0f, 0.5f));
   new TestAgent(&_world, _world.GetEnvironment(), Vector(4.0f, 1.0f, 0.5f));
   _world.GetEnvironment()->AddObject(new HeightmapTerrain("Other/Heightfield.raw"));
-
 
   Object3D* obj = new Object3D();
   obj->Position = Vector(8, 3, 0.2f);
@@ -47,7 +48,6 @@ ALU::ALU() :
   obj->Model = new Model3D("M4/Tree03.m4");
   obj->Heading.X = 25.0f;
   _world.GetEnvironment()->AddObject(obj);
-
 
   obj = new Object3D();
   obj->Position = Vector(0.8f, 8.8f, 0.2f);
@@ -74,7 +74,7 @@ ALU::ALU() :
   obj->Heading.X = 80.0f;
   _world.GetEnvironment()->AddObject(obj);
 
-  IControllerModule* agent = new ModelTestAgent(&_world, _world.GetEnvironment(), new Model3D("test.m4"), Vector(7.5f, 7.5f, 0.05f));
+  IControllerModule* agent = new ModelTestAgent(&_world, _world.GetEnvironment(), new Model3D("M4/Timberwolf.m4"), Vector(7.5f, 7.5f, 0.05f));
   _listener.AddControllerModule(agent);
 }
 

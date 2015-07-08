@@ -114,7 +114,7 @@ class HeightmapTerrain : public Object3D {
       Model->Textures.push_back(ImageLoader::LoadTexture("Other/Terrain.jpg"));
       Model->Geosets[0]->textureID = 0;
       Model->CalculateNormals();
-      Model->RenderingMode = Model3D::DIRECT;
+      Model->DisplayMode = Model3D::DIRECT;
       Model->ScaleModel(0.04f);
     }
 };
