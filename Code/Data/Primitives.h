@@ -125,6 +125,7 @@ struct Bone {
   char Name[80];
   int ID;
   int ParentID;
+  int GeosetID;
   AnimSet* Translation = 0;
   AnimSet* Rotation    = 0;
   AnimSet* Scaling     = 0;
@@ -140,4 +141,39 @@ struct Sequence {
   float BoundsRadius;
   Float3 MinimumExtent;
   Float3 MaximumExtent;
+};
+
+
+
+
+/** Bone element. A bone hierarchy is used to express a model's skeleton. */
+struct Bone_t {
+  int ID;            // Sequential bone identifier to access transformation arrays.  
+  char* Name;        // Bone name, maybe useful for text-based storage.
+  Bone_t* Parent;    // Parent bone.
+  Bone_t** Children; // Child bones following in the hierarchy below this one.
+  long* VertexIdx;   // Array of vertices (indices) that are associated to this bone.
+  uint NrChildren;   // Number of child bones.
+  uint NrVertices;   // Number of vertex indices.
+  //TODO Maybe min/max extents and bone position?
+};
+
+
+/** Transformation specification. Defines modifications to apply to a bone and its subnodes. */
+struct Transformation {
+  uint Frame;          // The frame this transformation belongs to. 
+  Bone_t* Bone;        // Parent bone. 
+  Float3 Translation;  //| Transformation
+  Float4 Rotation;     //| directives to
+  Float3 Scaling;      //| apply to bone.
+  //TODO Flags to signalize used/unused directives.
+};
+
+
+/** Animation structure. Consists of a number of transformation rules to apply. */
+struct Animation {
+  char* Name;                       // Animation identifier.
+  uint FrameCount;                  // Length of animation (number of frames). 
+  int* NrTransformations;           // Number of transformations per bone.
+  Transformation** Transformations; // [Bone][Transformation] double array pointer.
 };

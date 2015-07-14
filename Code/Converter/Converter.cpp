@@ -563,8 +563,7 @@ void Converter::ReadMDX() {
       (_model->Bones[i]->Rotation    == 0) ? 0 : _model->Bones[i]->Rotation->Size,
       (_model->Bones[i]->Scaling     == 0) ? 0 : _model->Bones[i]->Scaling->Size);
   }
-  
-  
+
 
   // Print parser results.
   printf("Parser results:  \n"
@@ -578,6 +577,81 @@ void Converter::ReadMDX() {
          " - Geometries: %d\n", 
            _model->Geosets.size(), _model->Textures.size(), _model->Sequences.size(),
            _model->Bones.size(), totalV, totalN, totalT, totalG);
+
+
+  printf("[DBG] Creating bone hierarchy:\n");
+  
+
+  // Some pointer wraps to keep code below context-independent!
+  // Later, these global structures shall be replaced with local ones.
+  std::vector<Bone*> bones = _model->Bones;
+  std::vector<Sequence*> sequences = _model->Sequences;
+
+
+  Bone_t* skeleton = (Bone_t*) calloc(bones.size(), sizeof(Bone_t));
+  int nrBones = bones.size();
+
+  // First run: Set base data and determine child node counters.
+  for (int i = 0; i < nrBones; i ++) {
+    skeleton[i].ID = bones[i]->ID;                         // Set the bone ID.
+    skeleton[i].Name = bones[i]->Name;                     // Set the name.
+    if (bones[i]->ParentID != -1) {                        // If a parent node exists ...
+      skeleton[i].Parent = &skeleton[bones[i]->ParentID];  // - set link to parent node
+      skeleton[bones[i]->ParentID].NrChildren ++;          // - and increase the parent's child count.
+    }
+    else skeleton[i].Parent = NULL;
+  }
+
+  // Second run: Allocate memory for all nodes with children.
+  int* tmpSet = (int*) calloc(nrBones, sizeof(int));
+  for (int i = 0; i < nrBones; i ++) {
+    if (skeleton[i].NrChildren > 0) {
+      skeleton[i].Children = (Bone_t**) calloc(skeleton[i].NrChildren, sizeof(Bone_t*));
+    }
+  }
+
+  // Third run: Set the child nodes.
+  for (int i = 0; i < nrBones; i ++) {
+    if (skeleton[i].Parent != NULL) {
+      skeleton[i].Parent->Children[tmpSet[bones[i]->ParentID]] = &skeleton[i];
+      tmpSet[bones[i]->ParentID] ++;  // Increase array index (to write the next value).
+    }
+  }
+
+  //TODO Vertex group assignments!
+  //TODO Local sequentation!
+  //TODO Animation frames!
+  // <-----
+  Animation* animations = (Animation*) calloc(sequences.size(), sizeof(Animation));
+  int nrAnimations = sequences.size();
+  for (int i = 0; i < nrAnimations; i ++) {
+    animations[i].Name = sequences[i]->Name;
+    //sequences[i]->IntervalStart, sequences[i]->IntervalEnd);
+  }
+
+
+
+  // Debug output. Echo all nodes and childs to the console (later, a file).
+  for (int i = 0; i < nrBones; i ++) {
+    printf("Node %02d ('%s'), parent: '%s', children (%d)", 
+      skeleton[i].ID, 
+      skeleton[i].Name, 
+      (skeleton[i].Parent != NULL)? skeleton[i].Parent->Name : "",
+      skeleton[i].NrChildren
+    );
+    if (skeleton[i].NrChildren > 0) {
+      printf(": '%s'", skeleton[i].Children[0]->Name);
+      for (unsigned int j = 1; j < skeleton[i].NrChildren; j ++) {
+        printf(", '%s'", skeleton[i].Children[j]->Name);
+      }
+    }
+    printf("\n");
+  }
+
+  for (int i = 0; i < nrAnimations; i ++) {
+    printf("Animation %02d ('%s')", i, animations[i].Name);
+    printf("\n");
+  }
 }
 
 
