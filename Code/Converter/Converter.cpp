@@ -554,7 +554,7 @@ void Converter::ReadMDX() {
     _model->Bones.push_back(bone);
   }
 
-  
+  /*
   // DEBUG OUTPUT - KEEP UNTIL ALL WORKS PROPERLY
   for (unsigned int i = 0; i < _model->Bones.size(); i ++) {
     printf("Bone [%d]: %s (%d - %d) T: %d | R: %d | S: %d \n", 
@@ -563,7 +563,7 @@ void Converter::ReadMDX() {
       (_model->Bones[i]->Rotation    == 0) ? 0 : _model->Bones[i]->Rotation->Size,
       (_model->Bones[i]->Scaling     == 0) ? 0 : _model->Bones[i]->Scaling->Size);
   }
-
+  */
 
   // Print parser results.
   printf("Parser results:  \n"
@@ -626,6 +626,30 @@ void Converter::ReadMDX() {
   int nrAnimations = sequences.size();
   for (int i = 0; i < nrAnimations; i ++) {
     animations[i].Name = sequences[i]->Name;
+    animations[i].FrameCount = sequences[i]->IntervalEnd - sequences[i]->IntervalStart + 1;
+
+    // Calculate the number of transformation directives per bone.
+    for (int j = 0; j < nrBones; j ++) {
+      int counter = 0;
+      
+      AnimSet* set = bones[j]->Translation;
+      if (set != NULL) {
+        for (int k = 0; k < set->Size; k ++) {
+          if (set->Time[k] >= sequences[i]->IntervalStart && set->Time[k] <= sequences[i]->IntervalEnd) {
+            counter ++;
+          }
+        }
+      }
+
+
+
+
+
+      printf("[%s][%s]: %d TDs found.\n", animations[i].Name, skeleton[j].Name, counter);
+    }
+
+
+
     //sequences[i]->IntervalStart, sequences[i]->IntervalEnd);
   }
 
@@ -649,7 +673,7 @@ void Converter::ReadMDX() {
   }
 
   for (int i = 0; i < nrAnimations; i ++) {
-    printf("Animation %02d ('%s')", i, animations[i].Name);
+    printf("Animation '%-22s': %5d frames.", animations[i].Name, animations[i].FrameCount);
     printf("\n");
   }
 }
