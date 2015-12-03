@@ -1,5 +1,6 @@
-#pragma warning(disable: 4996)
+﻿#pragma warning(disable: 4996)
 #include <Converter/Converter.h>
+#include <Converter/Converter2.h>
 #include <Data/Model3D.h>
 #include <Data/Primitives.h>
 #include <Data/Textures/Texture.h>
@@ -67,13 +68,13 @@ void Converter::StartConversion (const char* filename) {
   fseek(_fp, 0L, SEEK_END);
   unsigned long bytes = ftell(_fp);
   fseek(_fp, 0L, SEEK_SET);
-  printf("\nOpening file '%s' [%lu bytes].\n", filename, bytes);
+  //TODO printf("\nOpening file '%s' [%lu bytes].\n", filename, bytes);
 
 
   // Execute corresponding converter function.
   switch (fileformat) {
     case GLF: ReadGLF();  break;
-    case OBJ: ReadOBJ();  break;
+    case OBJ: /*ReadOBJ();*/ Converter2().ConvertObj(filename); return; //TODO ← Hier eingehängt!!
     case MDX: ReadMDX();  break;
     default: printf("Sorry, converter module is not implemented yet!\n");
   }

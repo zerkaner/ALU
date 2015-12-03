@@ -14,6 +14,8 @@
     <ClCompile Include="..\Code\Agents\Agent.cpp" />
     <ClCompile Include="..\Code\Converter\Converter.cpp" />
     <ClCompile Include="..\Code\Converter\DBCParser.cpp" />
+    <ClCompile Include="..\Code\Converter\Export_JSON.cpp" />
+    <ClCompile Include="..\Code\Converter\Import_OBJ.cpp" />
     <ClCompile Include="..\Code\Converter\M2Loader.cpp" />
     <ClCompile Include="..\Code\Converter\MPQReader.cpp" />
     <ClCompile Include="..\Code\Data\Compression\Archiver.cpp" />
@@ -44,6 +46,7 @@
     <ClInclude Include="..\Code\Agents\SpatialAgent.h" />
     <ClInclude Include="..\Code\Agents\TestAgent.h" />
     <ClInclude Include="..\Code\Converter\Converter.h" />
+    <ClInclude Include="..\Code\Converter\Converter2.h" />
     <ClInclude Include="..\Code\Converter\DBCParser.h" />
     <ClInclude Include="..\Code\Converter\M2Loader.h" />
     <ClInclude Include="..\Code\Converter\MemoryStream.h" />
