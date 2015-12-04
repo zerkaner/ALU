@@ -1,36 +1,10 @@
 #pragma once
 #pragma warning(disable: 4996)
 #include <Data/Primitives.h>
+#include <Execution/ALU.h>
 #include <stdio.h>
 #include <vector>
 using namespace std;
-
-
-struct Submesh2 {
-  DWORD IndexOffset;
-  DWORD IndexLength;
-  DWORD BoneOffset;
-  DWORD BoneCount;
-};
-struct Mesh2 {
-  char ID[32];
-  char Texture[80];
-  vector<Submesh2> Submeshes;
-};
-struct Bone2 {};
-struct Animation2 {};
-struct Model2 {
-  char Name[80];
-  int Version;
-  vector<Float3> Vertices;
-  vector<Float3> Normals;
-  vector<Float2> UVs;
-  vector<DWORD> Indices;   // uInt16.
-  vector<Mesh2> Meshes;
-  vector<Bone2> Bones;
-  vector<Animation2> Animations;
-};
-
 
 
 /** The second-generation model converter. */
@@ -74,6 +48,14 @@ class Converter2 {
 
       // Close input file stream after conversion.
       fclose(fp);
+
+
+
+      // Start the runtime environment and enter main loop.
+      ALU* alu = new ALU();
+      alu->TestConvertedModel(model);
+      alu->Start();
+      delete(alu);
     }
 
 

@@ -32,4 +32,8 @@ class ALU {
 
     /** Stops the execution. */
     void Stop();
+
+    /** Inserts a in-memory model from an import
+     * @param model The model to test. */
+    void TestConvertedModel(Model2* model);
 };

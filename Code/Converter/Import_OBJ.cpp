@@ -13,9 +13,9 @@ int startsWith(const char* string, const char* prefix) {
 
 /** Stores vertex, normal and texture indices for a face (.obj has no common indices). */
 struct UnevenTriangle {
-  int vIdx[3];  // The three vertices ...
-  int nIdx[3];  // ... normal vectors ...
-  int tIdx[3];  // ... and texture vectors to use.
+  DWORD vIdx[3];  // The three vertices ...
+  DWORD nIdx[3];  // ... normal vectors ...
+  DWORD tIdx[3];  // ... and texture vectors to use.
 };
 
 
@@ -32,7 +32,7 @@ void AlignIndices(Model2* model, vector<UnevenTriangle>* faces);
 Model2* Converter2::ReadObj(FILE* fp) {
   char buffer[256];   // Input buffer for file read-in.
   float x, y, z;      // Float input buffers.
-  int i1, i2, i3;     // Index input buffers.
+  DWORD i1, i2, i3;   // Index input buffers.
 
   Model2* model = new Model2();   // Create model structure.
 
@@ -40,8 +40,8 @@ Model2* Converter2::ReadObj(FILE* fp) {
   // to align them before they can be written into the model structure.
   vector<UnevenTriangle> triangles;
   Mesh2* curMesh = NULL;  // Currently selected mesh.
-  int indicesRead = 0;    // Number of indices that belong to the current mesh.
-  int indicesOffset = 0;  // Position of current mesh's first index in total array.  
+  DWORD indicesRead = 0;    // Number of indices that belong to the current mesh.
+  DWORD indicesOffset = 0;  // Position of current mesh's first index in total array.  
 
   // Main read-in loop. Runs over the entire file and evaluates the read line.
   while (fgets(buffer, 256, fp) != NULL) {
@@ -66,32 +66,32 @@ Model2* Converter2::ReadObj(FILE* fp) {
 
     // Faces definition: =>  f 287/323/324 288/324/325 309/345/346
     else if (startsWith(buffer, "f ")) {
-      UnevenTriangle triangle = UnevenTriangle();
+      UnevenTriangle* triangle = new UnevenTriangle();
 
       char* splitPtr = strtok(buffer, " ");   // Split of first segment.   
       for (int i = 0;  splitPtr != NULL;      // While there's something left.
         i ++, splitPtr = strtok(NULL, " ")) { // Advance counter and take next bit.
 
         // Dereference the vertices, normals and texture crap.
-        if (sscanf(splitPtr, "%d/%d/%d", &i1, &i2, &i3) == 3) {  // Vertex, normal and texel.
-          triangle.vIdx[i] = i1 - 1;  triangle.nIdx[i] = i2 - 1;  triangle.tIdx[i] = i3 - 1;
+        if (sscanf(splitPtr, "%d/%d/%d", &i1, &i2, &i3) == 3) {  // Vertex, texeland normal.
+          triangle->vIdx[i] = i1 - 1;  triangle->tIdx[i] = i2 - 1;  triangle->nIdx[i] = i3 - 1;
         }
 
         else if (sscanf(splitPtr, "%d//%d", &i1, &i2) == 2) {   // Vertex and normal.
-          triangle.vIdx[i] = i1 - 1;  triangle.nIdx[i] = i2 - 1;  triangle.tIdx[i] = 0;
+          triangle->vIdx[i] = i1 - 1;  triangle->nIdx[i] = i2 - 1;  triangle->tIdx[i] = 0;
         }
 
         else if (sscanf(splitPtr, "%d/%d", &i1, &i2) == 2) {    // Vertex and texel.
-          triangle.vIdx[i] = i1 - 1;  triangle.nIdx[i] = 0;  triangle.tIdx[i] = i2 - 1;
+          triangle->vIdx[i] = i1 - 1;  triangle->nIdx[i] = 0;  triangle->tIdx[i] = i2 - 1;
         }
 
         else if (sscanf(splitPtr, "%d", &i1) == 1) {           // Vertex only.
-          triangle.vIdx[i] = i1 - 1;  triangle.nIdx[i] = 0;  triangle.tIdx[i] = 0;
+          triangle->vIdx[i] = i1 - 1;  triangle->nIdx[i] = 0;  triangle->tIdx[i] = 0;
         }
 
         else i --;
       }
-      triangles.push_back(triangle);
+      triangles.push_back(*triangle);
       indicesRead += 3;
     }
 
@@ -113,7 +113,7 @@ Model2* Converter2::ReadObj(FILE* fp) {
       // Create the new mesh.
       curMesh = new Mesh2();
       strcpy(curMesh->ID, mtl);
-      strcpy(curMesh->Texture, "?"); //TODO Read the texture name from the MTLLIB.
+      strcpy(curMesh->Texture, ""); //TODO Read the texture name from the MTLLIB.
 
       // Increase index offset and reset current index counter.
       indicesOffset += indicesRead;

@@ -29,7 +29,7 @@ ALU::ALU() :
   _listener.AddControllerModule(new RenderModeController(&(_world.GetEnvironment()->Objects.Objects)));
   
   // Initial camera position.
-  _camera.SetPosition(11, 8.4f, 2, 250, -13);
+  _camera.SetPosition(12.0f, 9.6f, 2, 244, -13);
 
 
   // Create some test agents.
@@ -56,11 +56,10 @@ ALU::ALU() :
 
 
   obj = new Object3D();
-  obj->Position = Vector(5, 6, 0.2f);
-  obj->Heading.X = -25.0f;
+  obj->Position = Vector(1.4f, 5.5f, 0.2f);
   obj->Model = new Model3D("M4/Bear.m4");
   _world.GetEnvironment()->AddObject(obj);
-
+  
 
   obj = new Object3D();
   obj->Position = Vector(1, 7.2f, 0.1f);
@@ -74,8 +73,8 @@ ALU::ALU() :
   obj->Heading.X = 80.0f;
   _world.GetEnvironment()->AddObject(obj);
 
-  IControllerModule* agent = new ModelTestAgent(&_world, _world.GetEnvironment(), new Model3D("M4/Timberwolf.m4"), Vector(7.5f, 7.5f, 0.05f));
-  _listener.AddControllerModule(agent);
+  //IControllerModule* agent = new ModelTestAgent(&_world, _world.GetEnvironment(), new Model3D("M4/Timberwolf.m4"), Vector(7.5f, 7.5f, 0.05f));
+  //_listener.AddControllerModule(agent);
 }
 
 
@@ -103,4 +102,11 @@ void ALU::Start() {
 /** Stops the execution. */
 void ALU::Stop() {
   _run = false;
+}
+
+
+/** Inserts a in-memory model from an import
+* @param model The model to test. */
+void ALU::TestConvertedModel(Model2* model) {
+  _world.GetEnvironment()->AddModel2(model);
 }
