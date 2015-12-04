@@ -151,17 +151,17 @@ void GLDrawer::Draw(Model2* mdl) {
 
   // Displace and rotate model based on position and orientation vector.
   glTranslatef(7.5f, 7.5f, 0.05f);     // Translate object.     
-  glRotatef(M2Hdg, 0.0f, 0.0f, -1.0f);  // Rotate on z [height]-Axis (set yaw).       
+  glRotatef(M2Hdg, 0.0f, 0.0f, -1.0f); // Rotate on z [height]-Axis (set yaw).       
   glRotatef(0.0f, 1.0f, 0.0f, 0.0f);   // Rotate on x-Axis (set pitch).  
 
 
-  int drawMode = 0;
+  int drawMode = mdl->_renderMode;
 
 
   // Draw on selected rendering mode.  
   switch (drawMode) {
 
-    case 0: {  // Output point cloud.
+    case 1: {  // Output point cloud.
       glBegin(GL_POINTS);
       for (uint i = 0; i < mdl->Vertices.size(); i ++) {
         glVertex3f(mdl->Vertices[i].X, mdl->Vertices[i].Y, mdl->Vertices[i].Z);               
@@ -169,75 +169,57 @@ void GLDrawer::Draw(Model2* mdl) {
       glEnd();
       break;
     }
-                          /*
-    case Model3D::MESH: {  // Draw a triangle mesh. 
-      for (int g, t, i = 0; i < mesh->nrElements; i ++) {
-        geoset = mesh->geosets[i];
-        if (!geoset->enabled) continue;
-        for (g = 0; g < geoset->nrG; g ++) {
-          glBegin(GL_LINE_LOOP);
-          for (t = 0; t < 3; t ++) {
-            tri = &geoset->geometries[g];
-            glVertex3f(
-              geoset->vertices[tri->vIdx[t]].X,
-              geoset->vertices[tri->vIdx[t]].Y,
-              geoset->vertices[tri->vIdx[t]].Z
-              );
+                          
+    case 2: {  // Draw a triangle mesh. 
+      for (uint m = 0; m < mdl->Meshes.size(); m ++) {                // Mesh loop.
+        if (!mdl->Meshes[m]._enabled) continue;
+        for (uint s = 0; s < mdl->Meshes[m].Submeshes.size(); s ++) { // Submesh loop.
+          DWORD idxStart = mdl->Meshes[m].Submeshes[s].IndexOffset;
+          DWORD idxLength = mdl->Meshes[m].Submeshes[s].IndexLength;
+         
+          for (DWORD i = 0; i < idxLength; i += 3) {  // Triangle loop.
+            DWORD i0 = mdl->Indices[idxStart+i];
+            DWORD i1 = mdl->Indices[idxStart+i+1];
+            DWORD i2 = mdl->Indices[idxStart+i+2];
+
+            glBegin(GL_LINE_LOOP);
+            glVertex3f(mdl->Vertices[i0].X, mdl->Vertices[i0].Y, mdl->Vertices[i0].Z);
+            glVertex3f(mdl->Vertices[i1].X, mdl->Vertices[i1].Y, mdl->Vertices[i1].Z);
+            glVertex3f(mdl->Vertices[i2].X, mdl->Vertices[i2].Y, mdl->Vertices[i2].Z);
+            glEnd();
           }
-          glEnd();
         }
       }
       break;
     }
 
-    case Model3D::DIRECT: {  // Direct CPU rendering.
+    case 3: {  // Direct CPU rendering.
       glEnable(GL_LIGHTING);
-      for (int g, t, i = 0; i < mesh->nrElements; i ++) {
-        geoset = mesh->geosets[i];
-        if (!geoset->enabled) continue;
+      glBegin(GL_TRIANGLES);
+      for (uint m = 0; m < mdl->Meshes.size(); m ++) { // Mesh loop.
+        if (!mdl->Meshes[m]._enabled) continue;
 
         // Load and set texture, if available.
-        if (geoset->textureID != -1) {
-          glEnable(GL_TEXTURE_2D);
-          glBindTexture(GL_TEXTURE_2D, mdl->Textures[geoset->textureID]->ID());
-        }
-
-        glBegin(GL_TRIANGLES);
-        for (g = 0; g < geoset->nrG; g ++) {
-          for (t = 0; t < 3; t ++) {
-            tri = &geoset->geometries[g];
-            glTexCoord2f(
-              geoset->texVects[tri->tIdx[t]].X,
-              geoset->texVects[tri->tIdx[t]].Y
-              );
-            glNormal3f(
-              geoset->normals[tri->nIdx[t]].X,
-              geoset->normals[tri->nIdx[t]].Y,
-              geoset->normals[tri->nIdx[t]].Z
-              );
-            glVertex3f(
-              geoset->vertices[tri->vIdx[t]].X,
-              geoset->vertices[tri->vIdx[t]].Y,
-              geoset->vertices[tri->vIdx[t]].Z
-              );
+        //if (geoset->textureID != -1) {
+        //  glEnable(GL_TEXTURE_2D);
+        //  glBindTexture(GL_TEXTURE_2D, mdl->Textures[geoset->textureID]->ID());
+        //}        
+         
+        for (uint s = 0; s < mdl->Meshes[m].Submeshes.size(); s ++) { // Submesh loop.
+          DWORD idxStart = mdl->Meshes[m].Submeshes[s].IndexOffset;
+          DWORD idxLength = mdl->Meshes[m].Submeshes[s].IndexLength;
+          for (DWORD i = 0; i < idxLength; i ++) {  // Index loop.
+            DWORD idx = mdl->Indices[idxStart + i];
+            glTexCoord2f(mdl->UVs[idx].X, mdl->UVs[idx].Y);
+            glNormal3f(mdl->Normals[idx].X, mdl->Normals[idx].Y, mdl->Normals[idx].Z);
+            glVertex3f(mdl->Vertices[idx].X, mdl->Vertices[idx].Y, mdl->Vertices[idx].Z);
           }
         }
-        glEnd();
-        if (geoset->textureID != -1) glDisable(GL_TEXTURE_2D);
       }
-
-
+      glEnd();
       glDisable(GL_LIGHTING);
       break;
     }
-
-    case Model3D::VBO: {  // Draw model via vertex buffer objects on the GPU.
-      //TODO Not implemented yet!
-      break;
-    }
-                       */
-    // Illegal rendering mode.
-    default: break;
   }
 
 

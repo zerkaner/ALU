@@ -30,6 +30,8 @@ void AlignIndices(Model2* model, vector<UnevenTriangle>* faces);
  * @param fp Pointer to the opened file.
  * @return The imported and index-aligned model. */
 Model2* Converter2::ReadObj(FILE* fp) {
+  printf("OBJ converter loaded.\n");
+
   char buffer[256];   // Input buffer for file read-in.
   float x, y, z;      // Float input buffers.
   DWORD i1, i2, i3;   // Index input buffers.
@@ -105,8 +107,8 @@ Model2* Converter2::ReadObj(FILE* fp) {
         curMesh->Submeshes.push_back(Submesh2());
         curMesh->Submeshes[0].IndexOffset = indicesOffset;
         curMesh->Submeshes[0].IndexLength = indicesRead;
-        curMesh->Submeshes[0].BoneCount = 0;  //TODO We will take care
-        curMesh->Submeshes[0].BoneOffset = 0; // of these someday later!
+        curMesh->Submeshes[0].BoneCount = 0;  //TODO We will take care of these someday later!
+        curMesh->Submeshes[0].BoneOffset = 0;
         model->Meshes.push_back(*curMesh);
       }
 
@@ -132,8 +134,8 @@ Model2* Converter2::ReadObj(FILE* fp) {
   curMesh->Submeshes.push_back(Submesh2());
   curMesh->Submeshes[0].IndexOffset = indicesOffset;
   curMesh->Submeshes[0].IndexLength = indicesRead;
-  curMesh->Submeshes[0].BoneCount = 0;  //TODO We will take care
-  curMesh->Submeshes[0].BoneOffset = 0; // of these someday later!
+  curMesh->Submeshes[0].BoneCount = 0;  //TODO We will take care of these someday later!
+  curMesh->Submeshes[0].BoneOffset = 0;
   model->Meshes.push_back(*curMesh);
 
 
@@ -220,5 +222,7 @@ void AlignIndices(Model2* model, vector<UnevenTriangle>* faces) {
     model->UVs.push_back(vertexBuffer[i].texel);
   }
 
-  printf("[finished]\n");
+  printf("[finished]\n"
+         " - new V/N/T sizes: %d\n"
+         " - new index size : %d\n", nrElem, model->Indices.size());
 }

@@ -1,5 +1,5 @@
 #include <Agents/TestAgent.h>     // DBG
-#include <Agents/ModelTestAgent.h>// DBG
+#include <Agents/NewModelAgent.h> // DBG
 #include <Data/Object3D.h>        // DBG
 #include <Data/StatsInfo.h>
 #include <Data/Textures/ImageLoader.h>      // DBG
@@ -72,9 +72,6 @@ ALU::ALU() :
   obj->Model = new Model3D("M4/Stable.m4");
   obj->Heading.X = 80.0f;
   _world.GetEnvironment()->AddObject(obj);
-
-  //IControllerModule* agent = new ModelTestAgent(&_world, _world.GetEnvironment(), new Model3D("M4/Timberwolf.m4"), Vector(7.5f, 7.5f, 0.05f));
-  //_listener.AddControllerModule(agent);
 }
 
 
@@ -109,4 +106,7 @@ void ALU::Stop() {
 * @param model The model to test. */
 void ALU::TestConvertedModel(Model2* model) {
   _world.GetEnvironment()->AddModel2(model);
+  
+  IControllerModule* agent = new NewModelAgent(&_world, _world.GetEnvironment(), model);
+  _listener.AddControllerModule(agent);
 }

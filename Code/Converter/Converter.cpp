@@ -74,8 +74,8 @@ void Converter::StartConversion (const char* filename) {
   // Execute corresponding converter function.
   switch (fileformat) {
     case GLF: ReadGLF();  break;
-    case OBJ: /*ReadOBJ();*/ Converter2().ConvertObj(filename); return; //TODO ← Hier eingehängt!!
-    case MDX: ReadMDX();  break;
+    case OBJ: /*ReadOBJ();*/ Converter2().ConvertObj(filename, true); return; //TODO ← Hier eingehängt!!
+    case MDX: /*ReadMDX();*/ Converter2().ConvertObj(filename, false); return;
     default: printf("Sorry, converter module is not implemented yet!\n");
   }
 

@@ -15,6 +15,7 @@
     <ClCompile Include="..\Code\Converter\Converter.cpp" />
     <ClCompile Include="..\Code\Converter\DBCParser.cpp" />
     <ClCompile Include="..\Code\Converter\Export_JSON.cpp" />
+    <ClCompile Include="..\Code\Converter\Import_MDX.cpp" />
     <ClCompile Include="..\Code\Converter\Import_OBJ.cpp" />
     <ClCompile Include="..\Code\Converter\M2Loader.cpp" />
     <ClCompile Include="..\Code\Converter\MPQReader.cpp" />
@@ -39,6 +40,7 @@
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h" />
     <ClInclude Include="..\Code\Agents\ModelTestAgent.h" />
+    <ClInclude Include="..\Code\Agents\NewModelAgent.h" />
     <ClInclude Include="..\Code\Agents\Perception\PerceptionUnit.h" />
     <ClInclude Include="..\Code\Agents\Perception\Sensor.h" />
     <ClInclude Include="..\Code\Agents\Reasoning\IAgentLogic.h" />

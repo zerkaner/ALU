@@ -74,7 +74,7 @@ void Engine::SetResolution (int width, int height, bool fullscreen) {
   StatsInfo::WINDOW_Y = _height;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(40.0, (double) _width/_height, 1.0, 750.0),
+  gluPerspective(45.0, (double) _width/_height, 0.2, 750.0),
   glMatrixMode(GL_MODELVIEW);
 }
 

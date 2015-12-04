@@ -120,6 +120,9 @@
     <ClCompile Include="..\Code\Converter\Import_OBJ.cpp">
       <Filter>Converter</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Converter\Import_MDX.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h">
@@ -277,6 +280,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Converter\Converter2.h">
       <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\NewModelAgent.h">
+      <Filter>Agents</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
