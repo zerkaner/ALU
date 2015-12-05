@@ -20,6 +20,7 @@
     <ClCompile Include="..\Code\Converter\M2Loader.cpp" />
     <ClCompile Include="..\Code\Converter\MPQReader.cpp" />
     <ClCompile Include="..\Code\Data\Compression\Archiver.cpp" />
+    <ClCompile Include="..\Code\Data\Model.cpp" />
     <ClCompile Include="..\Code\Data\Model3D.cpp" />
     <ClCompile Include="..\Code\Data\StatsInfo.cpp" />
     <ClCompile Include="..\Code\Data\Textures\ImageLoader.cpp" />
@@ -56,6 +57,7 @@
     <ClInclude Include="..\Code\Data\AnimationManager.h" />
     <ClInclude Include="..\Code\Data\Compression\Archiver.h" />
     <ClInclude Include="..\Code\Data\Compression\Miniz.h" />
+    <ClInclude Include="..\Code\Data\Model.h" />
     <ClInclude Include="..\Code\Data\Model3D.h" />
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />

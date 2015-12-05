@@ -2,6 +2,7 @@
 #include "SpatialAgent.h"
 #include "Reasoning/IAgentLogic.h"
 #include "Reasoning/IInteraction.h"
+#include <Data/Model.h>
 #include <Data/Textures/Texture.h>
 #include <Input/IControllerModule.h>
 #include <stdio.h>
@@ -34,8 +35,8 @@ public:
   void KeyPressed(Key key, Modifier mod) {
     switch (key) {
       case KEY_SPACE:
-        _model->Meshes[_selectedMesh]._enabled = !_model->Meshes[_selectedMesh]._enabled; // Invert bit. 
-        printf(" %s ", (_model->Meshes[_selectedMesh]._enabled) ? "enabled" : "disabled");
+        _model->Meshes[_selectedMesh].Enabled = !_model->Meshes[_selectedMesh].Enabled; // Invert bit. 
+        printf(" %s ", (_model->Meshes[_selectedMesh].Enabled) ? "enabled" : "disabled");
         break;
 
       case KEY_N:

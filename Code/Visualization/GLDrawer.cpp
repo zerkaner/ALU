@@ -136,9 +136,9 @@ void GLDrawer::Draw(Model2* mdl) {
   //TODO Move lighting somewhere else. Maybe as a Engine.Add() function. 
   glEnable(GL_LIGHT0);
   float lightpos[] = {35.0f, 50.0f, 40.0f, 1.0f};    // Position. 4th is directional (0) or positional. 
-  float diffuseLight[] = {0.8f, 0.8f, 0.8f, 1.0f};   // Color for diffuse light (RGBA code).
-  float ambientLight[] = {0.2f, 0.2f, 0.2f, 1.0f};   // Color for ambient (environmental) light.
-  float specularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};   // Specular (reflected) light.
+  float diffuseLight[]  = {0.8f, 0.8f, 0.8f, 1.0f};  // Color for diffuse light (RGBA code).
+  float ambientLight[]  = {0.2f, 0.2f, 0.2f, 1.0f};  // Color for ambient (environmental) light.
+  float specularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};  // Specular (reflected) light.
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos);       // Set position of light source.
   glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);    // Set diffuse light.
   glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);    // Set ambient light.
@@ -171,24 +171,24 @@ void GLDrawer::Draw(Model2* mdl) {
     }
                           
     case 2: {  // Draw a triangle mesh. 
-      for (uint m = 0; m < mdl->Meshes.size(); m ++) {                // Mesh loop.
-        if (!mdl->Meshes[m]._enabled) continue;
-        for (uint s = 0; s < mdl->Meshes[m].Submeshes.size(); s ++) { // Submesh loop.
-          DWORD idxStart = mdl->Meshes[m].Submeshes[s].IndexOffset;
-          DWORD idxLength = mdl->Meshes[m].Submeshes[s].IndexLength;
-         
-          for (DWORD i = 0; i < idxLength; i += 3) {  // Triangle loop.
-            DWORD i0 = mdl->Indices[idxStart+i];
-            DWORD i1 = mdl->Indices[idxStart+i+1];
-            DWORD i2 = mdl->Indices[idxStart+i+2];
+      for (uint m = 0; m < mdl->Meshes.size(); m ++) { // Mesh loop.
+        if (!mdl->Meshes[m].Enabled) continue;
 
-            glBegin(GL_LINE_LOOP);
-            glVertex3f(mdl->Vertices[i0].X, mdl->Vertices[i0].Y, mdl->Vertices[i0].Z);
-            glVertex3f(mdl->Vertices[i1].X, mdl->Vertices[i1].Y, mdl->Vertices[i1].Z);
-            glVertex3f(mdl->Vertices[i2].X, mdl->Vertices[i2].Y, mdl->Vertices[i2].Z);
-            glEnd();
-          }
+        DWORD idxStart = mdl->Meshes[m].IndexOffset;
+        DWORD idxLength = mdl->Meshes[m].IndexLength;
+
+        for (DWORD i = 0; i < idxLength; i += 3) {  // Triangle loop.
+          DWORD i0 = mdl->Indices[idxStart + i];
+          DWORD i1 = mdl->Indices[idxStart + i + 1];
+          DWORD i2 = mdl->Indices[idxStart + i + 2];
+
+          glBegin(GL_LINE_LOOP);
+          glVertex3f(mdl->Vertices[i0].X, mdl->Vertices[i0].Y, mdl->Vertices[i0].Z);
+          glVertex3f(mdl->Vertices[i1].X, mdl->Vertices[i1].Y, mdl->Vertices[i1].Z);
+          glVertex3f(mdl->Vertices[i2].X, mdl->Vertices[i2].Y, mdl->Vertices[i2].Z);
+          glEnd();
         }
+
       }
       break;
     }
@@ -197,7 +197,7 @@ void GLDrawer::Draw(Model2* mdl) {
       glEnable(GL_LIGHTING);
       glBegin(GL_TRIANGLES);
       for (uint m = 0; m < mdl->Meshes.size(); m ++) { // Mesh loop.
-        if (!mdl->Meshes[m]._enabled) continue;
+        if (!mdl->Meshes[m].Enabled) continue;
 
         // Load and set texture, if available.
         //if (geoset->textureID != -1) {
@@ -205,16 +205,15 @@ void GLDrawer::Draw(Model2* mdl) {
         //  glBindTexture(GL_TEXTURE_2D, mdl->Textures[geoset->textureID]->ID());
         //}        
          
-        for (uint s = 0; s < mdl->Meshes[m].Submeshes.size(); s ++) { // Submesh loop.
-          DWORD idxStart = mdl->Meshes[m].Submeshes[s].IndexOffset;
-          DWORD idxLength = mdl->Meshes[m].Submeshes[s].IndexLength;
-          for (DWORD i = 0; i < idxLength; i ++) {  // Index loop.
-            DWORD idx = mdl->Indices[idxStart + i];
-            glTexCoord2f(mdl->UVs[idx].X, mdl->UVs[idx].Y);
-            glNormal3f(mdl->Normals[idx].X, mdl->Normals[idx].Y, mdl->Normals[idx].Z);
-            glVertex3f(mdl->Vertices[idx].X, mdl->Vertices[idx].Y, mdl->Vertices[idx].Z);
-          }
+        DWORD idxStart = mdl->Meshes[m].IndexOffset;
+        DWORD idxLength = mdl->Meshes[m].IndexLength;
+        for (DWORD i = 0; i < idxLength; i ++) {  // Index loop.
+          DWORD idx = mdl->Indices[idxStart + i];
+          glTexCoord2f(mdl->UVs[idx].X, mdl->UVs[idx].Y);
+          glNormal3f(mdl->Normals[idx].X, mdl->Normals[idx].Y, mdl->Normals[idx].Z);
+          glVertex3f(mdl->Vertices[idx].X, mdl->Vertices[idx].Y, mdl->Vertices[idx].Z);
         }
+
       }
       glEnd();
       glDisable(GL_LIGHTING);

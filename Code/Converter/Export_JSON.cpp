@@ -57,19 +57,13 @@ void Converter2::WriteJson(Model2* model, const char* savefile) {
   int nrMeshes = model->Meshes.size();
   for (int i = 0; i < nrMeshes; i ++) {
     fprintf(writer, "\n    {\n");
-    fprintf(writer, "      \"ID\":        \"%s\",\n", model->Meshes[i].ID);
-    fprintf(writer, "      \"Texture\":   \"%s\",\n", model->Meshes[i].Texture);
-    fprintf(writer, "      \"Submeshes\": [");
-    int nrSubmeshes = model->Meshes[i].Submeshes.size();
-    for (int j = 0; j < nrSubmeshes; j ++) {
-      fprintf(writer, "\n        {\n");
-      fprintf(writer, "          \"IndexOffset\": %d,\n", model->Meshes[i].Submeshes[j].IndexOffset);
-      fprintf(writer, "          \"IndexLength\": %d,\n", model->Meshes[i].Submeshes[j].IndexLength);
-      fprintf(writer, "          \"BoneOffset\":  %d,\n", model->Meshes[i].Submeshes[j].BoneOffset);
-      fprintf(writer, "          \"BoneCount\":   %d\n", model->Meshes[i].Submeshes[j].BoneCount);
-      fprintf(writer, "        }%s", (j < nrSubmeshes - 1) ? "," : "\n      ");
-    } fprintf(writer, "]\n");
-    fprintf(writer, "    }%s", (i < nrMeshes - 1) ? "," : "\n  ");
+    fprintf(writer, "      \"ID\":          \"%s\",\n", model->Meshes[i].ID);
+    fprintf(writer, "      \"Texture\":     \"%s\",\n", model->Meshes[i].Texture);
+    fprintf(writer, "      \"IndexOffset\": %d,\n", model->Meshes[i].IndexOffset);
+    fprintf(writer, "      \"IndexLength\": %d,\n", model->Meshes[i].IndexLength);
+    fprintf(writer, "      \"BoneOffset\":  %d,\n", model->Meshes[i].BoneOffset);
+    fprintf(writer, "      \"BoneCount\":   %d\n", model->Meshes[i].BoneCount);
+    fprintf(writer, "    }%s", (i < nrMeshes-1)? "," : "\n  ");
   } fprintf(writer, "],\n\n\n");
 
 

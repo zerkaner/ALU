@@ -1,5 +1,8 @@
 #include <Converter/Converter2.h>
 #include <map>
+#include <vector>
+using namespace std;
+
 
 /** Utility method to check the beginning of a string. [internal]
  * @param string The string to check.
@@ -104,11 +107,10 @@ Model2* Converter2::ReadObj(FILE* fp) {
 
       // Save current mesh before we create the new one.
       if (curMesh != NULL) {
-        curMesh->Submeshes.push_back(Submesh2());
-        curMesh->Submeshes[0].IndexOffset = indicesOffset;
-        curMesh->Submeshes[0].IndexLength = indicesRead;
-        curMesh->Submeshes[0].BoneCount = 0;  //TODO We will take care of these someday later!
-        curMesh->Submeshes[0].BoneOffset = 0;
+        curMesh->IndexOffset = indicesOffset;
+        curMesh->IndexLength = indicesRead;
+        curMesh->BoneCount = 0;  //TODO We will take care of these someday later!
+        curMesh->BoneOffset = 0;
         model->Meshes.push_back(*curMesh);
       }
 
@@ -131,11 +133,10 @@ Model2* Converter2::ReadObj(FILE* fp) {
     strcpy(curMesh->Texture, "");
   }
 
-  curMesh->Submeshes.push_back(Submesh2());
-  curMesh->Submeshes[0].IndexOffset = indicesOffset;
-  curMesh->Submeshes[0].IndexLength = indicesRead;
-  curMesh->Submeshes[0].BoneCount = 0;  //TODO We will take care of these someday later!
-  curMesh->Submeshes[0].BoneOffset = 0;
+  curMesh->IndexOffset = indicesOffset;
+  curMesh->IndexLength = indicesRead;
+  curMesh->BoneCount = 0;  //TODO We will take care of these someday later!
+  curMesh->BoneOffset = 0;
   model->Meshes.push_back(*curMesh);
 
 

@@ -2,7 +2,7 @@
 class Object3D;
 class Model3D;
 #include <Data/Primitives.h>
-
+#include <Data/Model.h>
 
 /** GL rendering code for 3D objects. */
 class GLDrawer {

@@ -145,8 +145,7 @@ Model2* Converter2::ReadMdx(FILE* fp) {
     // Setup mesh and submesh structure for this geoset.
     Mesh2 mesh = Mesh2();
     sprintf(mesh.ID, "MDX-Geoset %02d", g);
-    Submesh2 submesh = Submesh2();
-    submesh.IndexOffset = totalG;
+    mesh.IndexOffset = totalG;
 
 
     // Read all vertices.
@@ -229,8 +228,9 @@ Model2* Converter2::ReadMdx(FILE* fp) {
     }
 
     // Add new mesh.
-    submesh.IndexLength = nrIndices;
-    mesh.Submeshes.push_back(submesh);
+    mesh.IndexLength = nrIndices;
+    mesh.BoneCount = 0;
+    mesh.BoneOffset = 0;
     model->Meshes.push_back(mesh);
   }
 

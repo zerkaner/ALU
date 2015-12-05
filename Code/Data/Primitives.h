@@ -177,36 +177,3 @@ struct Animation {
   int* NrTransformations;           // Number of transformations per bone.
   Transformation** Transformations; // [Bone][Transformation] double array pointer.
 };
-
-
-
-#include <vector>
-using namespace std;
-
-//TODO Das neue!
-struct Submesh2 {
-  DWORD IndexOffset;
-  DWORD IndexLength;
-  DWORD BoneOffset;
-  DWORD BoneCount;
-};
-struct Mesh2 {
-  char ID[32];
-  char Texture[80];
-  vector<Submesh2> Submeshes;
-  bool _enabled = true;  // Just another debug flag.
-};
-struct Bone2 {};
-struct Animation2 {};
-struct Model2 {
-  char Name[80];
-  int Version;
-  vector<Float3> Vertices;
-  vector<Float3> Normals;
-  vector<Float2> UVs;
-  vector<DWORD> Indices;
-  vector<Mesh2> Meshes;
-  vector<Bone2> Bones;
-  vector<Animation2> Animations;
-  int _renderMode = 1; // Debug flag for visual testing. Not part of the model!
-};
