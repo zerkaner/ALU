@@ -47,9 +47,48 @@ Model2* ModelUtils::Load(const char* filepath) {
   fread(&nrBne, sizeof(uint), 1, fp);  model->Bones.reserve(nrBne);
   fread(&nrAni, sizeof(uint), 1, fp);  model->Animations.reserve(nrAni);
   
+  // Read vertices, normals, texture vectors and indices.
+  for (uint i = 0; i < nrVtx; i ++) {
+    Float3 f = Float3();
+    fread(&f, sizeof(Float3), 1, fp);
+    model->Vertices.push_back(f);
+  }
+  for (uint i = 0; i < nrNor; i ++) {
+    Float3 f = Float3();
+    fread(&f, sizeof(Float3), 1, fp);
+    model->Normals.push_back(f);
+  }
+  for (uint i = 0; i < nrUVs; i ++) {
+    Float2 f = Float2();
+    fread(&f, sizeof(Float2), 1, fp);
+    model->UVs.push_back(f);
+  }
+  for (uint i = 0; i < nrIdx; i ++) {
+    DWORD f;
+    fread(&f, sizeof(DWORD), 1, fp);
+    model->Indices.push_back(f);
+  }
 
+  // Read the meshes.
+  for (uint i = 0; i < nrMsh; i ++) {
+    Mesh2 mesh = Mesh2();
+    fread(&mesh.ID,          sizeof(char), 32, fp);
+    fread(&mesh.Enabled,     sizeof(bool),  1, fp);
+    fread(&mesh.Texture,     sizeof(char), 80, fp);
+    fread(&mesh.IndexOffset, sizeof(DWORD), 1, fp);
+    fread(&mesh.IndexLength, sizeof(DWORD), 1, fp);
+    fread(&mesh.BoneOffset,  sizeof(DWORD), 1, fp);
+    fread(&mesh.BoneCount,   sizeof(DWORD), 1, fp);
+    model->Meshes.push_back(mesh);
+  }
 
-  return NULL;
+  // Read the bones.
+  for (uint i = 0; i < nrBne; i ++) { /*TODO*/ }
+
+  // Read the animation sequences.
+  for (uint i = 0; i < nrAni; i ++) { /*TODO*/ }
+
+  return model;
 }
 
 

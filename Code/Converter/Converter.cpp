@@ -34,7 +34,10 @@ Converter::Converter(int argc, char** argv) {
 
 
 void Converter::StartConversion (const char* filename) {
-  
+  Converter2().ConvertObj(filename, true); 
+  return;
+
+
   // File recognition information. 
   static const int nrBinary = 4;    // Number of binary formats (beginning from left).
   static const int nrFormats = 6;   // Number of available fileendings.

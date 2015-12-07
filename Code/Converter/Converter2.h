@@ -10,12 +10,13 @@
 /** The second-generation model converter. */
 class Converter2 {
 
+
   public:
 
     void ConvertObj(const char* filename, bool isObj) {
 
       // Try to open filestream.
-      FILE* fp = fopen(filename, (isObj)? "r" : "rb");
+      FILE* fp = fopen(filename, (isObj)? "rb" : "rb");
       if (fp == NULL) {
         printf("\nError opening file '%s'!\n", filename);
         return;
@@ -38,30 +39,31 @@ class Converter2 {
       Model2* model = NULL;
       
       if (isObj) {
-        model = ReadObj(fp);
+        //model = ReadObj(fp);
+        model = ReadWgl(fp);
+        ModelUtils::ScaleModel(model, 0.3f);
         strcpy(model->Name, modelname); // Set the model name.
         model->Version = 2;             // Set version to '2' (latest).
         WriteJson(model, "test.m4l");
       }
       else {
         model = ReadMdx(fp);
-        ModelUtils::ScaleModel(model, 0.03f);
+        ModelUtils::ScaleModel(model, 0.1f);
         strcpy(model->Name, modelname); // Set the model name.
         model->Version = 2;             // Set version to '2' (latest).
-        WriteJson(model, "test.m4l");
+        //WriteJson(model, "test1.m4l");
         ModelUtils::Save(model, "test.m4");
-        ModelUtils::Load("test.m4");
+        model = ModelUtils::Load("test.m4");
       }
       // Close input file stream after conversion.
       fclose(fp);
-      return;
+      //return;
 
       // Start the runtime environment and display converted model.
       if (model != NULL) {
-        ALU* alu = new ALU();
-        alu->TestConvertedModel(model);
-        alu->Start();
-        delete(alu);
+        ALU alu = ALU();
+        alu.TestConvertedModel(model);
+        alu.Start();
       }
     }
 
@@ -76,6 +78,12 @@ class Converter2 {
      * @param fp Pointer to the opened file stream. 
      * @return The loaded model. No need for index alignment here! */
     Model2* ReadMdx(FILE* fp);
+
+
+    /** Reads a WGL lump file (TojiCode).
+    * @param fp Pointer to the opened file stream.
+    * @return Loaded model structure. */
+    Model2* ReadWgl(FILE* fp);
 
 
     /** Writes a model to a JSON file.

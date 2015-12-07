@@ -93,6 +93,9 @@ void ALU::Start() {
     delay = (long)((1.0f/_targetFPS)*1000) - execTime;
     if (delay > 0) Sleep(delay);
   }
+
+  //TODO Put sound deletion code here.
+  printf("[ALU] Shutting down.\n");
 }
 
 

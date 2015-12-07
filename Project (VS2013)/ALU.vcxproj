@@ -17,6 +17,7 @@
     <ClCompile Include="..\Code\Converter\Export_JSON.cpp" />
     <ClCompile Include="..\Code\Converter\Import_MDX.cpp" />
     <ClCompile Include="..\Code\Converter\Import_OBJ.cpp" />
+    <ClCompile Include="..\Code\Converter\Import_WGL.cpp" />
     <ClCompile Include="..\Code\Converter\M2Loader.cpp" />
     <ClCompile Include="..\Code\Converter\MPQReader.cpp" />
     <ClCompile Include="..\Code\Data\Compression\Archiver.cpp" />
