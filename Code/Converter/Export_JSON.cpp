@@ -73,7 +73,20 @@ void Converter2::WriteJson(Model2* model, const char* savefile) {
   int nrBones = model->Bones.size();
   for (int i = 0; i < nrBones; i ++) {
     fprintf(writer, "\n    {\n");
-    //TODO Bone format write-out.
+    fprintf(writer, "      \"Name\":     \"%s\",\n", model->Bones[i].Name);
+    fprintf(writer, "      \"Parent\":   %d,\n", model->Bones[i].Parent);
+    fprintf(writer, "      \"Position\": [%f, %f, %f],\n", 
+      model->Bones[i].Position.X, 
+      model->Bones[i].Position.Y, 
+      model->Bones[i].Position.Z);
+    fprintf(writer, "      \"Rotation\": [%f, %f, %f, %f],\n", 
+      model->Bones[i].Rotation.X,
+      model->Bones[i].Rotation.Y,
+      model->Bones[i].Rotation.Z,
+      model->Bones[i].Rotation.W);
+
+    //TODO Additional bone write-out.
+
     fprintf(writer, "    }%s", (i < nrBones - 1) ? "," : "\n  ");
   } fprintf(writer, "],\n\n\n");
 

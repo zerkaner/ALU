@@ -129,6 +129,9 @@
     <ClCompile Include="..\Code\Converter\Import_WGL.cpp">
       <Filter>Converter</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Data\Quaternion.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h">
@@ -291,6 +294,9 @@
       <Filter>Agents</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Data\Model.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Quaternion.h">
       <Filter>Data</Filter>
     </ClInclude>
   </ItemGroup>

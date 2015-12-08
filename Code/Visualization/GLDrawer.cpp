@@ -188,7 +188,28 @@ void GLDrawer::Draw(Model2* mdl) {
           glVertex3f(mdl->Vertices[i2].X, mdl->Vertices[i2].Y, mdl->Vertices[i2].Z);
           glEnd();
         }
+      }
 
+      for (uint b = 0; b < mdl->Bones.size(); b ++) { // Bone loop.
+        glColor3f(1.0, 0.0, 0.0);
+        Float3 p = mdl->Bones[b].Position;
+        float o = 0.015f;
+        glBegin(GL_LINE_LOOP); // bottom
+        glVertex3f(p.X-o, p.Y-o, p.Z-o);  glVertex3f(p.X+o, p.Y-o, p.Z-o);  glVertex3f(p.X, p.Y+o, p.Z-o);
+        glEnd();
+
+        glBegin(GL_LINE_LOOP); // front
+        glVertex3f(p.X-o, p.Y-o, p.Z-o);  glVertex3f(p.X+o, p.Y-o, p.Z-o);  glVertex3f(p.X,  p.Y, p.Z+o); 
+        glEnd();
+
+        glBegin(GL_LINE_LOOP); // left/back
+        glVertex3f(p.X-o, p.Y-o, p.Z-o);  glVertex3f(p.X, p.Y+o, p.Z-o);  glVertex3f(p.X, p.Y, p.Z+o);
+        glEnd();
+
+        glBegin(GL_LINE_LOOP); // right/back
+        glVertex3f(p.X+o, p.Y-o, p.Z-o);  glVertex3f(p.X, p.Y+o, p.Z-o);  glVertex3f(p.X, p.Y, p.Z+o);
+        glEnd();
+        glColor3f(1.0, 1.0, 1.0);
       }
       break;
     }

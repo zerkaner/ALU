@@ -12,6 +12,12 @@ struct Mesh2 {
   DWORD BoneCount;
 };
 struct Bone2 {
+  char Name[32];
+  int Parent;
+  Float3 Position;
+  Float4 Rotation;
+  bool Skinned;
+  float BindPoseMat[16];
 };
 struct Animation2 {
 };
