@@ -1,28 +1,10 @@
 #include <Converter/Converter2.h>
 
 
-/** Opens a file and print status output.
- * @param file The file path to open.
- * @param binary Flag, whether to open as binary or as text.
- * @return File pointer or 'null' on error. */
-FILE* OpenFile(char* file, bool binary) {
-  FILE* fp = fopen(file, (binary)? "rb" : "r");
-  if (fp == NULL) {
-    printf("Error opening file '%s'!\n", file);
-    return NULL;
-  }
-  fseek(fp, 0L, SEEK_END);
-  unsigned long bytes = ftell(fp);
-  fseek(fp, 0L, SEEK_SET);
-  printf("Opening file '%s' [%lu bytes].\n", file, bytes);
-  return fp;
-}
-
-
+/** String contains shortcut. */
 bool IsLine(char* buffer, char* line) {
   return (strstr(buffer, line) != NULL);
 }
-
 
 
 /** Reads a WGL lump file (TojiCode).
@@ -33,12 +15,12 @@ Model2* Converter2::ReadWgl(const char* filepath) {
 
   // First of all, get both files.
   char dir[256], file[80], name[40], ending[10], vertFile[256], modelFile[256];
-  FileUtils::SplitPath(filepath, dir, file);
-  FileUtils::SplitFileEnding(file, name, ending);
+  FileUtils::File_splitPath(filepath, dir, file);
+  FileUtils::File_splitEnding(file, name, ending);
   sprintf(vertFile,  "%s/%s.%s", dir, name, "wglvert");
   sprintf(modelFile, "%s/%s.%s", dir, name, "wglmodel");
-  FILE* fpV = OpenFile(vertFile, true);
-  FILE* fpM = OpenFile(modelFile, false);
+  FILE* fpV = FileUtils::File_open(vertFile, true);
+  FILE* fpM = FileUtils::File_open(modelFile, false);
   if (fpV == NULL || fpM == NULL) {
     if (fpV != NULL) fclose(fpV);
     if (fpM != NULL) fclose(fpM);

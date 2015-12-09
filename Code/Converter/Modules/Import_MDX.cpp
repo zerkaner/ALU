@@ -180,7 +180,7 @@ Model2* Converter2::ReadMdx(FILE* fp) {
     while (dbuf != 'XTVP') fread(&dbuf, sizeof(DWORD), 1, fp);  // Skip 'PVTX'.
     uint nrIndices;
     fread(&nrIndices, sizeof(DWORD), 1, fp);
-    totalG += nrIndices;   //TODO wenn totalg verwendet wird: Achtung, war früher /3!
+    totalG += nrIndices;
     model->Indices.reserve(totalG);
     WORD index;
     for (uint idx = 0; idx < nrIndices; idx ++) {
@@ -316,12 +316,6 @@ Model2* Converter2::ReadMdx(FILE* fp) {
   }
 
 
-
-
-
-
-
-
   /*
   if (texPath[0] != '\0') {
   printf("Loading texture '%s' ", texPath);
@@ -341,6 +335,99 @@ Model2* Converter2::ReadMdx(FILE* fp) {
   }
   else printf("[ERROR]\n");
   }*/
+
+
+
+  /* 
+  printf("[DBG] Creating bone hierarchy:\n");
+
+  // Some pointer wraps to keep code below context-independent!
+  // Later, these global structures shall be replaced with local ones.
+  std::vector<Bone*> bones = _model->Bones;
+  std::vector<Sequence*> sequences = _model->Sequences;
+
+
+  Bone_t* skeleton = (Bone_t*) calloc(bones.size(), sizeof(Bone_t));
+  int nrBones = bones.size();
+
+  // First run: Set base data and determine child node counters.
+  for (int i = 0; i < nrBones; i ++) {
+    skeleton[i].ID = bones[i]->ID;                         // Set the bone ID.
+    skeleton[i].Name = bones[i]->Name;                     // Set the name.
+    if (bones[i]->ParentID != -1) {                        // If a parent node exists ...
+      skeleton[i].Parent = &skeleton[bones[i]->ParentID];  // - set link to parent node
+      skeleton[bones[i]->ParentID].NrChildren ++;          // - and increase the parent's child count.
+    }
+    else skeleton[i].Parent = NULL;
+  }
+
+  // Second run: Allocate memory for all nodes with children.
+  int* tmpSet = (int*) calloc(nrBones, sizeof(int));
+  for (int i = 0; i < nrBones; i ++) {
+    if (skeleton[i].NrChildren > 0) {
+      skeleton[i].Children = (Bone_t**) calloc(skeleton[i].NrChildren, sizeof(Bone_t*));
+    }
+  }
+
+  // Third run: Set the child nodes.
+  for (int i = 0; i < nrBones; i ++) {
+    if (skeleton[i].Parent != NULL) {
+      skeleton[i].Parent->Children[tmpSet[bones[i]->ParentID]] = &skeleton[i];
+      tmpSet[bones[i]->ParentID] ++;  // Increase array index (to write the next value).
+    }
+  }
+
+  //TODO Vertex group assignments!
+  //TODO Local sequentation!
+  //TODO Animation frames!
+  // <-----
+  Animation* animations = (Animation*) calloc(sequences.size(), sizeof(Animation));
+  int nrAnimations = sequences.size();
+  for (int i = 0; i < nrAnimations; i ++) {
+    animations[i].Name = sequences[i]->Name;
+    animations[i].FrameCount = sequences[i]->IntervalEnd - sequences[i]->IntervalStart + 1;
+
+    // Calculate the number of transformation directives per bone.
+    for (int j = 0; j < nrBones; j ++) {
+      int counter = 0;
+      
+      AnimSet* set = bones[j]->Translation;
+      if (set != NULL) {
+        for (int k = 0; k < set->Size; k ++) {
+          if (set->Time[k] >= sequences[i]->IntervalStart && set->Time[k] <= sequences[i]->IntervalEnd) {
+            counter ++;
+          }
+        }
+      }
+      printf("[%s][%s]: %d TDs found.\n", animations[i].Name, skeleton[j].Name, counter);
+    }
+
+    //sequences[i]->IntervalStart, sequences[i]->IntervalEnd);
+  }
+
+
+  // Debug output. Echo all nodes and childs to the console (later, a file).
+  for (int i = 0; i < nrBones; i ++) {
+    printf("Node %02d ('%s'), parent: '%s', children (%d)", 
+      skeleton[i].ID, 
+      skeleton[i].Name, 
+      (skeleton[i].Parent != NULL)? skeleton[i].Parent->Name : "",
+      skeleton[i].NrChildren
+    );
+    if (skeleton[i].NrChildren > 0) {
+      printf(": '%s'", skeleton[i].Children[0]->Name);
+      for (unsigned int j = 1; j < skeleton[i].NrChildren; j ++) {
+        printf(", '%s'", skeleton[i].Children[j]->Name);
+      }
+    }
+    printf("\n");
+  }
+
+  for (int i = 0; i < nrAnimations; i ++) {
+    printf("Animation '%-22s': %5d frames.", animations[i].Name, animations[i].FrameCount);
+    printf("\n");
+  }
+*/
 
 
   // Print parser results.

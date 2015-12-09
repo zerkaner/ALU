@@ -12,14 +12,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp" />
-    <ClCompile Include="..\Code\Converter\Converter.cpp" />
     <ClCompile Include="..\Code\Converter\DBCParser.cpp" />
-    <ClCompile Include="..\Code\Converter\Export_JSON.cpp" />
-    <ClCompile Include="..\Code\Converter\Import_MDX.cpp" />
-    <ClCompile Include="..\Code\Converter\Import_OBJ.cpp" />
-    <ClCompile Include="..\Code\Converter\Import_WGL.cpp" />
     <ClCompile Include="..\Code\Converter\M2Loader.cpp" />
+    <ClCompile Include="..\Code\Converter\Modules\Export_JSON.cpp" />
+    <ClCompile Include="..\Code\Converter\Modules\Import_GLF.cpp" />
+    <ClCompile Include="..\Code\Converter\Modules\Import_MDX.cpp" />
+    <ClCompile Include="..\Code\Converter\Modules\Import_OBJ.cpp" />
+    <ClCompile Include="..\Code\Converter\Modules\Import_WGL.cpp" />
     <ClCompile Include="..\Code\Converter\MPQReader.cpp" />
+    <ClCompile Include="..\Code\Converter\Utils\FileUtils.cpp" />
     <ClCompile Include="..\Code\Data\Compression\Archiver.cpp" />
     <ClCompile Include="..\Code\Data\Model.cpp" />
     <ClCompile Include="..\Code\Data\Model3D.cpp" />
@@ -50,12 +51,12 @@
     <ClInclude Include="..\Code\Agents\Reasoning\IInteraction.h" />
     <ClInclude Include="..\Code\Agents\SpatialAgent.h" />
     <ClInclude Include="..\Code\Agents\TestAgent.h" />
-    <ClInclude Include="..\Code\Converter\Converter.h" />
     <ClInclude Include="..\Code\Converter\Converter2.h" />
     <ClInclude Include="..\Code\Converter\DBCParser.h" />
     <ClInclude Include="..\Code\Converter\M2Loader.h" />
     <ClInclude Include="..\Code\Converter\MemoryStream.h" />
     <ClInclude Include="..\Code\Converter\MPQReader.h" />
+    <ClInclude Include="..\Code\Converter\Utils\FileUtils.h" />
     <ClInclude Include="..\Code\Data\AnimationManager.h" />
     <ClInclude Include="..\Code\Data\Compression\Archiver.h" />
     <ClInclude Include="..\Code\Data\Compression\Miniz.h" />
@@ -75,7 +76,6 @@
     <ClInclude Include="..\Code\Environment\Quadtree.h" />
     <ClInclude Include="..\Code\Execution\ALU.h" />
     <ClInclude Include="..\Code\Execution\Stopwatch.h" />
-    <ClInclude Include="..\Code\Execution\test.h" />
     <ClInclude Include="..\Code\Execution\World.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerFPS.h" />
     <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerRTS.h" />

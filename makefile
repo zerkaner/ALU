@@ -10,6 +10,8 @@ OBJS = $(wildcard $(SRC)/Agents/*.cpp)\
        $(wildcard $(SRC)/Agents/Perception/*.cpp)\
        $(wildcard $(SRC)/Agents/Reasoning/*.cpp)\
        $(wildcard $(SRC)/Converter/*.cpp)\
+       $(wildcard $(SRC)/Converter/Modules/*.cpp)\
+       $(wildcard $(SRC)/Converter/Utils/*.cpp)\
        $(wildcard $(SRC)/Data/*.cpp)\
        $(wildcard $(SRC)/Data/Compression/*.cpp)\
        $(wildcard $(SRC)/Data/Textures/*.cpp)\

@@ -46,13 +46,16 @@
     <Filter Include="Data\Compression">
       <UniqueIdentifier>{bb0650bf-b71c-4dda-b44e-ed66d4bc0ccb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Converter\Modules">
+      <UniqueIdentifier>{8af7c576-1524-49e6-b925-0a4dc54e963c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Converter\Utils">
+      <UniqueIdentifier>{229db1d2-5e7b-4864-a9a4-ae97b338c5b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp">
       <Filter>Agents</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Converter\Converter.cpp">
-      <Filter>Converter</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Data\Vector.cpp">
       <Filter>Data</Filter>
@@ -114,23 +117,29 @@
     <ClCompile Include="..\Code\Data\Compression\Archiver.cpp">
       <Filter>Data\Compression</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Converter\Export_JSON.cpp">
-      <Filter>Converter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Converter\Import_OBJ.cpp">
-      <Filter>Converter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Code\Converter\Import_MDX.cpp">
-      <Filter>Converter</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Data\Model.cpp">
       <Filter>Data</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Converter\Import_WGL.cpp">
-      <Filter>Converter</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Data\Quaternion.cpp">
       <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Export_JSON.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_MDX.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_OBJ.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_WGL.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Utils\FileUtils.cpp">
+      <Filter>Converter\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_GLF.cpp">
+      <Filter>Converter\Modules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -181,9 +190,6 @@
     </ClInclude>
     <ClInclude Include="..\Code\Environment\GridTerrain.h">
       <Filter>Environment</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Converter\Converter.h">
-      <Filter>Converter</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Data\StatsInfo.h">
       <Filter>Data</Filter>
@@ -278,9 +284,6 @@
     <ClInclude Include="..\Code\Converter\MemoryStream.h">
       <Filter>Converter</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Execution\test.h">
-      <Filter>Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Data\AnimationManager.h">
       <Filter>Data</Filter>
     </ClInclude>
@@ -298,6 +301,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Data\Quaternion.h">
       <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\Utils\FileUtils.h">
+      <Filter>Converter\Utils</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

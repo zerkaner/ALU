@@ -7,7 +7,7 @@ void test() {
   printf("test fkt!\n");
 }
 
-// http://content.gpwiki.org/index.php/OpenGL:Tutorials:Basic_Bones_System
+
 namespace AnimTest {
 
 
