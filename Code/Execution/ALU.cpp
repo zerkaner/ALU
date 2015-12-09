@@ -35,7 +35,9 @@ ALU::ALU() :
   // Create some test agents.
   new TestAgent(&_world, _world.GetEnvironment(), Vector(2.0f, 2.0f, 0.5f));
   new TestAgent(&_world, _world.GetEnvironment(), Vector(4.0f, 1.0f, 0.5f));
-  _world.GetEnvironment()->AddObject(new HeightmapTerrain("Other/Heightfield.raw"));
+  
+  //TODO Does not work with ALU_standalone!
+  //_world.GetEnvironment()->AddObject(new HeightmapTerrain("Other/Heightfield.raw"));
 
   Object3D* obj = new Object3D();
   obj->Position = Vector(8, 3, 0.2f);

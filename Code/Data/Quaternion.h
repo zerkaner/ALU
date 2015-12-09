@@ -30,7 +30,7 @@ struct Quaternion {
 
 
     /** Multiplying a quaternion q with a vector v applies the q-rotation to v. */
-    Float3 Quaternion::operator* (const Float3& vec);
+    Float3 operator* (const Float3& vec);
 
 
     /** Convert from axis angle. */
