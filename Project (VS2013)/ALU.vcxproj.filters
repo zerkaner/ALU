@@ -105,9 +105,6 @@
     <ClCompile Include="..\Code\Data\Textures\ImageLoader.cpp">
       <Filter>Data\Textures</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Converter\M2Loader.cpp">
-      <Filter>Converter</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Converter\DBCParser.cpp">
       <Filter>Converter</Filter>
     </ClCompile>
@@ -139,6 +136,12 @@
       <Filter>Converter\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Code\Converter\Modules\Import_GLF.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Converter.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_M2.cpp">
       <Filter>Converter\Modules</Filter>
     </ClCompile>
   </ItemGroup>
@@ -263,9 +266,6 @@
     <ClInclude Include="..\Code\Data\Textures\ImageLoader.h">
       <Filter>Data\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Converter\M2Loader.h">
-      <Filter>Converter</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Agents\ModelTestAgent.h">
       <Filter>Agents</Filter>
     </ClInclude>
@@ -281,17 +281,11 @@
     <ClInclude Include="..\Code\Data\Compression\Miniz.h">
       <Filter>Data\Compression</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Converter\MemoryStream.h">
-      <Filter>Converter</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Data\AnimationManager.h">
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Input\ControllerModules\RenderModeController.h">
       <Filter>Input\ControllerModules</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Converter\Converter2.h">
-      <Filter>Converter</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Agents\NewModelAgent.h">
       <Filter>Agents</Filter>
@@ -303,6 +297,12 @@
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Converter\Utils\FileUtils.h">
+      <Filter>Converter\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\Converter.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\Utils\MemoryStream.h">
       <Filter>Converter\Utils</Filter>
     </ClInclude>
   </ItemGroup>

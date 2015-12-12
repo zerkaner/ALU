@@ -1,6 +1,6 @@
 #pragma warning(disable: 4996)
 #include <Converter/DBCParser.h>
-#include <Converter/M2Loader.h>
+#include <Converter/Converter.h>
 #include <Converter/MPQReader.h>
 #include <Execution/ALU.h>
 #include <stdio.h>
@@ -14,7 +14,7 @@
 DBCParser::DBCParser(int argc, char** argv) {
   
   // Read DBC files from MPQ archive.
-  MPQReader reader = MPQReader("C:/Games/World of Warcraft 2.4.3 [8606]/Data/deDE/patch-deDE.mpq");
+  MPQReader reader = MPQReader("E:/Spiele/World of Warcraft 2.4.3 [8606]/Data/deDE/patch-deDE.mpq");
   _dbcItems  = new MemoryStream(&reader, "DBFilesClient\\ItemDisplayInfo.dbc");
   _dbcInfo   = new MemoryStream(&reader, "DBFilesClient\\CreatureDisplayInfo.dbc");
   _dbcExtra  = new MemoryStream(&reader, "DBFilesClient\\CreatureDisplayInfoExtra.dbc");
@@ -108,36 +108,39 @@ void DBCParser::Test() {
     printf("\n");
 
 
-    const char* archive = "C:/Games/World of Warcraft 2.4.3 [8606]/Data/common.mpq";
+    const char* archive = "E:/Spiele/World of Warcraft 2.4.3 [8606]/Data/common.mpq";
     DWORD filesize;
     BYTE* data = MPQReader::ExtractFileFromArchive(archive, modeldata->model, &filesize);
     MemoryStream modelstream = MemoryStream(data, filesize);
     
     // Start model loader!
-    Model3D* model = M2Loader().LoadM2(&modelstream);    
+    Model2* model = Converter::ReadM2(&modelstream);
     
     // Enable the needed geosets (maybe later we'll delete the rest).
-    for (unsigned int i = 0; i < model->Geosets.size(); i ++) {
+    for (unsigned int i = 0; i < model->Meshes.size(); i ++) {
+      model->Meshes[i].Enabled = false;
       for (unsigned int j = 0; j < modeldata->geosets.size(); j ++) {
-        if (model->Geosets[i]->id == modeldata->geosets[j]) {
-          model->Geosets[i]->enabled = true;
+        int id;
+        sscanf(model->Meshes[i].ID, "Geoset %d", &id);
+        if (id == modeldata->geosets[j]) {
+          model->Meshes[i].Enabled = true;
           break;
         }
       }
     }
 
     // Close model file stream.
-    model->WriteFile("test.m4");
+    ModelUtils::Save(model, "test.m4");
+
+    //ALU test start.
+    ALU alu = ALU();
+    alu.TestConvertedModel(model);
+    alu.Start();
+
     delete model; 
   }
 
   else printf("Dat gibt's hier nicht!\n");
-  getchar();
-
-  //ALU test start.
-  ALU* alu = new ALU();
-  alu->Start();
-  delete(alu);
 }
 
 

@@ -1,5 +1,7 @@
 #pragma once
 #include <stdio.h>
+#include <string.h>
+
 
 /** Static class with various helper functions for file processing. */
 class FileUtils {
@@ -10,7 +12,7 @@ class FileUtils {
      * @param file The file path to open.
      * @param binary Flag, whether to open as binary or as text.
      * @return File pointer or 'null' on error. */
-    static FILE* File_open(char* file, bool binary);
+    static FILE* File_open(const char* file, bool binary);
 
 
     /** Splits a file string into file name and file ending.

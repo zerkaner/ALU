@@ -1,6 +1,8 @@
-#include <Converter/Converter2.h>
+#include <Converter/Converter.h>
+#include <stdlib.h>
 #include <vector>
 using namespace std;
+
 
 struct MDX_Sequence {
   char Name[80];
@@ -36,10 +38,12 @@ struct MDX_Bone {
 
 
 /** Reads a Blizzard MDX file (WarCraft 3).
-* @param fp Pointer to the opened file stream.
-* @return The loaded model. No need for index alignment here! */
-Model2* Converter2::ReadMdx(FILE* fp) {
+ * @param inputfile The file to load.
+ * @return The loaded model. No need for index alignment here! */
+Model2* Converter::ReadMdx(const char* inputfile) {
   printf("MDX converter loaded.\n");
+  FILE* fp = FileUtils::File_open(inputfile, false);
+  if (fp == NULL) return NULL;
 
   // Create reader temporary variables.
   DWORD dbuf = 0x00;    // "Read-in and discard" buffer.
@@ -55,6 +59,12 @@ Model2* Converter2::ReadMdx(FILE* fp) {
   vector<DWORD> texIDs;
   vector<char*> textures;
 
+  // Set the model name and version.
+  char dir[256], file[80], name[40], ending[10];
+  FileUtils::File_splitPath(inputfile, dir, file);
+  FileUtils::File_splitEnding(file, name, ending);
+  strcpy(model->Name, name);
+  model->Version = 2;
 
 
   //________________________________________________________________________________[SEQUENCES]
@@ -440,5 +450,6 @@ Model2* Converter2::ReadMdx(FILE* fp) {
     model->Meshes.size(), model->Vertices.size(), model->Normals.size(), 
     model->UVs.size(), model->Indices.size());
   
+  fclose(fp); // Close file stream.
   return model;
 } 

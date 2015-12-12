@@ -1,11 +1,13 @@
-#include <Converter/Converter2.h>
+#include <Converter/Converter.h>
 
 
 /** Read a .glf binary font definition and output data as source code.
-* @param fp Pointer to the opened file.
-* @param savename The name to save the output file at. */
-void Converter2::ReadGlf(FILE* fp, const char* savename) {
+ * @param inputfile The file to load.
+ * @param savename The name to save the output file at. */
+void Converter::ReadGlf(const char* inputfile, const char* savename) {
   printf("GLF reader engaged!\n");
+  FILE* fp = FileUtils::File_open(inputfile, false);
+  if (fp == NULL) return;
 
   // Try to open writer stream. Quit on failure.
   FILE* writer = fopen(savename, "w");
@@ -62,7 +64,8 @@ void Converter2::ReadGlf(FILE* fp, const char* savename) {
   }
   fprintf(writer, "\n};\n");
 
-  // Close output file stream.
+  // Close in- and output file stream.
   printf ("Written %d bytes to file '%s'.\n", ftell(writer), savename);  
   fclose(writer);
+  fclose(fp);
 }

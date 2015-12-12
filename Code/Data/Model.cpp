@@ -18,7 +18,7 @@ Model2* ModelUtils::Load(const char* filepath) {
   fseek(fp, 0L, SEEK_END);
   unsigned long bytes = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
-  printf("[%lu bytes] ", bytes);
+  printf("[%lu bytes]\n", bytes);
   
   // Read format identifier and version. Skip on mismatch.
   DWORD formatID;

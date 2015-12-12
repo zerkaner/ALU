@@ -1,13 +1,12 @@
 #pragma warning(disable: 4996)
 #include "FileUtils.h"
-#include <string.h>
 
 
 /** Opens a file and print status output.
  * @param file The file path to open.
  * @param binary Flag, whether to open as binary or as text.
  * @return File pointer or 'null' on error. */
-FILE* FileUtils::File_open(char* file, bool binary) {
+FILE* FileUtils::File_open(const char* file, bool binary) {
   FILE* fp = fopen(file, (binary) ? "rb" : "r");
   if (fp == NULL) {
     printf("Error opening file '%s'!\n", file);

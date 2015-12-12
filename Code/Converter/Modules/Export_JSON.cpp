@@ -1,10 +1,10 @@
-#include <Converter/Converter2.h>
+#include <Converter/Converter.h>
 
 
 /** Writes a model to a JSON file.
  * @param model The model to output.
  * @param savefile Name of the file to write. */
-void Converter2::WriteJson(Model2* model, const char* savefile) {
+void Converter::WriteJson(Model2* model, const char* savefile) {
 
   // Try to open writer stream. Quit on failure.
   FILE* writer = fopen(savefile, "w");

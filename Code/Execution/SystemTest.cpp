@@ -2,7 +2,7 @@
 #define _WIN32
 #endif
 
-#include <Converter/Converter2.h>
+#include <Converter/Converter.h>
 #include <Converter/DBCParser.h>
 #include <Converter/MPQReader.h>
 #include <Execution/ALU.h>
@@ -13,7 +13,7 @@ int main (int argc, char** argv) {
 
   // Run converter on parameter "--conv". 
   if (argc > 1 && (strcmp(argv[1], "--conv") == 0)) {
-    Converter2().ConvertObj(argv[2], true);//(argc - 2, &argv[2]);
+    Converter(argc - 2, &argv[2]);
   }
 
   // "--load": Start the MPQ-DBC-M2 parsing toolchain [work has just begun!].

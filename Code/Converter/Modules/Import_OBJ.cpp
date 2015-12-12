@@ -1,4 +1,4 @@
-#include <Converter/Converter2.h>
+#include <Converter/Converter.h>
 #include <map>
 #include <vector>
 using namespace std;
@@ -30,16 +30,26 @@ void AlignIndices(Model2* model, vector<UnevenTriangle>* faces);
 
 
 /** Import a model from an OBJ file.
- * @param fp Pointer to the opened file.
+ * @param inputfile The file to load.
  * @return The imported and index-aligned model. */
-Model2* Converter2::ReadObj(FILE* fp) {
+Model2* Converter::ReadObj(const char* inputfile) {
   printf("OBJ converter loaded.\n");
+  FILE* fp = FileUtils::File_open(inputfile, false);
+  if (fp == NULL) return NULL;
 
   char buffer[256];   // Input buffer for file read-in.
   float x, y, z;      // Float input buffers.
   DWORD i1, i2, i3;   // Index input buffers.
 
   Model2* model = new Model2();   // Create model structure.
+  
+  // Set the model name and version.
+  char dir[256], file[80], name[40], ending[10];
+  FileUtils::File_splitPath(inputfile, dir, file);
+  FileUtils::File_splitEnding(file, name, ending);
+  strcpy(model->Name, name); 
+  model->Version = 2;
+
 
   // Temporary face buffer. Because .obj has asymmetric indices, we'll have
   // to align them before they can be written into the model structure.
@@ -138,7 +148,7 @@ Model2* Converter2::ReadObj(FILE* fp) {
   curMesh->BoneCount = 0;  //TODO We will take care of these someday later!
   curMesh->BoneOffset = 0;
   model->Meshes.push_back(*curMesh);
-
+  fclose(fp); // Close file.
 
   // Print parser results.
   printf("Parser results:\n"
@@ -154,7 +164,6 @@ Model2* Converter2::ReadObj(FILE* fp) {
 
   return model;
 }
-
 
 
 

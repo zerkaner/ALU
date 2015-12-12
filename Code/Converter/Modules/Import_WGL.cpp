@@ -1,4 +1,4 @@
-#include <Converter/Converter2.h>
+#include <Converter/Converter.h>
 
 
 /** String contains shortcut. */
@@ -10,7 +10,7 @@ bool IsLine(char* buffer, char* line) {
 /** Reads a WGL lump file (TojiCode).
  * @param filepath Path to a .wglvert or .wglmodel to load.
  * @return Loaded model structure. */
-Model2* Converter2::ReadWgl(const char* filepath) {
+Model2* Converter::ReadWgl(const char* filepath) {
   printf("WGL parser loaded.\n");
 
   // First of all, get both files.
