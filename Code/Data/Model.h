@@ -1,11 +1,13 @@
 #pragma once
 #include <Data/Primitives.h>
+#include <Data/Textures/Texture.h>
 #include <vector>
 
 struct Mesh2 {
   char ID[32];
-  bool Enabled = true;
-  char Texture[80];
+  bool Enabled;           // Shall this mesh be rendered?
+  char Texture[80];       // Texture path.
+  short TextureIdx = -1;  // Index to the appended texture chunk. 
   DWORD IndexOffset;
   DWORD IndexLength;
   DWORD BoneOffset;
@@ -31,6 +33,7 @@ struct Model2 {
   std::vector<Mesh2> Meshes;
   std::vector<Bone2> Bones;
   std::vector<Animation2> Animations;
+  std::vector<SimpleTexture*> Textures;
   int _renderMode = 1; // Debug flag for visual testing. Not part of the model!
 };
 

@@ -110,7 +110,12 @@ void ALU::Stop() {
 /** Inserts a in-memory model from an import
 * @param model The model to test. */
 void ALU::TestConvertedModel(Model2* model) {
+  for (uint i = 0; i < model->Textures.size(); i ++) {
+    ((SimpleTexture*) model->Textures[i])->SetupGLTextureBuffer();
+  }
   _world.GetEnvironment()->AddModel2(model);
+  _camera.SetPosition(16.0f, 11.0f, 4, 244, -13);
+
   
   IControllerModule* agent = new NewModelAgent(&_world, _world.GetEnvironment(), model);
   _listener.AddControllerModule(agent);

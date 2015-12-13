@@ -68,6 +68,9 @@ class SimpleTexture : public Texture {
     int OffsetX()           const { return 0; }
     int OffsetY()           const { return 0; }
     const Texture* Parent() const { return 0; }   
+
+    /** Initialize the OpenGL buffer for this texture. */
+    void SetupGLTextureBuffer();
 };
 
 

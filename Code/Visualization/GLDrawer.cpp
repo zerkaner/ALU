@@ -135,9 +135,9 @@ void GLDrawer::Draw(Model2* mdl) {
 
   //TODO Move lighting somewhere else. Maybe as a Engine.Add() function. 
   glEnable(GL_LIGHT0);
-  float lightpos[] = {35.0f, 50.0f, 40.0f, 1.0f};    // Position. 4th is directional (0) or positional. 
+  float lightpos[] = {35.0f, 20.0f, 80.0f, 1.0f};    // Position. 4th is directional (0) or positional. 
   float diffuseLight[]  = {0.8f, 0.8f, 0.8f, 1.0f};  // Color for diffuse light (RGBA code).
-  float ambientLight[]  = {0.2f, 0.2f, 0.2f, 1.0f};  // Color for ambient (environmental) light.
+  float ambientLight[]  = {0.3f, 0.3f, 0.3f, 1.0f};  // Color for ambient (environmental) light.
   float specularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};  // Specular (reflected) light.
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos);       // Set position of light source.
   glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);    // Set diffuse light.
@@ -216,16 +216,16 @@ void GLDrawer::Draw(Model2* mdl) {
 
     case 3: {  // Direct CPU rendering.
       glEnable(GL_LIGHTING);
-      glBegin(GL_TRIANGLES);
       for (uint m = 0; m < mdl->Meshes.size(); m ++) { // Mesh loop.
         if (!mdl->Meshes[m].Enabled) continue;
 
         // Load and set texture, if available.
-        //if (geoset->textureID != -1) {
-        //  glEnable(GL_TEXTURE_2D);
-        //  glBindTexture(GL_TEXTURE_2D, mdl->Textures[geoset->textureID]->ID());
-        //}        
+        if (mdl->Meshes[m].TextureIdx != -1) {
+          glEnable(GL_TEXTURE_2D);
+          glBindTexture(GL_TEXTURE_2D, mdl->Textures[mdl->Meshes[m].TextureIdx]->ID());
+        }        
          
+        glBegin(GL_TRIANGLES);
         DWORD idxStart = mdl->Meshes[m].IndexOffset;
         DWORD idxLength = mdl->Meshes[m].IndexLength;
         for (DWORD i = 0; i < idxLength; i ++) {  // Index loop.
@@ -234,14 +234,16 @@ void GLDrawer::Draw(Model2* mdl) {
           glNormal3f(mdl->Normals[idx].X, mdl->Normals[idx].Y, mdl->Normals[idx].Z);
           glVertex3f(mdl->Vertices[idx].X, mdl->Vertices[idx].Y, mdl->Vertices[idx].Z);
         }
+        glEnd();
 
+        if (mdl->Meshes[m].TextureIdx != -1) glDisable(GL_TEXTURE_2D);
       }
-      glEnd();
       glDisable(GL_LIGHTING);
       break;
     }
+
+
+    // Further rendering cases here.
   }
-
-
   glPopMatrix();
 }

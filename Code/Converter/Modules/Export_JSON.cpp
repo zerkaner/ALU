@@ -58,6 +58,7 @@ void Converter::WriteJson(Model2* model, const char* savefile) {
   for (int i = 0; i < nrMeshes; i ++) {
     fprintf(writer, "\n    {\n");
     fprintf(writer, "      \"ID\":          \"%s\",\n", model->Meshes[i].ID);
+    fprintf(writer, "      \"Enabled\":     %s,\n", model->Meshes[i].Enabled? "true" : "false");
     fprintf(writer, "      \"Texture\":     \"%s\",\n", model->Meshes[i].Texture);
     fprintf(writer, "      \"IndexOffset\": %d,\n", model->Meshes[i].IndexOffset);
     fprintf(writer, "      \"IndexLength\": %d,\n", model->Meshes[i].IndexLength);

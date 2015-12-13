@@ -140,7 +140,9 @@ void Model3D::LoadFile(const char* filepath) {
     fread(&size, sizeof(unsigned long), 1, fp);
     BYTE* data = (BYTE*) calloc(size, sizeof(BYTE));
     fread(data, sizeof(BYTE), size, fp);    
-    Textures.push_back(new SimpleTexture(data, size, "-internal-"));
+    SimpleTexture* texture = new SimpleTexture(data, size, "-internal-");
+    texture->SetupGLTextureBuffer();
+    Textures.push_back(texture);
   }
 
   // Close file stream and quit.

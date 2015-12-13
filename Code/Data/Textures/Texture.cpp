@@ -26,70 +26,75 @@ Texture* Texture::Slice(int x, int y, int width, int height) {
 
 SimpleTexture::SimpleTexture(unsigned char* rawdata, unsigned long size, const char* name) {
   _name = name;
+  _data = rawdata;
+  _size = size;
+}
+
+
+
+void SimpleTexture::SetupGLTextureBuffer() {
 
   // Take care of the byteorder for RGB-masks.
   uint32_t rmask, gmask, bmask, amask;
   bool isLE;
-  #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-      rmask = 0xff000000;
-      gmask = 0x00ff0000;
-      bmask = 0x0000ff00;
-      amask = 0x000000ff;
-      isLE = false;
-  #else
-      rmask = 0x000000ff;
-      gmask = 0x0000ff00;
-      bmask = 0x00ff0000;
-      amask = 0xff000000;
-      isLE = true;
-  #endif
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+  rmask = 0xff000000;
+  gmask = 0x00ff0000;
+  bmask = 0x0000ff00;
+  amask = 0x000000ff;
+  isLE = false;
+#else
+  rmask = 0x000000ff;
+  gmask = 0x0000ff00;
+  bmask = 0x00ff0000;
+  amask = 0xff000000;
+  isLE = true;
+#endif
 
   int resX, resY, cmp;  // Stores x, y resolution and components.
-  unsigned char* imagedata = stbi_load_from_memory(rawdata, size, &resX, &resY, &cmp, 0);
+  unsigned char* imagedata = stbi_load_from_memory(_data, _size, &resX, &resY, &cmp, 0);
 
 
   // Create the surface and determine RGB(A) / BGR(A) format (OpenGL code).  
   SDL_Surface* sf;
   unsigned int format;
   switch (cmp) {
-    
-    case 3 : 
-      sf = SDL_CreateRGBSurface(0, resX, resY, 24, rmask, gmask, bmask, 0); 
-      format = isLE? GL_RGB : GL_BGR;
+
+    case 3:
+      sf = SDL_CreateRGBSurface(0, resX, resY, 24, rmask, gmask, bmask, 0);
+      format = isLE ? GL_RGB : GL_BGR;
       break;
-    
-    case 4 : 
-      sf = SDL_CreateRGBSurface(0, resX, resY, 32, rmask, gmask, bmask, amask); 
-      format = isLE? GL_RGBA : GL_BGRA;
+
+    case 4:
+      sf = SDL_CreateRGBSurface(0, resX, resY, 32, rmask, gmask, bmask, amask);
+      format = isLE ? GL_RGBA : GL_BGRA;
       break;
-    
-    default: 
-      free(rawdata); 
-      free(imagedata); 
+
+    default:
+      free(_data);
+      free(imagedata);
       printf("[Texture] Error! Texture has invalid components (%d)!\n", cmp);
       return;
   }
-    
+
 
   // Copy pixels to surface object and set members. 
   memcpy(sf->pixels, imagedata, cmp * resX * resY);
   free(imagedata);
-  _data = rawdata;
-  _size = size;
 
   // Create an OpenGL texture from the SDL surface.
   _id = 0;
   _width = sf->w;
   _height = sf->h;
   if (SDL_GL_ExtensionSupported("GL_ARB_texture_non_power_of_two")) {
-    _storedWidth  = _width;
+    _storedWidth = _width;
     _storedHeight = _height;
-  } 
+  }
   else {  // Extend storage size, if it must be a power of two.
-    _storedWidth  = nextPowerOfTwo(_width);
+    _storedWidth = nextPowerOfTwo(_width);
     _storedHeight = nextPowerOfTwo(_height);
   }
- 
+
 
   // Set texture attributes.
   glEnable(GL_TEXTURE_2D);
@@ -98,11 +103,11 @@ SimpleTexture::SimpleTexture(unsigned char* rawdata, unsigned long size, const c
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);  
- 
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
   // Create texture.
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _storedWidth, _storedHeight,
-                0, format, GL_UNSIGNED_BYTE, sf->pixels);
+    0, format, GL_UNSIGNED_BYTE, sf->pixels);
 }
 
 

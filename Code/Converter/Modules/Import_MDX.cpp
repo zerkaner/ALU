@@ -42,7 +42,7 @@ struct MDX_Bone {
  * @return The loaded model. No need for index alignment here! */
 Model2* Converter::ReadMdx(const char* inputfile) {
   printf("MDX converter loaded.\n");
-  FILE* fp = FileUtils::File_open(inputfile, false);
+  FILE* fp = FileUtils::File_open(inputfile, true);
   if (fp == NULL) return NULL;
 
   // Create reader temporary variables.
@@ -141,6 +141,33 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   }
 
   
+  /* Reading the texture files. */
+  vector<short> texIdx;
+  for (uint t = 0; t < textures.size(); t ++) {
+    printf("Loading texture '%s' ", textures[t]);
+
+    // Try to open file stream.
+    FILE* texReader = fopen(textures[t], "rb");
+    if (texReader != NULL) {  
+      fseek(texReader, 0L, SEEK_END);          //| Read image size
+      unsigned long bytes = ftell(texReader);  //| and output.
+      printf("[%lu bytes] ", bytes);
+      BYTE* rawData = (BYTE*) calloc(bytes, sizeof(BYTE));
+      fseek(texReader, 0L, SEEK_SET);
+      fread(rawData, sizeof(BYTE), bytes, texReader);
+      model->Textures.push_back(new SimpleTexture(rawData, bytes, textures[t]));
+      fclose(texReader);
+      printf("[OK]\n");
+      texIdx.push_back(t);
+    }
+    else {
+      printf("[ERROR]\n");
+      texIdx.push_back(-1);
+    }
+  }
+
+
+
 
   //__________________________________________________________________________________[GEOSETS]
   // Skip file to geoset definitions and read in size.
@@ -156,6 +183,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
     Mesh2 mesh = Mesh2();
     sprintf(mesh.ID, "MDX-Geoset %02d", g);
     mesh.IndexOffset = totalG;
+    mesh.Enabled = true;  //TODO To be set later by some function.
 
 
     // Read all vertices.
@@ -211,11 +239,15 @@ Model2* Converter::ReadMdx(const char* inputfile) {
 
     // Get associated texture from texture ID vector.
     if (dbuf < texIDs.size()) {
-      if (texIDs[dbuf] < textures.size()) strcpy(mesh.Texture, textures[texIDs[dbuf]]);
+      if (texIDs[dbuf] < textures.size()) {
+        strcpy(mesh.Texture, textures[texIDs[dbuf]]);
+        mesh.TextureIdx = texIdx[texIDs[dbuf]];
+      }
       else {
         printf("[ERROR] Texture association failed. Entry %d is invalid (only %d texture%s)!\n",
           texIDs[dbuf], textures.size(), (textures.size() > 1)? "s" : "");
         strcpy(mesh.Texture, "");
+        mesh.TextureIdx = -1;
       }
     }
     else { // Texture index is out of bounds. Print error and leave texture field empty. 
@@ -326,25 +358,6 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   }
 
 
-  /*
-  if (texPath[0] != '\0') {
-  printf("Loading texture '%s' ", texPath);
-
-  // Try to open file stream.
-  FILE* texReader = fopen(texPath, "rb");
-  if (texReader != NULL) {
-  fseek(texReader, 0L, SEEK_END);          //| Read image size
-  unsigned long bytes = ftell(texReader);  //| and output.
-  printf("[%lu bytes] ", bytes);
-  unsigned char* rawData = new unsigned char[bytes];
-  fseek(texReader, 0L, SEEK_SET);
-  fread(rawData, sizeof(unsigned char), bytes, texReader);
-  _model->Textures.push_back(new SimpleTexture(rawData, bytes, texPath));
-  fclose(texReader);
-  printf("[OK]\n");
-  }
-  else printf("[ERROR]\n");
-  }*/
 
 
 

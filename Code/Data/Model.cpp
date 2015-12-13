@@ -38,7 +38,7 @@ Model2* ModelUtils::Load(const char* filepath) {
 
   // Read model name and vector sizes. Redimension vectors as needed.
   fread(&model->Name, sizeof(char), 80, fp);
-  uint nrVtx, nrNor, nrUVs, nrIdx, nrMsh, nrBne, nrAni;
+  uint nrVtx, nrNor, nrUVs, nrIdx, nrMsh, nrBne, nrAni, nrTex;
   fread(&nrVtx, sizeof(uint), 1, fp);  model->Vertices.reserve(nrVtx);
   fread(&nrNor, sizeof(uint), 1, fp);  model->Normals.reserve(nrNor);
   fread(&nrUVs, sizeof(uint), 1, fp);  model->UVs.reserve(nrUVs);
@@ -46,6 +46,7 @@ Model2* ModelUtils::Load(const char* filepath) {
   fread(&nrMsh, sizeof(uint), 1, fp);  model->Meshes.reserve(nrMsh);
   fread(&nrBne, sizeof(uint), 1, fp);  model->Bones.reserve(nrBne);
   fread(&nrAni, sizeof(uint), 1, fp);  model->Animations.reserve(nrAni);
+  fread(&nrTex, sizeof(uint), 1, fp);  model->Textures.reserve(nrTex);
   
   // Read vertices, normals, texture vectors and indices.
   for (uint i = 0; i < nrVtx; i ++) {
@@ -75,6 +76,7 @@ Model2* ModelUtils::Load(const char* filepath) {
     fread(&mesh.ID,          sizeof(char), 32, fp);
     fread(&mesh.Enabled,     sizeof(bool),  1, fp);
     fread(&mesh.Texture,     sizeof(char), 80, fp);
+    fread(&mesh.TextureIdx,  sizeof(short), 1, fp);
     fread(&mesh.IndexOffset, sizeof(DWORD), 1, fp);
     fread(&mesh.IndexLength, sizeof(DWORD), 1, fp);
     fread(&mesh.BoneOffset,  sizeof(DWORD), 1, fp);
@@ -88,6 +90,17 @@ Model2* ModelUtils::Load(const char* filepath) {
   // Read the animation sequences.
   for (uint i = 0; i < nrAni; i ++) { /*TODO*/ }
 
+
+  // Read the texture chunk.
+  for (uint i = 0; i < nrTex; i ++) { 
+    DWORD size;
+    fread(&size, sizeof(DWORD), 1, fp);    
+    BYTE* data = (BYTE*) calloc(size, sizeof(BYTE));
+    fread(data, sizeof(BYTE), size, fp);
+    SimpleTexture* texture = new SimpleTexture(data, size, "-internal-");
+    texture->SetupGLTextureBuffer();
+    model->Textures.push_back(texture);
+  }
   return model;
 }
 
@@ -118,6 +131,7 @@ void ModelUtils::Save(Model2* model, const char* savefile) {
   uint nrMsh = model->Meshes.size();     fwrite(&nrMsh, sizeof(uint), 1, fp);
   uint nrBne = model->Bones.size();      fwrite(&nrBne, sizeof(uint), 1, fp);
   uint nrAni = model->Animations.size(); fwrite(&nrAni, sizeof(uint), 1, fp);
+  uint nrTex = model->Textures.size();   fwrite(&nrTex, sizeof(uint), 1, fp);
 
   // Write vertices, normals, texture vectors and indices.
   for (uint i=0; i<nrVtx; i++) fwrite(&model->Vertices[i], sizeof(Float3), 1, fp);
@@ -130,6 +144,7 @@ void ModelUtils::Save(Model2* model, const char* savefile) {
     fwrite(&model->Meshes[i].ID,          sizeof(char), 32, fp);
     fwrite(&model->Meshes[i].Enabled,     sizeof(bool),  1, fp);
     fwrite(&model->Meshes[i].Texture,     sizeof(char), 80, fp);
+    fwrite(&model->Meshes[i].TextureIdx,  sizeof(short), 1, fp);
     fwrite(&model->Meshes[i].IndexOffset, sizeof(DWORD), 1, fp);
     fwrite(&model->Meshes[i].IndexLength, sizeof(DWORD), 1, fp);
     fwrite(&model->Meshes[i].BoneOffset,  sizeof(DWORD), 1, fp);
@@ -144,6 +159,15 @@ void ModelUtils::Save(Model2* model, const char* savefile) {
   // Write the animation sequences.
   for (uint i = 0; i < nrAni; i ++) {
     //TODO s.o.
+  }
+
+
+  // Write the texture chunk.
+  for (uint i = 0; i < nrTex; i ++) {
+    DWORD size = model->Textures[i]->Size();
+    BYTE* data = model->Textures[i]->Data();
+    fwrite(&size, sizeof(DWORD), 1, fp);
+    fwrite(data, sizeof(BYTE), size, fp);
   }
 
   // Close file stream and quit.

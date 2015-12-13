@@ -128,6 +128,7 @@ Model2* Converter::ReadObj(const char* inputfile) {
       curMesh = new Mesh2();
       strcpy(curMesh->ID, mtl);
       strcpy(curMesh->Texture, ""); //TODO Read the texture name from the MTLLIB.
+      curMesh->Enabled = true;
 
       // Increase index offset and reset current index counter.
       indicesOffset += indicesRead;
@@ -141,6 +142,7 @@ Model2* Converter::ReadObj(const char* inputfile) {
     curMesh = new Mesh2();
     strcpy(curMesh->ID, "-default-");
     strcpy(curMesh->Texture, "");
+    curMesh->Enabled = true;
   }
 
   curMesh->IndexOffset = indicesOffset;

@@ -74,6 +74,10 @@ Converter::Converter(int argc, char** argv) {
 
     // Display the converted model.
     if (params.display) {
+
+      delete model;
+      model = ModelUtils::Load(params.outputfile);
+
       ALU alu = ALU();
       alu.TestConvertedModel(model);
       alu.Start();
