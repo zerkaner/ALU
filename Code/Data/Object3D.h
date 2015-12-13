@@ -1,6 +1,6 @@
 #pragma once
 #include "Primitives.h"
-#include "Model3D.h"
+#include "Model.h"
 #include "Vector.h"
 
 
@@ -13,7 +13,7 @@ class Object3D {
     Vector Heading;       // Orientation (yaw, pitch, roll).
     Vector Movement;      // The movement speeds as a vector (V).
     Vector Acceleration;  // Change of movement speeds (A).
-    Model3D* Model;       // 3D model reference.
+    Model2* Model;        // 3D model reference.
 
     // Parameters for physics simulation.
     float Mass;           // Mass of object.

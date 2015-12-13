@@ -182,6 +182,7 @@ void ModelUtils::Save(Model2* model, const char* savefile) {
  * @param factor The scaling factor. */
 void ModelUtils::ScaleModel(Model2* model, float factor) {
   printf("Scaling model by factor '%6.4f'.\n", factor);
+  if (model == NULL) { printf("[Error] Model does not exist!\n"); return; }
   for (uint i = 0; i < model->Vertices.size(); i ++) {
     model->Vertices[i].X *= factor;
     model->Vertices[i].Y *= factor;
@@ -231,3 +232,103 @@ void ModelUtils::ScaleModelToExtent(Model2* model, char axis, float value) {
   float factor = value / (maxVal - minVal);
   ScaleModel(model, factor);
 }
+
+
+/* 
+// Calculate vertex normals.
+void Model3D::CalculateNormals() {
+  for (unsigned int i = 0; i < Geosets.size(); i ++) {
+    Geoset* geo = Geosets[i];
+
+    // Allocate normals array and set counter.
+    if (geo->nrN > 0) delete[] geo->normals;
+    geo->nrN = geo->nrV;
+    geo->normals = new Float3 [geo->nrN];
+
+
+    // Calculate all triangle normals and put them to the correspondent vertex normals.
+    for (int g = 0; g < geo->nrG; g ++) {
+      Geometry* tri = &geo->geometries[g];
+
+      // Get edge vectors u and v (v1v2, v1v3).
+      Float3 v1 = geo->vertices[tri->vIdx[2]];
+      Float3 v2 = geo->vertices[tri->vIdx[1]];
+      Float3 v3 = geo->vertices[tri->vIdx[0]];
+      Float3 u = Float3(v2.X-v1.X, v2.Y-v1.Y, v2.Z-v1.Z);
+      Float3 v = Float3(v3.X-v1.X, v3.Y-v1.Y, v3.Z-v1.Z);
+
+      // Calculate triangle normal vector (cross product).
+      Float3 nor = Float3(
+        (u.Y*v.Z - u.Z*v.Y), 
+        (u.Z*v.X - u.X*v.Z), 
+        (u.X*v.Y - u.Y*v.X)
+      );
+
+      // Add calculated triangle normal vector to all involved vertices-normals.
+      geo->normals[tri->vIdx[0]] += nor;
+      geo->normals[tri->vIdx[1]] += nor;
+      geo->normals[tri->vIdx[2]] += nor;
+
+      // Set index references. These are the same as the vertex indices.
+      tri->nIdx[0] = tri->vIdx[0];
+      tri->nIdx[1] = tri->vIdx[1];
+      tri->nIdx[2] = tri->vIdx[2];
+    }
+
+
+    // Normalize all calculated normal vectors to unit vectors.
+    for (int n = 0; n < geo->nrN; n ++) {
+      float length = sqrt(
+        geo->normals[n].X*geo->normals[n].X + 
+        geo->normals[n].Y*geo->normals[n].Y + 
+        geo->normals[n].Z*geo->normals[n].Z
+      );
+      geo->normals[n].X /= length;
+      geo->normals[n].Y /= length;
+      geo->normals[n].Z /= length;    
+    }
+  }
+}
+
+
+
+
+// 2nd version (not used).
+void Model3D::CalculateNormals() {
+  for (unsigned int i = 0; i < Geosets.size(); i ++) {
+    Geoset* geo = Geosets[i];
+
+    // Allocate normals array and set counter.
+    if (geo->nrN > 0) delete[] geo->normals;
+    geo->nrN = geo->nrG;
+    geo->normals = new Float3 [geo->nrN];
+
+    for (int n = 0; n < geo->nrN; n ++) {
+      Geometry* tri = &geo->geometries[n];
+
+      // Get edge vectors u and v (p1p2, p1p3).
+      Float3 p1 = geo->vertices[tri->vIdx[0]];
+      Float3 p2 = geo->vertices[tri->vIdx[2]];
+      Float3 p3 = geo->vertices[tri->vIdx[1]];
+      Float3 u = Float3(p2.X-p1.X, p2.Y-p1.Y, p2.Z-p1.Z);
+      Float3 v = Float3(p3.X-p1.X, p3.Y-p1.Y, p3.Z-p1.Z);
+
+      // Calculate normal vector (cross product) and set index reference.
+      geo->normals[n].X = u.Y*v.Z - u.Z*v.Y;
+      geo->normals[n].Y = u.Z*v.X - u.X*v.Z;
+      geo->normals[n].Z = u.X*v.Y - u.Y*v.X;
+      tri->nIdx[0] = tri->nIdx[1] = tri->nIdx[2] = n;
+      
+      // Normalize the calculated vectors to unit vectors.
+      float length = sqrt(
+        geo->normals[n].X*geo->normals[n].X + 
+        geo->normals[n].Y*geo->normals[n].Y + 
+        geo->normals[n].Z*geo->normals[n].Z
+      );
+      geo->normals[n].X /= length;
+      geo->normals[n].Y /= length;
+      geo->normals[n].Z /= length;
+    }
+  }
+}
+*/

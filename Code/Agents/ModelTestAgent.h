@@ -10,23 +10,21 @@
 class ModelTestAgent : public SpatialAgent, public IAgentLogic, public IControllerModule {
 
   private:
-    int geoset = 0; 
+    int _selectedMesh = 0;
 
   public:
-    ModelTestAgent(World* world, Environment* env, Model3D* model, Vector pos) : SpatialAgent(world, env) {
+    ModelTestAgent(World* world, Environment* env, Model2* model, Vector pos) : SpatialAgent(world, env) {
       RL = this;
       Data->Position = pos;
       Data->Model = model;
-      //Data->Model->Geosets[0]->enabled = true;
       AddToEnvironment();
     }
 
 
     IInteraction* Reason() {  
-
       Data->Heading.X += 1.0f;
       if (Data->Heading.X >= 360.0f) Data->Heading.X = 0.0f;
-      return NULL; //new TestInteraction();
+      return NULL;
     }
 
 
@@ -35,21 +33,26 @@ class ModelTestAgent : public SpatialAgent, public IAgentLogic, public IControll
     * @param mod The used modifier (Ctrl, Shift...). */
     void KeyPressed(Key key, Modifier mod) {
       switch (key) {
-        case KEY_SPACE:  
-          Data->Model->Geosets[geoset]->enabled = !Data->Model->Geosets[geoset]->enabled; // Invert bit. 
-          printf(" %s ", (Data->Model->Geosets[geoset]->enabled)? "enabled" : "disabled");
+        case KEY_SPACE:
+          Data->Model->Meshes[_selectedMesh].Enabled = !Data->Model->Meshes[_selectedMesh].Enabled; // Invert bit. 
+          printf(" %s ", (Data->Model->Meshes[_selectedMesh].Enabled) ? "enabled" : "disabled");
           break;
 
-        case KEY_N: 
-          geoset --;
-          if (geoset < 0) geoset = Data->Model->Geosets.size() - 1;
-          printf("\nGeoset %d [%d].", geoset, Data->Model->Geosets[geoset]->id);
-          break;        
-        
-        case KEY_M: 
-          geoset ++;
-          if (geoset == Data->Model->Geosets.size()) geoset = 0;
-          printf("\nGeoset %d [%d].", geoset, Data->Model->Geosets[geoset]->id);
+        case KEY_N:
+          _selectedMesh --;
+          if (_selectedMesh < 0) _selectedMesh = Data->Model->Meshes.size() - 1;
+          printf("\nGeoset %d [%d].", _selectedMesh, Data->Model->Meshes[_selectedMesh].ID);
+          break;
+
+        case KEY_M:
+          _selectedMesh ++;
+          if (_selectedMesh == Data->Model->Meshes.size()) _selectedMesh = 0;
+          printf("\nGeoset %d [%d].", _selectedMesh, Data->Model->Meshes[_selectedMesh].ID);
+          break;
+
+        case KEY_R:
+          Data->Model->_renderMode ++;
+          if (Data->Model->_renderMode == 4) Data->Model->_renderMode = 0;
           break;
       }
     }

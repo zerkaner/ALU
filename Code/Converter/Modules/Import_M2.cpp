@@ -99,8 +99,6 @@ Model2* Converter::ReadM2(MemoryStream* m2) {
     mesh->IndexLength = iL;
 
     m2->Seek(MemoryStream::CURRENT, 36);  // Skip the bones (until animation is integrated later). 
-    //printf("[%02d]: ID: %4d, sVtx: %4d, nrV: %3d | sTri: %d, nrG: %d\n",
-    //  i, geoset->id, sVtx, geoset->nrV, sTri, geoset->nrG);
     mesh->BoneOffset = 0;
     mesh->BoneCount = 0;
 

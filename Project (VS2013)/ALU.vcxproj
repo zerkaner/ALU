@@ -24,7 +24,6 @@
     <ClCompile Include="..\Code\Converter\Utils\FileUtils.cpp" />
     <ClCompile Include="..\Code\Data\Compression\Archiver.cpp" />
     <ClCompile Include="..\Code\Data\Model.cpp" />
-    <ClCompile Include="..\Code\Data\Model3D.cpp" />
     <ClCompile Include="..\Code\Data\Quaternion.cpp" />
     <ClCompile Include="..\Code\Data\StatsInfo.cpp" />
     <ClCompile Include="..\Code\Data\Textures\ImageLoader.cpp" />
@@ -45,7 +44,6 @@
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h" />
     <ClInclude Include="..\Code\Agents\ModelTestAgent.h" />
-    <ClInclude Include="..\Code\Agents\NewModelAgent.h" />
     <ClInclude Include="..\Code\Agents\Perception\PerceptionUnit.h" />
     <ClInclude Include="..\Code\Agents\Perception\Sensor.h" />
     <ClInclude Include="..\Code\Agents\Reasoning\IAgentLogic.h" />
@@ -61,7 +59,6 @@
     <ClInclude Include="..\Code\Data\Compression\Archiver.h" />
     <ClInclude Include="..\Code\Data\Compression\Miniz.h" />
     <ClInclude Include="..\Code\Data\Model.h" />
-    <ClInclude Include="..\Code\Data\Model3D.h" />
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />
     <ClInclude Include="..\Code\Data\Quaternion.h" />

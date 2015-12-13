@@ -11,7 +11,6 @@ class Environment : public IDrawable {
 
   private:
     IDrawable* _terrain;
-    Model2* experimentalModel = NULL;
 
   public:
 
@@ -35,13 +34,6 @@ class Environment : public IDrawable {
     }
 
 
-    /** Add a model in the new, experimental model format.
-    * @param mdl The new model. */
-    void AddModel2(Model2* mdl) {
-      experimentalModel = mdl;
-    }
-
-
     /** Remove an object from the environment.
      * @param obj The object to remove. */
     void RemoveObject(Object3D* obj) {
@@ -55,7 +47,5 @@ class Environment : public IDrawable {
       for (unsigned int i = 0; i < Objects.Objects.size(); i ++) {
         GLDrawer::Draw(Objects.Objects[i]);
       }
-
-      if (experimentalModel != NULL) GLDrawer::Draw(experimentalModel);
     }
 };

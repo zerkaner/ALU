@@ -1,6 +1,6 @@
-#include <Agents/TestAgent.h>     // DBG
-#include <Agents/NewModelAgent.h> // DBG
-#include <Data/Object3D.h>        // DBG
+#include <Agents/TestAgent.h>      // DBG
+#include <Agents/ModelTestAgent.h> // DBG
+#include <Data/Object3D.h>         // DBG
 #include <Data/StatsInfo.h>
 #include <Data/Textures/ImageLoader.h>      // DBG
 #include <Environment/HeightmapTerrain.h>   // DBG
@@ -41,37 +41,37 @@ ALU::ALU() :
 
   Object3D* obj = new Object3D();
   obj->Position = Vector(8, 3, 0.2f);
-  obj->Model = new Model3D("M4/Tree01.m4");
+  obj->Model = ModelUtils::Load("M4/Tree01.m4");
   _world.GetEnvironment()->AddObject(obj);
 
   
   obj = new Object3D();
   obj->Position = Vector(1, 1.5f, 0.2f);
-  obj->Model = new Model3D("M4/Tree03.m4");
+  obj->Model = ModelUtils::Load("M4/Tree03.m4");
   obj->Heading.X = 25.0f;
   _world.GetEnvironment()->AddObject(obj);
 
   obj = new Object3D();
   obj->Position = Vector(0.8f, 8.8f, 0.2f);
-  obj->Model = new Model3D("M4/Tree04.m4");
+  obj->Model = ModelUtils::Load("M4/Tree04.m4");
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
   obj->Position = Vector(1.4f, 5.5f, 0.2f);
-  obj->Model = new Model3D("M4/Bear.m4");
+  obj->Model = ModelUtils::Load("M4/Bear.m4");
   _world.GetEnvironment()->AddObject(obj);
   
 
   obj = new Object3D();
   obj->Position = Vector(1, 7.2f, 0.1f);
-  obj->Model = new Model3D("M4/Timberwolf.m4");
+  obj->Model = ModelUtils::Load("M4/Timberwolf.m4");
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
   obj->Position = Vector(1, 5.5f, 0.05f);
-  obj->Model = new Model3D("M4/Stable.m4");
+  obj->Model = ModelUtils::Load("M4/Stable.m4");
   obj->Heading.X = 80.0f;
   _world.GetEnvironment()->AddObject(obj);
 }
@@ -113,10 +113,7 @@ void ALU::TestConvertedModel(Model2* model) {
   for (uint i = 0; i < model->Textures.size(); i ++) {
     ((SimpleTexture*) model->Textures[i])->SetupGLTextureBuffer();
   }
-  _world.GetEnvironment()->AddModel2(model);
+  ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Vector(7.5f, 7.5f, 0.5f));
+  _listener.AddControllerModule(mta);
   _camera.SetPosition(16.0f, 11.0f, 4, 244, -13);
-
-  
-  IControllerModule* agent = new NewModelAgent(&_world, _world.GetEnvironment(), model);
-  _listener.AddControllerModule(agent);
 }

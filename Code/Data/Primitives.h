@@ -63,36 +63,7 @@ struct Float2 {
 };
 
 
-/** Triangular size geometry ("face"). A geometry consists of three coordinate point, 
- *  texture- and normal vector. Because we don't want to store the same things over 
- *  and over again, we just save the indices to access the v/n/t arrays in the geoset. */
-struct Geometry {
-  bool symIndices; // Symmetrical indices. If 'true', n and t are not used.
-  long vIdx[3];    // Indices to vertices (point coordinates).
-  long nIdx[3];    // Normal vector indices.
-  long tIdx[3];    // Texture slice vector indices.
-};
 
-
-/** Partial structure. A model consists of one or more geosets. It contains the vector
- *  arrays, an index table and a material IS,*/
-struct Geoset {
-  int id;
-  bool enabled;
-  int textureID;            // Texture of this geoset.
-  long nrV, nrN, nrT, nrG;  // Number of vertices, normals, texture vectors and geometries.
-  Float3* vertices;         // Coordinate of a vertex.
-  Float3* normals;          // Normal vector that shows a vertex's orientation.
-  Float2* texVects;         // Vectors to the texture slice of a point.  
-  Geometry* geometries;     // Geoset geometries.
-};
-
-
-/** The mesh holds a number of geosets and thereby constitutes the look of the model. */
-struct Mesh {
-  int nrElements;    // Number of elements.
-  Geoset** geosets;  // Geoset pointer array.
-};
 
 
 /** Material structure, containing a texture and various reflection settings. */

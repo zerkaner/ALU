@@ -34,8 +34,8 @@ public:
       }
       if (dpMode != -1) {
         for (unsigned int i = 0; i < _worldObjects->size(); i ++) {
-          Model3D* model = (*_worldObjects)[i]->Model;
-          if (model != NULL) model->DisplayMode = (Model3D::RenderingMode) dpMode;
+          Model2* model = (*_worldObjects)[i]->Model;
+          if (model != NULL) model->_renderMode = dpMode;
         }
       }    
     }
