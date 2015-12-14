@@ -7,6 +7,7 @@ bool IsLine(char* buffer, char* line) {
 }
 
 
+
 /** Reads a WGL lump file (TojiCode).
  * @param filepath Path to a .wglvert or .wglmodel to load.
  * @return Loaded model structure. */
@@ -71,6 +72,7 @@ Model2* Converter::ReadWgl(const char* filepath) {
     fread(&w, sizeof(WORD), 1, fpV);
     model->Indices.push_back(w);
   }
+  fclose(fpV);
 
 
   //_________________________________________________________________________[MODEL FILE]
@@ -143,9 +145,112 @@ Model2* Converter::ReadWgl(const char* filepath) {
       model->Bones[i].Rotation.W
     );
   }
-
-
-  fclose(fpV);
   fclose(fpM);
+
+
+
+  //_____________________________________________________________________[ANIMATION FILE]
+  char animFile[256];
+  sprintf(animFile, "%s/%s.%s", dir, "run_forward", "wglanim");
+  FILE* fpA = FileUtils::File_open(animFile, false);
+  if (fpA == NULL) return model;
+
+  Animation2 anim = Animation2();
+  bool readKeyframes = false;
+  int keyframe = -1, boneframe = -1;
+
+
+  anim.Bones.push_back("player_root");
+  anim.Bones.push_back("Bip001");
+  anim.Bones.push_back("Bip001 Pelvis");
+  anim.Bones.push_back("Bip001 L Thigh");
+  anim.Bones.push_back("Bip001 L Calf");
+  anim.Bones.push_back("Bip001 L Foot");
+  anim.Bones.push_back("Bip001 L Toe0");
+  anim.Bones.push_back("Bip001 R Thigh");
+  anim.Bones.push_back("Bip001 R Calf");
+  anim.Bones.push_back("Bip001 R Foot");
+  anim.Bones.push_back("Bip001 R Toe0");
+  anim.Bones.push_back("Bip001 Spine");
+  anim.Bones.push_back("Bip001 Spine1");
+  anim.Bones.push_back("Bip001 Neck");
+  anim.Bones.push_back("Bip001 Head");
+  anim.Bones.push_back("Bip001 L Clavicle");
+  anim.Bones.push_back("Bip001 L UpperArm");
+  anim.Bones.push_back("Bip001 L Forearm");
+  anim.Bones.push_back("Bip001 L Hand");
+  anim.Bones.push_back("Bip001 L Finger0");
+  anim.Bones.push_back("Bip001 L Finger01");
+  anim.Bones.push_back("Bip001 L Finger1");
+  anim.Bones.push_back("Bip001 L Finger11");
+  anim.Bones.push_back("Bip001 L Finger2");
+  anim.Bones.push_back("Bip001 L Finger21");
+  anim.Bones.push_back("Bip001 R Clavicle");
+  anim.Bones.push_back("Bip001 R UpperArm");
+  anim.Bones.push_back("Bip001 R Forearm");
+  anim.Bones.push_back("Bip001 R Hand");
+  anim.Bones.push_back("Bip001 R Finger0");
+  anim.Bones.push_back("Bip001 R Finger01");
+  anim.Bones.push_back("Bip001 R Finger1");
+  anim.Bones.push_back("Bip001 R Finger11");
+  anim.Bones.push_back("Bip001 R Finger2");
+  anim.Bones.push_back("Bip001 R Finger21");
+  anim.Bones.push_back("Bip001 Footsteps");
+
+
+  // Main read-in loop. Runs over the entire file and evaluates the read line.
+  while (fgets(buffer, 1024, fpA) != NULL) {
+    if      (IsLine(buffer, "animVersion")) anim.AnimVersion = FileUtils::JSON_getInteger(buffer);
+    else if (IsLine(buffer, "name"))        FileUtils::JSON_getString(buffer, anim.Name);
+    else if (IsLine(buffer, "frameRate"))   anim.FrameRate = FileUtils::JSON_getInteger(buffer);
+    else if (IsLine(buffer, "duration"))    anim.Duration = FileUtils::JSON_getInteger(buffer);
+    else if (IsLine(buffer, "frameCount"))  anim.FrameCount = FileUtils::JSON_getInteger(buffer); 
+
+    else if (strstr(buffer, "keyframes") != NULL) readKeyframes = true;
+    if (readKeyframes) {
+      if (strstr(buffer, "[{") != NULL) {
+        keyframe ++;
+        boneframe = 0;
+        anim.Keyframes.push_back(Keyframe());
+        anim.Keyframes[keyframe].BoneTrans.push_back(BoneDir());
+      }
+
+      else if (strstr(buffer, "}, {") != NULL) {
+        boneframe ++;
+        anim.Keyframes[keyframe].BoneTrans.push_back(BoneDir());
+      }
+      
+      else if (IsLine(buffer, "pos")) {
+        Float3 f;
+        FileUtils::JSON_getFloatArray(buffer, (float*) &f, i1);
+        anim.Keyframes[keyframe].BoneTrans[boneframe].Position = f;
+      }
+        
+      else if (IsLine(buffer, "rot")) {
+        Quaternion q;
+        FileUtils::JSON_getFloatArray(buffer, (float*) &q, i1);
+        anim.Keyframes[keyframe].BoneTrans[boneframe].Rotation = q;
+      }
+    }
+  }
+
+
+  for (uint i = 0; i < anim.Keyframes.size(); i ++) {
+    for (uint b = 0; b < anim.Keyframes[i].BoneTrans.size(); b ++) {
+      printf("%d %d:  (%f,%f,%f)  (%f,%f,%f,%f)\n", i, b,
+        anim.Keyframes[i].BoneTrans[b].Position.X,
+        anim.Keyframes[i].BoneTrans[b].Position.Y,
+        anim.Keyframes[i].BoneTrans[b].Position.Z,
+        anim.Keyframes[i].BoneTrans[b].Rotation.W,
+        anim.Keyframes[i].BoneTrans[b].Rotation.X,
+        anim.Keyframes[i].BoneTrans[b].Rotation.Y,
+        anim.Keyframes[i].BoneTrans[b].Rotation.Z
+        );
+    }
+  }
+
+  model->Animations.push_back(anim);
+
+  fclose(fpA);
   return model;
 }

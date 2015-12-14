@@ -1,5 +1,6 @@
 #pragma once
 #include <Data/Primitives.h>
+#include <Data/Quaternion.h>
 #include <Data/Textures/Texture.h>
 #include <vector>
 
@@ -21,8 +22,30 @@ struct Bone2 {
   bool Skinned;
   float BindPoseMat[16];
 };
-struct Animation2 {
+
+
+struct BoneDir {
+  Float3 Position;
+  Quaternion Rotation;
 };
+
+
+struct Keyframe {
+  std::vector<BoneDir> BoneTrans;
+};
+
+
+struct Animation2 {
+  int AnimVersion;
+  char Name[32];
+  int FrameRate;
+  int Duration;
+  int FrameCount;
+  std::vector<char*> Bones;
+  std::vector<Keyframe> Keyframes;
+};
+
+
 struct Model2 {
   char Name[80];
   int Version;
@@ -36,6 +59,7 @@ struct Model2 {
   std::vector<SimpleTexture*> Textures;
   int _renderMode = 1; // Debug flag for visual testing. Not part of the model!
 };
+
 
 
 /** Static model class that provides loading, editing and saving of models. */
