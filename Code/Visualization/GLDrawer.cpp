@@ -4,6 +4,10 @@
 #include <SDL_opengl.h>
 #include <cmath>
 
+#include <Data/Math/MathLib.h>
+#include <string.h> //DBG
+int frame = 0;
+
 
 void GLDrawer::Draw(Object3D* obj) {
 
@@ -28,8 +32,73 @@ void GLDrawer::Draw(Object3D* obj) {
   glRotatef(obj->Heading.X, 0.0f, 0.0f, -1.0f);   // Rotate on z [height]-Axis (set yaw).       
   glRotatef(obj->Heading.Y, 1.0f, 0.0f, 0.0f);    // Rotate on x-Axis (set pitch).  
   
+
   // Draw on selected rendering mode.
-  Model2* mdl = obj->Model;  
+  Model2* mdl = obj->Model;
+
+
+  //--------------------------------------------------
+  //TODO Animation stuff dumped right here:
+  if (mdl->Animations.size() > 0) {
+    int framecount = mdl->Animations[0].FrameCount;  // 18
+    int duration = mdl->Animations[0].Duration;      // 633
+    int framerate = mdl->Animations[0].FrameRate;    // 30
+    int curFrame = frame % framecount;
+
+
+    // Loop over all bones.
+    for (uint i = 0; i < mdl->Bones.size(); i ++) {
+      Bone2* curBone = &mdl->Bones[i];
+
+      // Find index for the BoneDir's in this animation.
+      int idx = -1;
+      for (uint j = 0; j < mdl->Animations[0].Bones.size(); j ++) {
+        char* str = mdl->Animations[0].Bones[j];
+        if (strstr(str, curBone->Name) != NULL) {
+          idx = j;
+          break;
+        }
+      }
+
+      BoneDir transition = mdl->Animations[0].Keyframes[curFrame].BoneTrans[idx];
+      curBone->Position = transition.Position;
+      curBone->Rotation = transition.Rotation;
+
+
+      // Apply parent transformation to this bone.
+      if (curBone->Parent != -1) {
+        Bone2* parent = &mdl->Bones[curBone->Parent];    
+        curBone->WorldPos = MathLib::RotateVector(curBone->Position, parent->WorldRot);
+        curBone->WorldPos += parent->WorldPos;
+        curBone->WorldRot = MathLib::MultiplyRotations(parent->WorldRot, curBone->Rotation);
+      }
+
+      // Root bone world position and rotation are the same as it's origins.
+      else {
+        curBone->WorldPos = curBone->Position;
+        curBone->WorldRot = curBone->Rotation;
+      }
+
+      // Compute matrices for those bones who have vertices assigned.
+      if (curBone->Skinned) {
+        MathLib::CreateRTMatrix(curBone->WorldRot, curBone->WorldPos, curBone->BoneMat);
+        MathLib::MultiplyMatrices(curBone->BoneMat, curBone->BindPoseMat, curBone->BoneMat);
+      }
+    }
+
+
+    
+    //printf("FC %d  DUR %d  FR %d  CF %d\n", framecount, duration, framerate, curFrame);
+  
+    frame ++;
+  }
+
+
+
+
+
+
+  //--------------------------------------------------
   switch (mdl->_renderMode) {
 
     case 1: {  // Output point cloud.
@@ -63,7 +132,7 @@ void GLDrawer::Draw(Object3D* obj) {
 
       for (uint b = 0; b < mdl->Bones.size(); b ++) { // Bone loop.
         glColor3f(1.0, 0.0, 0.0);
-        Float3 p = mdl->Bones[b].Position;
+        Float3 p = /*mdl->Bones[b].WorldPos;*/Float3(mdl->Bones[b].WorldPos.X, mdl->Bones[b].WorldPos.Z, mdl->Bones[b].WorldPos.Y);
         float o = 0.015f;
         glBegin(GL_LINE_LOOP); // bottom
         glVertex3f(p.X - o, p.Y - o, p.Z - o);  

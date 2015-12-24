@@ -28,6 +28,8 @@ Model2* Converter::ReadWgl(const char* filepath) {
     return NULL;
   }
 
+  bool swapAxis = (strcmp(name, "vat") == 0);
+
   //__________________________________________________________________________[VERT FILE]
 
   DWORD dbuf = 0x00;    // "Read-in and discard" buffer.
@@ -56,11 +58,13 @@ Model2* Converter::ReadWgl(const char* filepath) {
   for (uint i = 0; i < nrElem; i ++) {
     float in[3];
     fread(&in, sizeof(float), 3, fpV);
-    model->Vertices.push_back(Float3(in[0], in[1], in[2]));
+    if (swapAxis) model->Vertices.push_back(Float3(in[0], in[2], in[1]));
+    else model->Vertices.push_back(Float3(in[0], in[1], in[2]));
     fread(&in, sizeof(float), 2, fpV);
     model->UVs.push_back(Float2(in[0], in[1]));
     fread(&in, sizeof(float), 3, fpV);
-    model->Normals.push_back(Float3(in[0], in[1], in[2]));
+    if (swapAxis) model->Normals.push_back(Float3(in[0], in[2], in[1]));
+    else model->Normals.push_back(Float3(in[0], in[1], in[2]));
     int remaining = stride - 32;
     fseek(fpV, remaining, SEEK_CUR);
   }
@@ -83,6 +87,7 @@ Model2* Converter::ReadWgl(const char* filepath) {
   Mesh2* mesh = NULL;
   Bone2* bone = NULL;
   int meshCounter = 0;
+  int texturesRead = 0;
   bool readBones = false;
 
   // Main read-in loop. Runs over the entire file and evaluates the read line.
@@ -99,6 +104,26 @@ Model2* Converter::ReadWgl(const char* filepath) {
       sprintf(mesh->ID, "Mesh %02d", meshCounter);
       strcpy(mesh->Texture, bufferVal);
       mesh->Enabled = true;
+
+      // Load texture.
+      if (strcmp(mesh->Texture, "") != 0) {
+        printf("Loading texture '%s' ", mesh->Texture);
+        FILE* texReader = fopen(mesh->Texture, "rb");
+        if (texReader != NULL) {
+          fseek(texReader, 0L, SEEK_END);          //| Read image size
+          unsigned long bytes = ftell(texReader);  //| and output.
+          printf("[%lu bytes] ", bytes);
+          BYTE* rawData = (BYTE*) calloc(bytes, sizeof(BYTE));
+          fseek(texReader, 0L, SEEK_SET);
+          fread(rawData, sizeof(BYTE), bytes, texReader);
+          model->Textures.push_back(new SimpleTexture(rawData, bytes, mesh->Texture));
+          fclose(texReader);
+          printf("[OK]\n");
+          mesh->TextureIdx = texturesRead;
+          texturesRead ++;
+        }
+        else printf("[ERROR]\n");
+      }
     }
 
     // Read submesh values.
@@ -131,7 +156,7 @@ Model2* Converter::ReadWgl(const char* filepath) {
   if (mesh != NULL) model->Meshes.push_back(*mesh);
   if (bone != NULL) model->Bones.push_back(*bone);
 
-
+  /*
   for (uint i = 0; i < model->Bones.size(); i ++) {
     printf("[%-18s] %2d (%9f, %9f, %9f)  |  (%9f, %9f, %9f, %9f)\n", 
       model->Bones[i].Name,
@@ -145,6 +170,7 @@ Model2* Converter::ReadWgl(const char* filepath) {
       model->Bones[i].Rotation.W
     );
   }
+  */
   fclose(fpM);
 
 
@@ -227,14 +253,14 @@ Model2* Converter::ReadWgl(const char* filepath) {
       }
         
       else if (IsLine(buffer, "rot")) {
-        Quaternion q;
+        Float4 q;
         FileUtils::JSON_getFloatArray(buffer, (float*) &q, i1);
         anim.Keyframes[keyframe].BoneTrans[boneframe].Rotation = q;
       }
     }
   }
 
-
+  /*
   for (uint i = 0; i < anim.Keyframes.size(); i ++) {
     for (uint b = 0; b < anim.Keyframes[i].BoneTrans.size(); b ++) {
       printf("%d %d:  (%f,%f,%f)  (%f,%f,%f,%f)\n", i, b,
@@ -248,7 +274,7 @@ Model2* Converter::ReadWgl(const char* filepath) {
         );
     }
   }
-
+  */
   model->Animations.push_back(anim);
 
   fclose(fpA);

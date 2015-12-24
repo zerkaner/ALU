@@ -30,6 +30,7 @@ struct MDX_Bone {
   int ID;
   int ParentID;
   int GeosetID;
+  Float3 Position;
   MDX_AnimSet* Translation = 0;
   MDX_AnimSet* Rotation = 0;
   MDX_AnimSet* Scaling = 0;
@@ -348,18 +349,28 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   }
 
 
-  // DEBUG OUTPUT - KEEP UNTIL ALL WORKS PROPERLY
-  for (uint i = 0; i < bones.size(); i ++) {
-    printf("Bone [%d]: %s (%d - %d) T: %d | R: %d | S: %d \n",
-      i, bones[i].Name, bones[i].ID, bones[i].ParentID,
-      (bones[i].Translation == 0)? 0 : bones[i].Translation->Size,
-      (bones[i].Rotation    == 0)? 0 : bones[i].Rotation->Size,
-      (bones[i].Scaling     == 0)? 0 : bones[i].Scaling->Size);
+
+  /* READING THE PIVOT POINTS. Probably there are more for lights, particles etc... */
+  while (dbuf != 'TVIP') fread(&dbuf, sizeof(DWORD), 1, fp);
+  fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read pivot chunk size.
+  for (uint i = 0, b = 0; i < chunkSize / 12; i ++) {
+    if (b < bones.size()) {
+      fread(&bones[b].Position, sizeof(Float3), 1, fp);
+      b ++;
+    }
   }
 
 
 
-
+  // DEBUG OUTPUT - KEEP UNTIL ALL WORKS PROPERLY
+  for (uint i = 0; i < bones.size(); i ++) {
+    printf("Bone [%d]: %s (ID: %d - Par: %d) T: %d | R: %d | S: %d  /  Pos: %f, %f, %f\n",
+      i, bones[i].Name, bones[i].ID, bones[i].ParentID,
+      (bones[i].Translation == 0)? 0 : bones[i].Translation->Size,
+      (bones[i].Rotation    == 0)? 0 : bones[i].Rotation->Size,
+      (bones[i].Scaling     == 0)? 0 : bones[i].Scaling->Size,
+      bones[i].Position.X, bones[i].Position.Y, bones[i].Position.Z);
+  }
 
   /* 
   printf("[DBG] Creating bone hierarchy:\n");

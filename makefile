@@ -14,6 +14,7 @@ OBJS = $(wildcard $(SRC)/Agents/*.cpp)\
        $(wildcard $(SRC)/Converter/Utils/*.cpp)\
        $(wildcard $(SRC)/Data/*.cpp)\
        $(wildcard $(SRC)/Data/Compression/*.cpp)\
+       $(wildcard $(SRC)/Data/Math/*.cpp)\
        $(wildcard $(SRC)/Data/Textures/*.cpp)\
        $(wildcard $(SRC)/Environment/*.cpp)\
        $(wildcard $(SRC)/Execution/*.cpp)\

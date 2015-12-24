@@ -21,12 +21,15 @@ struct Bone2 {
   Float4 Rotation;
   bool Skinned;
   float BindPoseMat[16];
+  Float3 WorldPos;
+  Float4 WorldRot;
+  float BoneMat[16];
 };
 
 
 struct BoneDir {
   Float3 Position;
-  Quaternion Rotation;
+  Float4 Rotation;
 };
 
 

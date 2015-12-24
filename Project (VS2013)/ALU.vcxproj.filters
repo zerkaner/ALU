@@ -52,6 +52,9 @@
     <Filter Include="Converter\Utils">
       <UniqueIdentifier>{229db1d2-5e7b-4864-a9a4-ae97b338c5b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Data\Math">
+      <UniqueIdentifier>{11521a9b-a61b-418f-910f-2f6255834970}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp">
@@ -140,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Converter\Modules\Import_M2.cpp">
       <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Math\MathLib.cpp">
+      <Filter>Data\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -295,6 +301,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Converter\Utils\MemoryStream.h">
       <Filter>Converter\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Math\MathLib.h">
+      <Filter>Data\Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

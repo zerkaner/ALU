@@ -30,6 +30,10 @@ struct Font {
 /* Four-dimensional float structure (e.g. for RGBA). */
 struct Float4 {
   float X, Y, Z, W;
+  Float4() {}
+  Float4(float x, float y, float z, float w) {
+    X = x;  Y = y;  Z = z;  W = w;
+  }
 };
 
 

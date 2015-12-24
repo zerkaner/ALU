@@ -4,7 +4,7 @@
     "meshes": [ 
         {
             "material": "",
-            "defaultTexture": "js/model/Player.png",
+            "defaultTexture": "Other/player.jpg",
             "submeshes": [
                 { 
                     "indexOffset": 0,
