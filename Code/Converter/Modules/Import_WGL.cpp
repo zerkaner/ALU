@@ -1,4 +1,5 @@
 #include <Converter/Converter.h>
+#include <stdlib.h>
 
 
 /** String contains shortcut. */

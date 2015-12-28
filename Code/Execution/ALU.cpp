@@ -1,5 +1,6 @@
 #include <Agents/TestAgent.h>      // DBG
 #include <Agents/ModelTestAgent.h> // DBG
+#include <Data/AnimationManager.h>         // DBG
 #include <Data/Object3D.h>         // DBG
 #include <Data/StatsInfo.h>
 #include <Data/Textures/ImageLoader.h>      // DBG
@@ -113,6 +114,11 @@ void ALU::TestConvertedModel(Model2* model) {
   for (uint i = 0; i < model->Textures.size(); i ++) {
     ((SimpleTexture*) model->Textures[i])->SetupGLTextureBuffer();
   }
+
+  ModelUtils::PrintDebug(model);
+  model->AnimMgr = new AnimationManager(model);
+  model->AnimMgr->Play("Walk");
+
   ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Vector(7.5f, 7.5f, 0.5f));
   _listener.AddControllerModule(mta);
   _camera.SetPosition(16.0f, 11.0f, 4, 244, -13);

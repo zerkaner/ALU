@@ -6,7 +6,7 @@
 
 #include <Data/Math/MathLib.h>
 #include <string.h> //DBG
-int frame = 0;
+#include <Data/AnimationManager.h>
 
 
 void GLDrawer::Draw(Object3D* obj) {
@@ -39,6 +39,7 @@ void GLDrawer::Draw(Object3D* obj) {
 
   //--------------------------------------------------
   //TODO Animation stuff dumped right here:
+  /*
   if (mdl->Animations.size() > 0) {
     int framecount = mdl->Animations[0].FrameCount;  // 18
     int duration = mdl->Animations[0].Duration;      // 633
@@ -92,9 +93,9 @@ void GLDrawer::Draw(Object3D* obj) {
   
     frame ++;
   }
+  */
 
-
-
+  if (mdl->AnimMgr != NULL) mdl->AnimMgr->Tick();
 
 
 
@@ -132,7 +133,7 @@ void GLDrawer::Draw(Object3D* obj) {
 
       for (uint b = 0; b < mdl->Bones.size(); b ++) { // Bone loop.
         glColor3f(1.0, 0.0, 0.0);
-        Float3 p = /*mdl->Bones[b].WorldPos;*/Float3(mdl->Bones[b].WorldPos.X, mdl->Bones[b].WorldPos.Z, mdl->Bones[b].WorldPos.Y);
+        Float3 p = mdl->Bones[b].WorldPos;///*mdl->Bones[b].WorldPos;*/Float3(mdl->Bones[b].WorldPos.X, mdl->Bones[b].WorldPos.Z, mdl->Bones[b].WorldPos.Y);
         float o = 0.015f;
         glBegin(GL_LINE_LOOP); // bottom
         glVertex3f(p.X - o, p.Y - o, p.Z - o);  

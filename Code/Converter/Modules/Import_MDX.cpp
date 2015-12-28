@@ -79,7 +79,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
     fread(&seq.IntervalEnd,   sizeof(DWORD),  1, fp); // Read last animation frame.
     fread(&seq.MoveSpeed,     sizeof(float),  1, fp); // Read movement speed.
     fread(&dbuf,              sizeof(DWORD),  1, fp); // Read flags (evaluation later). 
-    if (dbuf == 0) seq.Loop = true;                   // Flags: 0: Looping, 1: NonLooping.                 
+    seq.Loop = (dbuf == 0);                           // Flags: 0: Looping, 1: NonLooping.                 
     fread(&fbuf,              sizeof(float),  1, fp); // Read 'Rarity' (whatever it is).
     fread(&dbuf,              sizeof(DWORD),  1, fp); // Read 'SyncPoint' (probably n.y.i). 
     fread(&seq.BoundsRadius,  sizeof(float),  1, fp); // Read bounds radius (broad phase CD).
@@ -361,8 +361,73 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   }
 
 
+  //TODO <<<<<<<<<<<<<<<<<
+  // 1) Writing bones to the 'real' model.
+  //    - Name, +ID, Parent, Position
+  for (uint i = 0; i < bones.size(); i ++) {
+    Bone2 b = Bone2();
+    strcpy(b.Name, bones[i].Name);
+    b.Parent = bones[i].ParentID;
+    b.Position = bones[i].Position;
+    b.Rotation = Float4(0.0f, 0.0f, 0.0f, 0.0f);
+    model->Bones.push_back(b);
+  }
+
+
+
+
+  // Playin' with da sequences:
+  for (uint i = 0; i < sequences.size(); i ++) {
+    Sequence seq = Sequence();
+    strcpy(seq.Name, sequences[i].Name);
+    seq.ID = i;
+    seq.Length = sequences[i].IntervalEnd - sequences[i].IntervalStart;
+    seq.Loop = sequences[i].Loop;
+
+    // Now it's getting hard: We'll have to loop over each bone, its transformation 
+    // sets (translation, rotation and scaling) and get all relevant frames.
+    int start = sequences[i].IntervalStart;
+    int end = sequences[i].IntervalEnd;    
+    for (uint b = 0; b < bones.size(); b ++) {
+      TransformationSet set = TransformationSet();    
+      
+      // Go over the TRS sets. Because they're basically the same, we use this generic loop.
+      for (int setLoop = 0; setLoop < 3; setLoop ++) {
+        MDX_AnimSet* animset;
+        vector<TransformationDirective>* vec;
+        if (setLoop == 0) { animset = bones[b].Translation; vec = &set.Translations; }
+        if (setLoop == 1) { animset = bones[b].Rotation; vec = &set.Rotations; }
+        if (setLoop == 2) { animset = bones[b].Scaling; vec = &set.Scalings; }
+        if (animset == 0) continue;  // Skip on empty set, else loop over its entries.
+        for (int s = 0; s < animset->Size; s ++) {
+          int frame = animset->Time[s];
+          if (frame < start) continue;   // Before start: Skip!
+          if (frame > end) break;        // After interval: Exit loop.
+          TransformationDirective dir = TransformationDirective();
+          dir.Frame = frame - start;
+          dir.X = animset->Values[s].X;
+          dir.Y = animset->Values[s].Y;
+          dir.Z = animset->Values[s].Z;
+          if (setLoop == 1) dir.W = animset->Values[s].W;  // 4th value (quaternion).
+          vec->push_back(dir);
+        }
+      }
+
+      // Check for content. There's no need to insert empty sets (= bones not moved anyway).
+      if (set.Translations.size() > 0 || set.Rotations.size() > 0 || set.Scalings.size() > 0) {
+        seq.Transformations[&model->Bones[b]] = set;
+      }
+    }
+
+    model->Sequences.push_back(seq);
+  }
+
+
+
+
 
   // DEBUG OUTPUT - KEEP UNTIL ALL WORKS PROPERLY
+  /*
   for (uint i = 0; i < bones.size(); i ++) {
     printf("Bone [%d]: %s (ID: %d - Par: %d) T: %d | R: %d | S: %d  /  Pos: %f, %f, %f\n",
       i, bones[i].Name, bones[i].ID, bones[i].ParentID,
@@ -371,6 +436,10 @@ Model2* Converter::ReadMdx(const char* inputfile) {
       (bones[i].Scaling     == 0)? 0 : bones[i].Scaling->Size,
       bones[i].Position.X, bones[i].Position.Y, bones[i].Position.Z);
   }
+  */
+
+
+  
 
   /* 
   printf("[DBG] Creating bone hierarchy:\n");
