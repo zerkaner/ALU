@@ -140,12 +140,13 @@ class AnimationManager {
             bone->Rotation = Interpolate(rot, _rotIndex[i], next, true);
           }
 
+          /*
           if (strstr(bone->Name, "Mesh06") != NULL) {
             printf("[%03d] | Pos: %7.4f, %7.4f, %7.4f  |  Rot: %7.4f, %7.4f, %7.4f, %7.4f\n",
               _curFrame, 
               bone->Position.X, bone->Position.Y, bone->Position.Z, 
               bone->Rotation.X, bone->Rotation.Y, bone->Rotation.Z, bone->Rotation.W);
-          }
+          }*/
 
           // Step 3: SCALING.
           //TODO Not used by now ...
@@ -166,11 +167,12 @@ class AnimationManager {
           bone->WorldRot = bone->Rotation;
         }
 
+        /*
         if (strstr(bone->Name, "Mesh06") != NULL) {
           printf("      | WPos %7.4f, %7.4f, %7.4f  |  WRot %7.4f, %7.4f, %7.4f, %7.4f\n",
             bone->WorldPos.X, bone->WorldPos.Y, bone->WorldPos.Z,
             bone->WorldRot.X, bone->WorldRot.Y, bone->WorldRot.Z, bone->WorldRot.W);
-        }
+        }*/
 
         // Compute matrices for those bones who have vertices assigned.
         //MathLib::CreateRTMatrix(bone->WorldRot, bone->WorldPos, bone->BoneMat);

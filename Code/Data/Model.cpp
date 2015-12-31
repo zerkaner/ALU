@@ -257,7 +257,7 @@ void ModelUtils::PrintDebug(Model2* model) {
 
 
   // Animation sequence output.
-  fprintf(fp, "  Sequences (%d):\n", model->Sequences.size());
+  fprintf(fp, "\n  Sequences (%d):", model->Sequences.size());
   for (uint i = 0; i < model->Sequences.size(); i ++) {
     Sequence* seq = &model->Sequences[i];
     fprintf(fp,

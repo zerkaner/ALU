@@ -36,6 +36,11 @@ struct MDX_Bone {
   MDX_AnimSet* Scaling = 0;
 };
 
+/** Forward-declaration of helper function for MDX node reading. */
+static MDX_Bone ReadMDXNode(FILE* fp, DWORD& inclSize);
+
+/** Bone reordering function (to match parents-before-childs criteria). */
+static void ReorderBones(Model2* model);
 
 
 /** Reads a Blizzard MDX file (WarCraft 3).
@@ -278,92 +283,53 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   }
 
 
+  bool repeatLoop = true;
+  while (repeatLoop) {
+    fread(&dbuf, sizeof(DWORD), 1, fp); // Read identifier flag.
+    switch (dbuf) {
 
-  //____________________________________________________________________________________[BONES]
-  // Scan for 'BONE' - animation bones codeblock.
-  while (dbuf != 'ENOB') fread(&dbuf, sizeof(DWORD), 1, fp);
-  fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read total bone chunk size.
-
-  // Read the bone chunk.
-  for (uint i = 0; i < chunkSize; i += inclSize) {
-    MDX_Bone bone = MDX_Bone();
-    fread(&inclSize,      sizeof(DWORD), 1, fp); // Read node structure total size.  
-    fread(&bone.Name,     sizeof(char), 80, fp); // Read name of bone.
-    fread(&bone.ID,       sizeof(DWORD), 1, fp); // Read 'ObjectID'.
-    fread(&bone.ParentID, sizeof(DWORD), 1, fp); // Read 'ParentID'.
-    fread(&dbuf,          sizeof(DWORD), 1, fp); // Skip 'Flags' (always 256).
-
-    // Calculate remaining bytes of current subset.
-    long remaining = inclSize - 4 * sizeof(DWORD) - 80 * sizeof(char);
-
-    // If available, read geoset transformation, rotation and scaling information.
-    while (remaining > 0) {
-      MDX_AnimSet* animSet = new MDX_AnimSet();
-      fread(&dbuf,                   sizeof(DWORD), 1, fp); // Read block identifier.
-      fread(&animSet->Size,          sizeof(DWORD), 1, fp); // Read element size.
-      fread(&animSet->Interpolation, sizeof(DWORD), 1, fp); // Read interpolation type.
-      fread(&animSet->GlobalSeqID,   sizeof(DWORD), 1, fp); // Read global sequence assignment.
-      remaining -= 4 * sizeof(DWORD);
-
-      animSet->Time = new long[animSet->Size];     // Allocate array for time progress.
-      animSet->Values = new Float4[animSet->Size]; // Allocate values array.
-      for (int t = 0; t < animSet->Size; t ++) {
-        fread(&animSet->Time[t],    sizeof(DWORD), 1, fp);  // Read time slot.
-        fread(&animSet->Values[t], sizeof(Float3), 1, fp);  // Read 3D float value.
-        remaining -= sizeof(DWORD) + sizeof(Float3);
-
-        if (dbuf == 'TRGK') {
-          fread(&animSet->Values[t].W, sizeof(float), 1, fp); // Read 4th value (bank angle).
-          remaining -= sizeof(float);
+      //____________________________________________________________________________________[BONES]
+      // Scan for 'BONE' - animation bones codeblock.
+      case 'ENOB': {
+        fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read total bone chunk size.
+        for (uint i = 0; i < chunkSize; i += inclSize) {
+          MDX_Bone bone = ReadMDXNode(fp, inclSize);
+          fread(&dbuf, sizeof(DWORD), 1, fp);   // Read 'GeosetID'.
+          fread(&dbuf, sizeof(DWORD), 1, fp);   // Read 'GeosetAnimationID'.
+          inclSize += 2 * sizeof(DWORD);        // Increase read size by these last two fields.
+          bones.push_back(bone);
         }
-
-        // Read [optional] tan value for Hermite and Bezier interpolation.
-        if (animSet->Interpolation > 1) {
-          animSet->InTan = new Float4();
-          animSet->OutTan = new Float4();
-          if (dbuf == 'TRGK') {
-            fread(&animSet->InTan,  sizeof(Float4), 1, fp);
-            fread(&animSet->OutTan, sizeof(Float4), 1, fp);
-            remaining -= 2 * sizeof(Float4);
-          }
-          else {
-            fread(&animSet->InTan,  sizeof(Float3), 1, fp);
-            fread(&animSet->OutTan, sizeof(Float3), 1, fp);
-            remaining -= 2 * sizeof(Float3);
-          }
-        }
+        break;
       }
 
-      // Write the constructed animation set to the corresponding pointer. 
-      switch (dbuf) {
-        case 'RTGK': bone.Translation = animSet;  break; // 'KGTR' - Geoset translation block.   
-        case 'TRGK': bone.Rotation = animSet;     break; // 'KGRT' - Geoset rotation block.
-        case 'CSGK': bone.Scaling = animSet;      break; // 'KGSC' - Geoset scaling block.
+      //__________________________________________________________________________________[HELPERS]
+      // Scan for 'HELP' - auxiliary nodes ... and the main bone on some models (?!)
+      case 'PLEH': {
+        fread(&chunkSize, sizeof(DWORD), 1, fp);         // Read helper chunk size.
+        for (uint i = 0; i < chunkSize; i += inclSize) { // Read the auxiliary nodes.  
+          MDX_Bone bone = ReadMDXNode(fp, inclSize);
+          bones.push_back(bone);
+        }
+        break;
       }
-    }
 
-    fread(&dbuf, sizeof(DWORD), 1, fp);   // Read 'GeosetID'.
-    fread(&dbuf, sizeof(DWORD), 1, fp);   // Read 'GeosetAnimationID'.
-    inclSize += 2 * sizeof(DWORD);        // Increase read size by these last two fields.
-    bones.push_back(bone);
-  }
-
-
-
-  /* READING THE PIVOT POINTS. Probably there are more for lights, particles etc... */
-  while (dbuf != 'TVIP') fread(&dbuf, sizeof(DWORD), 1, fp);
-  fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read pivot chunk size.
-  for (uint i = 0, b = 0; i < chunkSize / 12; i ++) {
-    if (b < bones.size()) {
-      fread(&bones[b].Position, sizeof(Float3), 1, fp);
-      b ++;
+      //___________________________________________________________________________________[PIVOTS]
+      // Reading the pivot points: These contain among others the bone positions.
+      case 'TVIP': { 
+        fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read pivot chunk size.
+        for (uint i = 0, b = 0; i < chunkSize / 12; i ++) {
+          if (b < bones.size()) {
+            fread(&bones[b].Position, sizeof(Float3), 1, fp);
+            b ++;
+          }
+        }  
+        repeatLoop = false; // Also break the while loop, because this is the last block.
+        break;
+      }
     }
   }
 
-
-  //TODO <<<<<<<<<<<<<<<<<
-  // 1) Writing bones to the 'real' model.
-  //    - Name, +ID, Parent, Position
+  // Write the bones to the model.
   for (uint i = 0; i < bones.size(); i ++) {
     Bone2 b = Bone2();
     strcpy(b.Name, bones[i].Name);
@@ -374,9 +340,8 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   }
 
 
-
-
-  // Playin' with da sequences:
+  //___________________________________________________________________[PROCESS ANIMATION DATA]
+  // Adjusting the MDX sequences (global frame line, interleaved anim data) to ours.
   for (uint i = 0; i < sequences.size(); i ++) {
     Sequence seq = Sequence();
     strcpy(seq.Name, sequences[i].Name);
@@ -408,8 +373,8 @@ Model2* Converter::ReadMdx(const char* inputfile) {
           dir.X = animset->Values[s].X;
           dir.Y = animset->Values[s].Y;
           dir.Z = animset->Values[s].Z;
-          if (setLoop == 1) dir.W = animset->Values[s].W;  // 4th value (quaternion).
-          vec->push_back(dir);
+          if (setLoop == 1) dir.W = animset->Values[s].W;  //| 4th value (quaternion).
+          vec->push_back(dir);                             //| We only have it on 2nd set!
         }
       }
 
@@ -423,126 +388,129 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   }
 
 
+  // Post-processing steps: Ensure correct bone order.  
+  ReorderBones(model);
 
 
-
-  // DEBUG OUTPUT - KEEP UNTIL ALL WORKS PROPERLY
-  /*
-  for (uint i = 0; i < bones.size(); i ++) {
-    printf("Bone [%d]: %s (ID: %d - Par: %d) T: %d | R: %d | S: %d  /  Pos: %f, %f, %f\n",
-      i, bones[i].Name, bones[i].ID, bones[i].ParentID,
-      (bones[i].Translation == 0)? 0 : bones[i].Translation->Size,
-      (bones[i].Rotation    == 0)? 0 : bones[i].Rotation->Size,
-      (bones[i].Scaling     == 0)? 0 : bones[i].Scaling->Size,
-      bones[i].Position.X, bones[i].Position.Y, bones[i].Position.Z);
-  }
-  */
-
-
-  
-
-  /* 
-  printf("[DBG] Creating bone hierarchy:\n");
-
-  // Some pointer wraps to keep code below context-independent!
-  // Later, these global structures shall be replaced with local ones.
-  std::vector<Bone*> bones = _model->Bones;
-  std::vector<Sequence*> sequences = _model->Sequences;
-
-
-  Bone_t* skeleton = (Bone_t*) calloc(bones.size(), sizeof(Bone_t));
-  int nrBones = bones.size();
-
-  // First run: Set base data and determine child node counters.
-  for (int i = 0; i < nrBones; i ++) {
-    skeleton[i].ID = bones[i]->ID;                         // Set the bone ID.
-    skeleton[i].Name = bones[i]->Name;                     // Set the name.
-    if (bones[i]->ParentID != -1) {                        // If a parent node exists ...
-      skeleton[i].Parent = &skeleton[bones[i]->ParentID];  // - set link to parent node
-      skeleton[bones[i]->ParentID].NrChildren ++;          // - and increase the parent's child count.
-    }
-    else skeleton[i].Parent = NULL;
-  }
-
-  // Second run: Allocate memory for all nodes with children.
-  int* tmpSet = (int*) calloc(nrBones, sizeof(int));
-  for (int i = 0; i < nrBones; i ++) {
-    if (skeleton[i].NrChildren > 0) {
-      skeleton[i].Children = (Bone_t**) calloc(skeleton[i].NrChildren, sizeof(Bone_t*));
-    }
-  }
-
-  // Third run: Set the child nodes.
-  for (int i = 0; i < nrBones; i ++) {
-    if (skeleton[i].Parent != NULL) {
-      skeleton[i].Parent->Children[tmpSet[bones[i]->ParentID]] = &skeleton[i];
-      tmpSet[bones[i]->ParentID] ++;  // Increase array index (to write the next value).
-    }
-  }
-
-  //TODO Vertex group assignments!
-  //TODO Local sequentation!
-  //TODO Animation frames!
-  // <-----
-  Animation* animations = (Animation*) calloc(sequences.size(), sizeof(Animation));
-  int nrAnimations = sequences.size();
-  for (int i = 0; i < nrAnimations; i ++) {
-    animations[i].Name = sequences[i]->Name;
-    animations[i].FrameCount = sequences[i]->IntervalEnd - sequences[i]->IntervalStart + 1;
-
-    // Calculate the number of transformation directives per bone.
-    for (int j = 0; j < nrBones; j ++) {
-      int counter = 0;
-      
-      AnimSet* set = bones[j]->Translation;
-      if (set != NULL) {
-        for (int k = 0; k < set->Size; k ++) {
-          if (set->Time[k] >= sequences[i]->IntervalStart && set->Time[k] <= sequences[i]->IntervalEnd) {
-            counter ++;
-          }
-        }
-      }
-      printf("[%s][%s]: %d TDs found.\n", animations[i].Name, skeleton[j].Name, counter);
-    }
-
-    //sequences[i]->IntervalStart, sequences[i]->IntervalEnd);
-  }
-
-
-  // Debug output. Echo all nodes and childs to the console (later, a file).
-  for (int i = 0; i < nrBones; i ++) {
-    printf("Node %02d ('%s'), parent: '%s', children (%d)", 
-      skeleton[i].ID, 
-      skeleton[i].Name, 
-      (skeleton[i].Parent != NULL)? skeleton[i].Parent->Name : "",
-      skeleton[i].NrChildren
-    );
-    if (skeleton[i].NrChildren > 0) {
-      printf(": '%s'", skeleton[i].Children[0]->Name);
-      for (unsigned int j = 1; j < skeleton[i].NrChildren; j ++) {
-        printf(", '%s'", skeleton[i].Children[j]->Name);
-      }
-    }
-    printf("\n");
-  }
-
-  for (int i = 0; i < nrAnimations; i ++) {
-    printf("Animation '%-22s': %5d frames.", animations[i].Name, animations[i].FrameCount);
-    printf("\n");
-  }
-*/
-
-
-  // Print parser results.
+  // Hey, we're done! Finally... Print parser results.
   printf("Parser results:\n"
-    " - Meshes  : %d\n"
-    " - Vertices: %d\n"
-    " - Normals : %d\n"
-    " - UVs     : %d\n"
-    " - Indices : %d\n",
+    " - Meshes   : %d\n"
+    " - Vertices : %d\n"
+    " - Normals  : %d\n"
+    " - UVs      : %d\n"
+    " - Indices  : %d\n"
+    " - Bones    : %d\n"
+    " - Sequences: %d\n",
     model->Meshes.size(), model->Vertices.size(), model->Normals.size(), 
-    model->UVs.size(), model->Indices.size());
+    model->UVs.size(), model->Indices.size(), model->Bones.size(), model->Sequences.size()
+  );
   
   fclose(fp); // Close file stream.
   return model;
 } 
+
+
+
+/** Helper function to read a MDX node.
+ * @param fp Opened file stream, correctly positioned.
+ * @param inclSize Integer address to transfer total node size.
+ * @return A structure containing the node data. */
+static MDX_Bone ReadMDXNode(FILE* fp, DWORD& inclSize) {
+  DWORD dbuf;
+  MDX_Bone bone = MDX_Bone();
+  fread(&inclSize,      sizeof(DWORD), 1, fp); // Read node structure total size.  
+  fread(&bone.Name,     sizeof(char), 80, fp); // Read name of bone.
+  fread(&bone.ID,       sizeof(DWORD), 1, fp); // Read 'ObjectID'.
+  fread(&bone.ParentID, sizeof(DWORD), 1, fp); // Read 'ParentID'.
+  fread(&dbuf,          sizeof(DWORD), 1, fp); // Skip 'Flags' (256 for bone, 0 for helper).
+
+  // Calculate remaining bytes of current subset.
+  long remaining = inclSize - 4 * sizeof(DWORD) - 80 * sizeof(char);
+
+  // If available, read geoset transformation, rotation and scaling information.
+  while (remaining > 0) {
+    MDX_AnimSet* animSet = new MDX_AnimSet();
+    fread(&dbuf,                   sizeof(DWORD), 1, fp); // Read block identifier.
+    fread(&animSet->Size,          sizeof(DWORD), 1, fp); // Read element size.
+    fread(&animSet->Interpolation, sizeof(DWORD), 1, fp); // Read interpolation type.
+    fread(&animSet->GlobalSeqID,   sizeof(DWORD), 1, fp); // Read global sequence assignment.
+    remaining -= 4 * sizeof(DWORD);
+
+    animSet->Time = new long[animSet->Size];     // Allocate array for time progress.
+    animSet->Values = new Float4[animSet->Size]; // Allocate values array.
+    for (int t = 0; t < animSet->Size; t ++) {
+      fread(&animSet->Time[t],    sizeof(DWORD), 1, fp);  // Read time slot.
+      fread(&animSet->Values[t], sizeof(Float3), 1, fp);  // Read 3D float value.
+      remaining -= sizeof(DWORD) + sizeof(Float3);
+
+      if (dbuf == 'TRGK') {
+        fread(&animSet->Values[t].W, sizeof(float), 1, fp); // Read 4th value (bank angle).
+        remaining -= sizeof(float);
+      }
+
+      // Read [optional] tan value for Hermite and Bezier interpolation.
+      if (animSet->Interpolation > 1) {
+        animSet->InTan = new Float4();
+        animSet->OutTan = new Float4();
+        if (dbuf == 'TRGK') {
+          fread(&animSet->InTan,  sizeof(Float4), 1, fp);
+          fread(&animSet->OutTan, sizeof(Float4), 1, fp);
+          remaining -= 2 * sizeof(Float4);
+        }
+        else {
+          fread(&animSet->InTan,  sizeof(Float3), 1, fp);
+          fread(&animSet->OutTan, sizeof(Float3), 1, fp);
+          remaining -= 2 * sizeof(Float3);
+        }
+      }
+    }
+
+    // Write the constructed animation set to the corresponding pointer. 
+    switch (dbuf) {
+      case 'RTGK': bone.Translation = animSet;  break; // 'KGTR' - Geoset translation block.   
+      case 'TRGK': bone.Rotation = animSet;     break; // 'KGRT' - Geoset rotation block.
+      case 'CSGK': bone.Scaling = animSet;      break; // 'KGSC' - Geoset scaling block.
+    }
+  }
+  return bone;
+}
+
+
+/** Bone reordering function (to match parents-before-childs criteria). 
+ * @param model The model whose bones shall be reordered. */
+static void ReorderBones(Model2* model) {
+  printf("Bone hierarchy check / reordering ... ");
+  
+  bool done = false;
+  vector<Bone2>& bones = model->Bones;
+  int nrBones = model->Bones.size();
+
+  while (!done) {
+    done = true;
+    int maxP = -1;  // Highest parent reference found. Update on iteration, stop on anomaly.
+    for (int i = 0; i < nrBones; i ++) {
+      if (bones[i].Parent < maxP) {
+        
+        // Find the right position to insert to.
+        for (int j = 0; j < nrBones; j ++) {
+          if (bones[j].Parent > bones[i].Parent) {
+            Bone2 b = bones[i];
+            bones.erase(bones.begin() + i);      // Remove from old position ...
+            bones.insert(bones.begin() + j, b);  // and insert at new one.      
+            for (int k = 0; k < nrBones; k ++) {
+              if (bones[k].Parent == i) bones[k].Parent = j;  // Update parent refs to this node.
+              else if (bones[k].Parent >= j && bones[k].Parent < i) { //| Update all other bones
+                bones[k].Parent ++;                                   //| affected by the shift
+              }                                                       //| in this [j, i] interval. 
+            }
+            break;
+          }
+        }
+        done = false;
+        break;
+      }
+      else maxP = model->Bones[i].Parent;
+    }
+  }
+  printf("[done]\n");
+}
