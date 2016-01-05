@@ -18,7 +18,7 @@ class TestInteraction : public IInteraction {
 
 class TestAgent : public SpatialAgent, public IAgentLogic {
   public:
-    TestAgent(World* world, Environment* env, Vector pos) : SpatialAgent(world, env) {
+    TestAgent(World* world, Environment* env, Float3 pos) : SpatialAgent(world, env) {
       RL = this;
       Data->Position = pos;
       Data->Model = ModelUtils::Load("M4/Cube.m4");

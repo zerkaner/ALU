@@ -60,9 +60,6 @@
     <ClCompile Include="..\Code\Agents\Agent.cpp">
       <Filter>Agents</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Data\Vector.cpp">
-      <Filter>Data</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Visualization\Engine.cpp">
       <Filter>Visualization</Filter>
     </ClCompile>
@@ -117,9 +114,6 @@
     <ClCompile Include="..\Code\Data\Model.cpp">
       <Filter>Data</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Data\Quaternion.cpp">
-      <Filter>Data</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Converter\Modules\Export_JSON.cpp">
       <Filter>Converter\Modules</Filter>
     </ClCompile>
@@ -147,6 +141,9 @@
     <ClCompile Include="..\Code\Data\Math\MathLib.cpp">
       <Filter>Data\Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\Code\Visualization\matrix.cpp">
+      <Filter>Visualization</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h">
@@ -156,9 +153,6 @@
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Data\Primitives.h">
-      <Filter>Data</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Data\Vector.h">
       <Filter>Data</Filter>
     </ClInclude>
     <ClInclude Include="..\Code\Visualization\Engine.h">
@@ -290,9 +284,6 @@
     <ClInclude Include="..\Code\Data\Model.h">
       <Filter>Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\Code\Data\Quaternion.h">
-      <Filter>Data</Filter>
-    </ClInclude>
     <ClInclude Include="..\Code\Converter\Utils\FileUtils.h">
       <Filter>Converter\Utils</Filter>
     </ClInclude>
@@ -304,6 +295,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Data\Math\MathLib.h">
       <Filter>Data\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\matrix.h">
+      <Filter>Visualization</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -13,7 +13,7 @@ class ModelTestAgent : public SpatialAgent, public IAgentLogic, public IControll
     int _selectedMesh = 0;
 
   public:
-    ModelTestAgent(World* world, Environment* env, Model2* model, Vector pos) : SpatialAgent(world, env) {
+    ModelTestAgent(World* world, Environment* env, Model2* model, Float3 pos) : SpatialAgent(world, env) {
       RL = this;
       Data->Position = pos;
       Data->Model = model;
@@ -22,7 +22,7 @@ class ModelTestAgent : public SpatialAgent, public IAgentLogic, public IControll
 
 
     IInteraction* Reason() {  
-      Data->Heading.X += 1.0f;
+      //Data->Heading.X += 1.0f;
       if (Data->Heading.X >= 360.0f) Data->Heading.X = 0.0f;
       return NULL;
     }

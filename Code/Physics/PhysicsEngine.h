@@ -46,8 +46,8 @@ class PhysicsEngine {
 
       // Perform time-dependant value changes.
       for (unsigned int i = 0; i < _objects->Objects.size(); i ++) {
-        _objects->Objects[i]->Movement += (_resolution * _objects->Objects[i]->Acceleration);
-        _objects->Objects[i]->Position += (_resolution * _objects->Objects[i]->Movement);
+        _objects->Objects[i]->Movement += (_objects->Objects[i]->Acceleration * _resolution);
+        _objects->Objects[i]->Position += (_objects->Objects[i]->Movement * _resolution);
       }
     }
 };

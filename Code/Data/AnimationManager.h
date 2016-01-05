@@ -5,6 +5,8 @@
 #include <string.h>
 using namespace std;
 
+#include <Visualization/matrix.h>
+
 
 /** Manages animations and interpolation for a model. */
 class AnimationManager {
@@ -55,7 +57,7 @@ class AnimationManager {
 
   public:
 
-    int Frameskip = 4;  // The frameskip governs the animation playback speed.
+    int Frameskip = 5;  // The frameskip governs the animation playback speed.
 
     /** Create a new animation manager.
      * @param model The model to animate. */
@@ -120,63 +122,62 @@ class AnimationManager {
       // Loop over all bones. It's important that this flat hierarchy starts with the roots.
       for (uint i = 0; i < _bones.size(); i ++) {
         Bone2* bone = &_bones[i];
+        
+        Matrix4x4f m;
+        m.loadTranslation(bone->Position);
+
+        float mat2[16];
+        Float3 npos = Float3(0,0,0);
+        Float4 nrot = Float4(0,0,0,0);
 
         // If we have transformation directives for this bone, interpolate its pos and rot.
         if (_sequence->Transformations.count(bone)) {
-
-          // Step 1: TRANSLATION.
-          if (_trLength[i] > 0) {
+          if (_trLength[i] > 0) {  // Step 1: TRANSLATION.  
             vector<TransformationDirective>& trans = _sequence->Transformations[bone].Translations;
             int next = AdvanceIndex(i, _trIndex, _trLength, trans);
-            Float4 translation = Interpolate(trans, _trIndex[i], next);
-            bone->Position = Float3(translation.X, translation.Y, translation.Z);
-          }
-          
-
-          // Step 2: ROTATION.
-          if (_rotLength[i] > 0) {
+            Float4 tl = Interpolate(trans, _trIndex[i], next);
+            m.translate(Float3(tl.X, tl.Y, tl.Z));
+            npos += Float3(tl.X, tl.Y, tl.Z);
+          }     
+          if (_rotLength[i] > 0) { // Step 2: ROTATION. 
             vector<TransformationDirective>& rot = _sequence->Transformations[bone].Rotations;
             int next = AdvanceIndex(i, _rotIndex, _rotLength, rot);
-            bone->Rotation = Interpolate(rot, _rotIndex[i], next, true);
+            Float4 qu = Interpolate(rot, _rotIndex[i], next, true);
+            m.quaternionRotate(qu);
+            nrot += qu;
           }
-
-          /*
-          if (strstr(bone->Name, "Mesh06") != NULL) {
-            printf("[%03d] | Pos: %7.4f, %7.4f, %7.4f  |  Rot: %7.4f, %7.4f, %7.4f, %7.4f\n",
-              _curFrame, 
-              bone->Position.X, bone->Position.Y, bone->Position.Z, 
-              bone->Rotation.X, bone->Rotation.Y, bone->Rotation.Z, bone->Rotation.W);
-          }*/
-
-          // Step 3: SCALING.
-          //TODO Not used by now ...
+          if (_scaLength[i] > 0) { // Step 3: SCALING.
+            vector<TransformationDirective>& sca = _sequence->Transformations[bone].Scalings;
+            int next = AdvanceIndex(i, _scaIndex, _scaLength, sca);
+            Float4 sc = Interpolate(sca, _scaIndex[i], next);
+            m.scale(Float3(sc.X, sc.Y, sc.Z));
+          }
         }
 
+        MathLib::CreateRTMatrix(nrot, npos, mat2);
 
+        Float3 np = Float3(-bone->Position.X, -bone->Position.Y, -bone->Position.Z);
+        m.translate(np);
+
+
+
+      
         // Apply parent transformation to this bone.
         if (bone->Parent != -1) {
           Bone2* parent = &_bones[bone->Parent];
-          bone->WorldPos = MathLib::RotateVector(bone->Position, parent->WorldRot);
-          bone->WorldPos += parent->WorldPos;
-          bone->WorldRot = MathLib::MultiplyRotations(parent->WorldRot, bone->Rotation);
+          bone->mpos = parent->mpos * m;
         }
-  
-        // Root bone world position and rotation are the same as it's origins.
-        else {
-          bone->WorldPos = bone->Position;
-          bone->WorldRot = bone->Rotation;
-        }
+        else bone->mpos = m;
+        
+        bone->WorldPos = bone->mpos * bone->Position;
+
 
         /*
-        if (strstr(bone->Name, "Mesh06") != NULL) {
-          printf("      | WPos %7.4f, %7.4f, %7.4f  |  WRot %7.4f, %7.4f, %7.4f, %7.4f\n",
-            bone->WorldPos.X, bone->WorldPos.Y, bone->WorldPos.Z,
-            bone->WorldRot.X, bone->WorldRot.Y, bone->WorldRot.Z, bone->WorldRot.W);
-        }*/
-
-        // Compute matrices for those bones who have vertices assigned.
-        //MathLib::CreateRTMatrix(bone->WorldRot, bone->WorldPos, bone->BoneMat);
-        //MathLib::MultiplyMatrices(bone->BoneMat, bone->BindPoseMat, bone->BoneMat);
+        if (strstr(bone->Name, "Mesh01") != NULL) {
+          printf("[%04d] | WPos %7.4f, %7.4f, %7.4f\n",
+            _curFrame, bone->WorldPos.X, bone->WorldPos.Y, bone->WorldPos.Z);
+        }
+        */
       }
       
 

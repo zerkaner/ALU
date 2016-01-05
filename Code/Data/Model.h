@@ -1,9 +1,10 @@
 #pragma once
 #include <Data/Primitives.h>
-#include <Data/Quaternion.h>
 #include <Data/Textures/Texture.h>
 #include <map>
 #include <vector>
+
+#include <Visualization/matrix.h>
 
 class AnimationManager;
 
@@ -12,6 +13,7 @@ struct Bone2 {
   char Name[32];
   int Parent;
   Float3 Position;
+  Matrix4x4f mpos;
   Float4 Rotation;
   bool Skinned;
   float BindPoseMat[16];
@@ -95,7 +97,7 @@ struct Model2 {
   AnimationManager* AnimMgr = 0;       // This is crap cause of double ref.
   std::vector<Animation2> Animations;
   std::vector<SimpleTexture*> Textures;
-  int _renderMode = 1; // Debug flag for visual testing. Not part of the model!
+  int _renderMode = 2; // Debug flag for visual testing. Not part of the model!
 };
 
 

@@ -34,6 +34,12 @@ struct Float4 {
   Float4(float x, float y, float z, float w) {
     X = x;  Y = y;  Z = z;  W = w;
   }
+  void operator+=(Float4 right) {
+    X += right.X;
+    Y += right.Y;
+    Z += right.Z;
+    W += right.W;
+  }
 };
 
 
@@ -51,6 +57,9 @@ struct Float3 {
       X += right.X;
       Y += right.Y; 
       Z += right.Z;
+    }
+    Float3 operator*(float val) {
+      return Float3(X * val, Y * val, Z * val);
     }
 };
 

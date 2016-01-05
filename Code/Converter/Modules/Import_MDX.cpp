@@ -338,6 +338,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
     b.Rotation = Float4(0.0f, 0.0f, 0.0f, 0.0f);
     model->Bones.push_back(b);
   }
+  ReorderBones(model);  // Ensure correct bone order. 
 
 
   //___________________________________________________________________[PROCESS ANIMATION DATA]
@@ -380,7 +381,12 @@ Model2* Converter::ReadMdx(const char* inputfile) {
 
       // Check for content. There's no need to insert empty sets (= bones not moved anyway).
       if (set.Translations.size() > 0 || set.Rotations.size() > 0 || set.Scalings.size() > 0) {
-        seq.Transformations[&model->Bones[b]] = set;
+        for (uint i = 0; i < model->Bones.size(); i ++) {
+          if (strcmp(model->Bones[i].Name, bones[b].Name) == 0) {
+            seq.Transformations[&model->Bones[i]] = set;
+            break;
+          }
+        }   
       }
     }
 
@@ -388,8 +394,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   }
 
 
-  // Post-processing steps: Ensure correct bone order.  
-  ReorderBones(model);
+
 
 
   // Hey, we're done! Finally... Print parser results.

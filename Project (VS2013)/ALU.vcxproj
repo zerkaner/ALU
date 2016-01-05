@@ -25,12 +25,10 @@
     <ClCompile Include="..\Code\Data\Compression\Archiver.cpp" />
     <ClCompile Include="..\Code\Data\Math\MathLib.cpp" />
     <ClCompile Include="..\Code\Data\Model.cpp" />
-    <ClCompile Include="..\Code\Data\Quaternion.cpp" />
     <ClCompile Include="..\Code\Data\StatsInfo.cpp" />
     <ClCompile Include="..\Code\Data\Textures\ImageLoader.cpp" />
     <ClCompile Include="..\Code\Data\Textures\stb_image.cpp" />
     <ClCompile Include="..\Code\Data\Textures\Texture.cpp" />
-    <ClCompile Include="..\Code\Data\Vector.cpp" />
     <ClCompile Include="..\Code\Execution\ALU.cpp" />
     <ClCompile Include="..\Code\Execution\SystemTest.cpp" />
     <ClCompile Include="..\Code\Execution\World.cpp" />
@@ -41,6 +39,7 @@
     <ClCompile Include="..\Code\Visualization\Camera.cpp" />
     <ClCompile Include="..\Code\Visualization\Engine.cpp" />
     <ClCompile Include="..\Code\Visualization\GLDrawer.cpp" />
+    <ClCompile Include="..\Code\Visualization\matrix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h" />
@@ -63,12 +62,10 @@
     <ClInclude Include="..\Code\Data\Model.h" />
     <ClInclude Include="..\Code\Data\Object3D.h" />
     <ClInclude Include="..\Code\Data\Primitives.h" />
-    <ClInclude Include="..\Code\Data\Quaternion.h" />
     <ClInclude Include="..\Code\Data\StatsInfo.h" />
     <ClInclude Include="..\Code\Data\Textures\ImageLoader.h" />
     <ClInclude Include="..\Code\Data\Textures\stb_image.h" />
     <ClInclude Include="..\Code\Data\Textures\Texture.h" />
-    <ClInclude Include="..\Code\Data\Vector.h" />
     <ClInclude Include="..\Code\Environment\Environment.h" />
     <ClInclude Include="..\Code\Environment\GridTerrain.h" />
     <ClInclude Include="..\Code\Environment\HeightmapTerrain.h" />
@@ -95,6 +92,7 @@
     <ClInclude Include="..\Code\Visualization\Engine.h" />
     <ClInclude Include="..\Code\Visualization\IDrawable.h" />
     <ClInclude Include="..\Code\Visualization\GLDrawer.h" />
+    <ClInclude Include="..\Code\Visualization\matrix.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6A1E07B8-D75A-47FB-98A3-67682FF66EB4}</ProjectGuid>

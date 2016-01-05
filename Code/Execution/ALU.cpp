@@ -27,54 +27,56 @@ ALU::ALU() :
   _listener.AddControllerModule(new ExecutionController(this));
   _listener.AddControllerModule(new CameraControllerRTS(&_camera, &_listener));  
   _listener.AddControllerModule(new EngineController(&_3dEngine));
-  _listener.AddControllerModule(new RenderModeController(&(_world.GetEnvironment()->Objects.Objects)));
+  //_listener.AddControllerModule(new RenderModeController(&(_world.GetEnvironment()->Objects.Objects)));
   
+  /*
   // Initial camera position.
   _camera.SetPosition(12.0f, 9.6f, 2, 244, -13);
 
 
   // Create some test agents.
-  new TestAgent(&_world, _world.GetEnvironment(), Vector(2.0f, 2.0f, 0.5f));
-  new TestAgent(&_world, _world.GetEnvironment(), Vector(4.0f, 1.0f, 0.5f));
+  new TestAgent(&_world, _world.GetEnvironment(), Float3(2.0f, 2.0f, 0.5f));
+  new TestAgent(&_world, _world.GetEnvironment(), Float3(4.0f, 1.0f, 0.5f));
   
   //TODO Does not work with ALU_standalone!
   //_world.GetEnvironment()->AddObject(new HeightmapTerrain("Other/Heightfield.raw"));
 
   Object3D* obj = new Object3D();
-  obj->Position = Vector(8, 3, 0.2f);
+  obj->Position = Float3(8, 3, 0.2f);
   obj->Model = ModelUtils::Load("M4/Tree01.m4");
   _world.GetEnvironment()->AddObject(obj);
 
   
   obj = new Object3D();
-  obj->Position = Vector(1, 1.5f, 0.2f);
+  obj->Position = Float3(1, 1.5f, 0.2f);
   obj->Model = ModelUtils::Load("M4/Tree03.m4");
   obj->Heading.X = 25.0f;
   _world.GetEnvironment()->AddObject(obj);
 
   obj = new Object3D();
-  obj->Position = Vector(0.8f, 8.8f, 0.2f);
+  obj->Position = Float3(0.8f, 8.8f, 0.2f);
   obj->Model = ModelUtils::Load("M4/Tree04.m4");
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
-  obj->Position = Vector(1.4f, 5.5f, 0.2f);
+  obj->Position = Float3(1.4f, 5.5f, 0.2f);
   obj->Model = ModelUtils::Load("M4/Bear.m4");
   _world.GetEnvironment()->AddObject(obj);
   
 
   obj = new Object3D();
-  obj->Position = Vector(1, 7.2f, 0.1f);
+  obj->Position = Float3(1, 7.2f, 0.1f);
   obj->Model = ModelUtils::Load("M4/Timberwolf.m4");
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
-  obj->Position = Vector(1, 5.5f, 0.05f);
+  obj->Position = Float3(1, 5.5f, 0.05f);
   obj->Model = ModelUtils::Load("M4/Stable.m4");
   obj->Heading.X = 80.0f;
   _world.GetEnvironment()->AddObject(obj);
+  */
 }
 
 
@@ -119,7 +121,7 @@ void ALU::TestConvertedModel(Model2* model) {
   model->AnimMgr = new AnimationManager(model);
   model->AnimMgr->Play("Walk");
 
-  ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Vector(7.5f, 7.5f, 0.5f));
+  ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Float3(7.5f, 7.5f, 0.5f));
   _listener.AddControllerModule(mta);
-  _camera.SetPosition(16.0f, 11.0f, 4, 244, -13);
+  _camera.SetPosition(80, 42, 40, 244, -13);//(16.0f, 11.0f, 4, 244, -13);
 }
