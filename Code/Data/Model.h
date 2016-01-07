@@ -3,23 +3,22 @@
 #include <Data/Textures/Texture.h>
 #include <map>
 #include <vector>
-
-#include <Visualization/matrix.h>
-
 class AnimationManager;
 
 
 struct Bone2 {
   char Name[32];
   int Parent;
+  Float3 Pivot;
   Float3 Position;
-  Matrix4x4f mpos;
   Float4 Rotation;
+  float WorldMatrix[16];
+
+  //TODO Remove this sh!t.
   bool Skinned;
   float BindPoseMat[16];
   Float3 WorldPos;
   Float4 WorldRot;
-  float BoneMat[16];
 };
 
 

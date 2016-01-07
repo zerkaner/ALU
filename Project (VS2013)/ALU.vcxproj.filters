@@ -141,9 +141,6 @@
     <ClCompile Include="..\Code\Data\Math\MathLib.cpp">
       <Filter>Data\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Visualization\matrix.cpp">
-      <Filter>Visualization</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h">
@@ -295,9 +292,6 @@
     </ClInclude>
     <ClInclude Include="..\Code\Data\Math\MathLib.h">
       <Filter>Data\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Code\Visualization\matrix.h">
-      <Filter>Visualization</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

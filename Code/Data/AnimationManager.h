@@ -1,11 +1,10 @@
 #pragma once
 #include <Data/Model.h>
 #include <Data/Math/MathLib.h>
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 using namespace std;
-
-#include <Visualization/matrix.h>
 
 
 /** Manages animations and interpolation for a model. */
@@ -23,6 +22,7 @@ class AnimationManager {
     int* _scaIndex; int* _scaLength; // Current scaling index and total length (per bone).
 
 
+    /** Check the bone transformation directive indices for advances. */
     int AdvanceIndex(int boneIdx, int* tdIdx, int* tdLength, vector<TransformationDirective>& TD) {
       int next = tdIdx[boneIdx] + 1;            //| 'next' holds the index of the following
       if (next == tdLength[boneIdx]) next = 0;  //| frame to interpolate with.
@@ -35,8 +35,7 @@ class AnimationManager {
       return next;
     }
 
-
-    /** Linear frame interpolation function.  */
+    /** Linear frame interpolation function. */
     Float4 Interpolate(vector<TransformationDirective>& TD, int curIdx, int nextIdx, bool isFloat4 = false) {
       if (nextIdx > curIdx) {
         int distance = TD[nextIdx].Frame - TD[curIdx].Frame;
@@ -54,10 +53,58 @@ class AnimationManager {
       else return Float4(TD[curIdx].X, TD[curIdx].Y, TD[curIdx].Z, TD[curIdx].W);
     }
 
+    float Vec4Dot(Float4 a, Float4 b) {
+      return a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
+    };
+
+    void Normalize(Float4& a) {
+      float len = a.X*a.X + a.Y*a.Y + a.Z*a.Z + a.W*a.W;
+      if (len > 0) {
+        len = 1.0f / sqrtf(len);
+        a.X *= len;
+        a.Y *= len;
+        a.Z *= len;
+        a.W *= len;
+      }
+    };
+
+    Float4 Nlerp(Float4 a, Float4 b, float t) {
+      float dot = Vec4Dot(a, b);
+      float inverseFactor = 1.0f - t;
+      Float4 ret;
+      if (dot < 0) ret = Float4(
+        inverseFactor * a.X - t * b.X,
+        inverseFactor * a.Y - t * b.Y,
+        inverseFactor * a.Z - t * b.Z,
+        inverseFactor * a.W - t * b.W
+        );
+      else ret = Float4(
+        inverseFactor * a.X + t * b.X,
+        inverseFactor * a.Y + t * b.Y,
+        inverseFactor * a.Z + t * b.Z,
+        inverseFactor * a.W + t * b.W
+        );
+      Normalize(ret);
+      return ret;
+    };
+
+    Float4 Interpolate2(vector<TransformationDirective>& TD, int curIdx, int nextIdx) {
+      if (nextIdx > curIdx) {
+        int distance = TD[nextIdx].Frame - TD[curIdx].Frame;
+        int pos = _curFrame - TD[curIdx].Frame;
+        float factor = (float) pos / distance;        
+        Float4 a = Float4(TD[curIdx].X,  TD[curIdx].Y,  TD[curIdx].Z,  TD[curIdx].W);
+        Float4 b = Float4(TD[nextIdx].X, TD[nextIdx].Y, TD[nextIdx].Z, TD[nextIdx].W);      
+        return Nlerp(a, b, factor);
+      }
+      // There's nothing to interpolate here. Just return current frame.
+      else return Float4(TD[curIdx].X, TD[curIdx].Y, TD[curIdx].Z, TD[curIdx].W);
+    }
+
 
   public:
 
-    int Frameskip = 5;  // The frameskip governs the animation playback speed.
+    int Frameskip = 6;  // The frameskip governs the animation playback speed.
 
     /** Create a new animation manager.
      * @param model The model to animate. */
@@ -118,17 +165,13 @@ class AnimationManager {
     void Tick() {
       if (_sequence == NULL) return;  // Skip on idling.
 
-
       // Loop over all bones. It's important that this flat hierarchy starts with the roots.
       for (uint i = 0; i < _bones.size(); i ++) {
         Bone2* bone = &_bones[i];
-        
-        Matrix4x4f m;
-        m.loadTranslation(bone->Position);
 
-        float mat2[16];
-        Float3 npos = Float3(0,0,0);
-        Float4 nrot = Float4(0,0,0,0);
+        Float3 translation = Float3(0,0,0);
+        Float4 rotation = Float4(0,0,0,0);
+        Float3 scaling = Float3(1,1,1);
 
         // If we have transformation directives for this bone, interpolate its pos and rot.
         if (_sequence->Transformations.count(bone)) {
@@ -136,51 +179,49 @@ class AnimationManager {
             vector<TransformationDirective>& trans = _sequence->Transformations[bone].Translations;
             int next = AdvanceIndex(i, _trIndex, _trLength, trans);
             Float4 tl = Interpolate(trans, _trIndex[i], next);
-            m.translate(Float3(tl.X, tl.Y, tl.Z));
-            npos += Float3(tl.X, tl.Y, tl.Z);
+            translation = Float3(tl.X, tl.Y, tl.Z);
           }     
           if (_rotLength[i] > 0) { // Step 2: ROTATION. 
             vector<TransformationDirective>& rot = _sequence->Transformations[bone].Rotations;
             int next = AdvanceIndex(i, _rotIndex, _rotLength, rot);
-            Float4 qu = Interpolate(rot, _rotIndex[i], next, true);
-            m.quaternionRotate(qu);
-            nrot += qu;
+            rotation = Interpolate2(rot, _rotIndex[i], next);
           }
           if (_scaLength[i] > 0) { // Step 3: SCALING.
             vector<TransformationDirective>& sca = _sequence->Transformations[bone].Scalings;
             int next = AdvanceIndex(i, _scaIndex, _scaLength, sca);
             Float4 sc = Interpolate(sca, _scaIndex[i], next);
-            m.scale(Float3(sc.X, sc.Y, sc.Z));
+            scaling = Float3(sc.X, sc.Y, sc.Z);
           }
         }
 
-        MathLib::CreateRTMatrix(nrot, npos, mat2);
+        // Create local transformation matrix for this bone.
+        float localMatrix[16];
+        MathLib::CreateRTSMatrix(translation, rotation, scaling, bone->Pivot, localMatrix);
 
-        Float3 np = Float3(-bone->Position.X, -bone->Position.Y, -bone->Position.Z);
-        m.translate(np);
-
-
-
-      
-        // Apply parent transformation to this bone.
-        if (bone->Parent != -1) {
+        if (bone->Parent != -1) { // Apply parent transformations to this bone.
           Bone2* parent = &_bones[bone->Parent];
-          bone->mpos = parent->mpos * m;
+          MathLib::MultiplyMatrices(parent->WorldMatrix, localMatrix, bone->WorldMatrix);
+          bone->Rotation = MathLib::MultiplyQuads(parent->Rotation, rotation);
         }
-        else bone->mpos = m;
+        else { // No parent (root bone). Just copy the values.
+          for (int i = 0; i < 16; i++) bone->WorldMatrix[i] = localMatrix[i]; 
+          bone->Rotation = rotation;
+        }
+
+        // Calculate the absolute position.
+        bone->Position = MathLib::TransformByMatrix(bone->Pivot, bone->WorldMatrix);
         
-        bone->WorldPos = bone->mpos * bone->Position;
-
-
-        /*
-        if (strstr(bone->Name, "Mesh01") != NULL) {
-          printf("[%04d] | WPos %7.4f, %7.4f, %7.4f\n",
-            _curFrame, bone->WorldPos.X, bone->WorldPos.Y, bone->WorldPos.Z);
+        if (strstr(bone->Name, "Mesh04") != NULL) {
+          printf(
+            "[%04d] %10s | %8.4f, %8.4f, %8.4f | %8.4f, %8.4f, %8.4f, %8.4f\n",
+            _curFrame, bone->Name,
+            bone->Position.X, bone->Position.Y, bone->Position.Z,
+            bone->Rotation.X, bone->Rotation.Y, bone->Rotation.Z, bone->Rotation.W
+          );
         }
-        */
       }
       
-
+      
 
       // Advance frame offset.
       _curFrame += Frameskip;

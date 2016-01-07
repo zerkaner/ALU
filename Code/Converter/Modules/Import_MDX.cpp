@@ -288,7 +288,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
     fread(&dbuf, sizeof(DWORD), 1, fp); // Read identifier flag.
     switch (dbuf) {
 
-      //____________________________________________________________________________________[BONES]
+      //__________________________________________________________________________________[BONES]
       // Scan for 'BONE' - animation bones codeblock.
       case 'ENOB': {
         fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read total bone chunk size.
@@ -302,7 +302,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
         break;
       }
 
-      //__________________________________________________________________________________[HELPERS]
+      //________________________________________________________________________________[HELPERS]
       // Scan for 'HELP' - auxiliary nodes ... and the main bone on some models (?!)
       case 'PLEH': {
         fread(&chunkSize, sizeof(DWORD), 1, fp);         // Read helper chunk size.
@@ -313,7 +313,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
         break;
       }
 
-      //___________________________________________________________________________________[PIVOTS]
+      //_________________________________________________________________________________[PIVOTS]
       // Reading the pivot points: These contain among others the bone positions.
       case 'TVIP': { 
         fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read pivot chunk size.
@@ -334,8 +334,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
     Bone2 b = Bone2();
     strcpy(b.Name, bones[i].Name);
     b.Parent = bones[i].ParentID;
-    b.Position = bones[i].Position;
-    b.Rotation = Float4(0.0f, 0.0f, 0.0f, 0.0f);
+    b.Pivot = bones[i].Position;
     model->Bones.push_back(b);
   }
   ReorderBones(model);  // Ensure correct bone order. 

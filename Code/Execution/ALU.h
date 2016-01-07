@@ -19,7 +19,7 @@ class ALU {
     Camera _camera;            // 3D user perspective.
     UserInterface _interface;  // 2D user interface overlay. 
     bool _run;                 // Loop execution flag. 
-    int _targetFPS = 25;       // Targeted frames per second.
+    int _targetFPS = 30;       // Targeted frames per second.
 
 
   public:

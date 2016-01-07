@@ -27,9 +27,8 @@ ALU::ALU() :
   _listener.AddControllerModule(new ExecutionController(this));
   _listener.AddControllerModule(new CameraControllerRTS(&_camera, &_listener));  
   _listener.AddControllerModule(new EngineController(&_3dEngine));
-  //_listener.AddControllerModule(new RenderModeController(&(_world.GetEnvironment()->Objects.Objects)));
+  _listener.AddControllerModule(new RenderModeController(&(_world.GetEnvironment()->Objects.Objects)));
   
-  /*
   // Initial camera position.
   _camera.SetPosition(12.0f, 9.6f, 2, 244, -13);
 
@@ -76,7 +75,6 @@ ALU::ALU() :
   obj->Model = ModelUtils::Load("M4/Stable.m4");
   obj->Heading.X = 80.0f;
   _world.GetEnvironment()->AddObject(obj);
-  */
 }
 
 
@@ -123,5 +121,5 @@ void ALU::TestConvertedModel(Model2* model) {
 
   ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Float3(7.5f, 7.5f, 0.5f));
   _listener.AddControllerModule(mta);
-  _camera.SetPosition(80, 42, 40, 244, -13);//(16.0f, 11.0f, 4, 244, -13);
+  _camera.SetPosition(16.0f, 11.0f, 4, 244, -13);
 }

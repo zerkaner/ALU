@@ -189,9 +189,9 @@ void ModelUtils::ScaleModel(Model2* model, float factor) {
     model->Vertices[i].Z *= factor;
   }
   for (uint i = 0; i < model->Bones.size(); i ++) {
-    model->Bones[i].Position.X *= factor;
-    model->Bones[i].Position.Y *= factor;
-    model->Bones[i].Position.Z *= factor;
+    model->Bones[i].Pivot.X *= factor;
+    model->Bones[i].Pivot.Y *= factor;
+    model->Bones[i].Pivot.Z *= factor;
   }
   for (uint i = 0; i < model->Sequences.size(); i ++) {
     //std::map<Bone2*, TransformationSet>::iterator iter;
@@ -263,7 +263,7 @@ void ModelUtils::PrintDebug(Model2* model) {
     Bone2* bone = &model->Bones[i];
     fprintf(fp, 
       "  [%02d]  %-12s  Par> %02d  | Pos: %7.4f, %7.4f, %7.4f | Rot: %7.4f, %7.4f, %7.4f, %7.4f\n",
-      i, bone->Name, bone->Parent, bone->Position.X, bone->Position.Y, bone->Position.Z,
+      i, bone->Name, bone->Parent, bone->Pivot.X, bone->Pivot.Y, bone->Pivot.Z,
       bone->Rotation.X, bone->Rotation.Y, bone->Rotation.Z, bone->Rotation.W  
     );
   }

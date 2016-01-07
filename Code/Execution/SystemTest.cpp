@@ -4,12 +4,10 @@
 
 #include <Converter/Converter.h>
 #include <Converter/DBCParser.h>
-#include <Converter/MPQReader.h>
 #include <Execution/ALU.h>
-#include <stdio.h>
 
 
-int main (int argc, char** argv) {
+int main(int argc, char** argv) {
 
   // Run converter on parameter "--conv". 
   if (argc > 1 && (strcmp(argv[1], "--conv") == 0)) {
@@ -34,7 +32,7 @@ int main (int argc, char** argv) {
   }
   
   // Delay exit (for debug reasons), then return. 
-  //printf("Press any key to exit.");
-  //getchar();
+  printf("Press any key to exit.");
+  getchar();
   return 0;
 }
