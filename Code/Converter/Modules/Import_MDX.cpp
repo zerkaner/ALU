@@ -1,4 +1,5 @@
 #include <Converter/Converter.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <vector>
 using namespace std;
@@ -36,11 +37,18 @@ struct MDX_Bone {
   MDX_AnimSet* Scaling = 0;
 };
 
-/** Forward-declaration of helper function for MDX node reading. */
-static MDX_Bone ReadMDXNode(FILE* fp, DWORD& inclSize);
+struct MDX_BoneAssignment {
+  vector<uint> Associations;
+  vector<vector<BYTE> > MatrixGroups;
+};
 
-/** Bone reordering function (to match parents-before-childs criteria). */
+
+/** Forward-declaration of helper functions. */
+static MDX_Bone ReadMDXNode(FILE* fp, DWORD& inclSize);
+static MDX_BoneAssignment ReadMDXBoneAssignment(FILE* fp);
 static void ReorderBones(Model2* model);
+static void BuildVertexGroups(Model2* model, vector<MDX_BoneAssignment> ba);
+
 
 
 /** Reads a Blizzard MDX file (WarCraft 3).
@@ -62,6 +70,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   Model2* model = new Model2();
   vector<MDX_Sequence> sequences;
   vector<MDX_Bone> bones;
+  vector<MDX_BoneAssignment> associations;
   vector<DWORD> texIDs;
   vector<char*> textures;
 
@@ -73,7 +82,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   model->Version = 2;
 
 
-  //________________________________________________________________________________[SEQUENCES]
+  //__________________________________________________________________________________[SEQUENCES]
   // Scan for 'SEQS' - animation sequence codeblock.
   while (dbuf != 'SQES') fread(&dbuf, sizeof(DWORD), 1, fp);
   fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read total sequence chunk size.
@@ -95,7 +104,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
 
 
 
-  //________________________________________________________________________________[MATERIALS]
+  //__________________________________________________________________________________[MATERIALS]
   // Scan for 'MTLS' - materials codeblock.
   while (dbuf != 'SLTM') fread(&dbuf, sizeof(DWORD), 1, fp);
   fread(&chunkSize, sizeof(DWORD), 1, fp);    // Read total material chunk size.
@@ -132,7 +141,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
 
 
 
-  //_________________________________________________________________________________[TEXTURES]
+  //___________________________________________________________________________________[TEXTURES]
   // Scan for 'TEXS' - textures codeblock.
   while (dbuf != 'SXET') fread(&dbuf, sizeof(DWORD), 1, fp);
   fread(&chunkSize, sizeof(DWORD), 1, fp);
@@ -175,7 +184,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
 
 
 
-  //__________________________________________________________________________________[GEOSETS]
+  //____________________________________________________________________________________[GEOSETS]
   // Skip file to geoset definitions and read in size.
   while (dbuf != 'SOEG') fread(&dbuf, sizeof(DWORD), 1, fp);
   fread(&remaining, sizeof(DWORD), 1, fp);
@@ -232,16 +241,13 @@ Model2* Converter::ReadMdx(const char* inputfile) {
       index += (totalV-nrVertices);  // Read indices are relative to the geoset. Add offset! 
       model->Indices.push_back(index);
     }
-    fread(&dbuf, sizeof(DWORD), 1, fp);  // Skip 'GNDX'.
-    fread(&dbuf, sizeof(DWORD), 1, fp);  // Discard vertex group numbers.
-    for (DWORD i = dbuf; i > 0; i --) fread(&dbuf, sizeof(BYTE), 1, fp);
 
-    
-    // Scan for 'MATS' - Material association codeblock.
-    while (dbuf != 'STAM') fread(&dbuf, sizeof(DWORD), 1, fp);
-    fread(&dbuf, sizeof(DWORD), 1, fp);  // Read number of matrix indexes (we ignore them).
-    for (DWORD i = dbuf; i > 0; i --) fread(&dbuf, sizeof(DWORD), 1, fp);
-    fread(&dbuf, sizeof(DWORD), 1, fp);  // This is our material ID!
+
+    associations.push_back(ReadMDXBoneAssignment(fp));
+
+
+    // Read the material ID.
+    fread(&dbuf, sizeof(DWORD), 1, fp);
 
     // Get associated texture from texture ID vector.
     if (dbuf < texIDs.size()) {
@@ -337,10 +343,12 @@ Model2* Converter::ReadMdx(const char* inputfile) {
     b.Pivot = bones[i].Position;
     model->Bones.push_back(b);
   }
-  ReorderBones(model);  // Ensure correct bone order. 
+  
+  //ReorderBones(model);  // Ensure correct bone order. 
+  BuildVertexGroups(model, associations);
 
 
-  //___________________________________________________________________[PROCESS ANIMATION DATA]
+  //_____________________________________________________________________[PROCESS ANIMATION DATA]
   // Adjusting the MDX sequences (global frame line, interleaved anim data) to ours.
   for (uint i = 0; i < sequences.size(); i ++) {
     Sequence seq = Sequence();
@@ -388,7 +396,6 @@ Model2* Converter::ReadMdx(const char* inputfile) {
         }   
       }
     }
-
     model->Sequences.push_back(seq);
   }
 
@@ -413,6 +420,98 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   return model;
 } 
 
+
+
+
+
+static void BuildVertexGroups(Model2* model, vector<MDX_BoneAssignment> ba) {
+  int vIdx = 0;
+  for (uint i = 0; i < ba.size(); i ++) {
+    for (uint j = 0; j < ba[i].Associations.size(); j ++) {
+      vector<BYTE> grp = ba[i].MatrixGroups[ba[i].Associations[j]];
+      BoneWeight bw = BoneWeight();
+      for (uint k = 0; k < 4; k ++) {
+        if (k < grp.size()) bw.BoneIDs[k] = grp[k];
+        else bw.BoneIDs[k] = 255;
+      }
+
+      // Calculate the weights.
+      Float3 vPos = model->Vertices[vIdx++];
+      float dist = 0.0f;
+      for (uint k = 0; k < grp.size() && k < 4; k ++) {
+        Float3 bPos = model->Bones[bw.BoneIDs[k]].Pivot;
+        dist += bPos.Distance(vPos);
+      }
+      for (uint k = 0; k < grp.size() && k < 4; k ++) {
+        Float3 bPos = model->Bones[bw.BoneIDs[k]].Pivot;
+        bw.Factor[k] = bPos.Distance(vPos) / dist;
+      }
+
+      model->Weights.push_back(bw);
+    }  
+  } /*
+  printf("Output:\n");
+  for (uint i = 0; i < model->Weights.size(); i ++) {
+    printf(" Weight %04d: {", i);
+    BoneWeight w = model->Weights[i];
+    for (uint j = 0; j < 4 && w.BoneIDs[j] != 255; j ++) {
+      printf(" %02d ==> %4.2f ", w.BoneIDs[j], w.Factor[j]);
+    }
+    printf("}\n");
+  }*/
+}
+
+
+/** Read the vertex-to-bone association groups.
+ * @param fp Opened and positioned file pointer.
+ * @return The bone assignment for the current geoset. */
+static MDX_BoneAssignment ReadMDXBoneAssignment(FILE* fp) {
+  DWORD dbuf, chunkSize;
+  BYTE bbuf;
+  MDX_BoneAssignment ba = MDX_BoneAssignment();
+
+  fread(&dbuf, sizeof(DWORD), 1, fp);      // Skip 'GNDX'.
+  fread(&chunkSize, sizeof(DWORD), 1, fp); //| Number of vertex groups. Should correlate 
+  for (uint i = 0; i < chunkSize; i ++) {  //| with the number of vertices read.
+    fread(&bbuf, sizeof(BYTE), 1, fp);
+    ba.Associations.push_back(bbuf);
+  }
+  vector<DWORD> mtxGroups;                 // Vertex group component sizes.
+  fread(&dbuf, sizeof(DWORD), 1, fp);      // Skip 'MTGC'.
+  fread(&chunkSize, sizeof(DWORD), 1, fp); // Number of matrix groups.
+  for (uint i = 0; i < chunkSize; i ++) {
+    fread(&dbuf, sizeof(DWORD), 1, fp);
+    mtxGroups.push_back(dbuf);
+  }
+  vector<DWORD> midxGroups;                // Bone association table.
+  fread(&dbuf, sizeof(DWORD), 1, fp);      // Skip 'MATS'.
+  fread(&chunkSize, sizeof(DWORD), 1, fp); // Number of matrix index groups.
+  for (uint i = 0; i < chunkSize; i ++) {
+    fread(&dbuf, sizeof(DWORD), 1, fp);
+    midxGroups.push_back(dbuf);
+  }
+
+
+  // Process the read data.
+  uint mOff = 0;
+  for (uint i = 0; i < mtxGroups.size(); i ++) {
+    vector<BYTE> indices;
+    for (uint j = 0; j < mtxGroups[i]; j ++) {
+      indices.push_back((BYTE) midxGroups[mOff++]);
+    }
+    ba.MatrixGroups.push_back(indices);
+  } /*
+  printf("Associations: %03d\n", ba.Associations.size());
+  for (uint i = 0; i < ba.MatrixGroups.size(); i ++) {
+    printf("Group [%02d]: { ", i);
+    for (uint j = 0; j < ba.MatrixGroups[i].size(); j ++) {
+      printf("%d", ba.MatrixGroups[i][j]);
+      if (j < ba.MatrixGroups[i].size() - 1) printf(", ");
+    }
+    printf(" }\n");
+  } */
+  return ba;
+}
 
 
 /** Helper function to read a MDX node.

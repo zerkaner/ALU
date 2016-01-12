@@ -3,7 +3,36 @@
 #include <Data/Object3D.h>
 #include <Data/Textures/Texture.h>
 #include <SDL_opengl.h>
-#include <cmath>
+//#include <cmath>
+
+
+static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone2>& bones) {
+  if (w.BoneIDs[0] != 255) {
+    int mi;
+    float mat[16];
+    float* wm1 = bones[w.BoneIDs[0]].WorldMatrix;
+    float f1 = w.Factor[0];
+    for (mi = 0; mi < 16; mi ++) mat[mi] = f1 * wm1[mi];
+    if (w.BoneIDs[1] != 255) {
+      float* wm2 = bones[w.BoneIDs[1]].WorldMatrix;
+      float f2 = w.Factor[1];
+      for (mi = 0; mi < 16; mi ++) mat[mi] += f2 * wm2[mi];
+      if (w.BoneIDs[2] != 255) {
+        float* wm3 = bones[w.BoneIDs[2]].WorldMatrix;
+        float f3 = w.Factor[2];
+        for (mi = 0; mi < 16; mi ++) mat[mi] += f3 * wm3[mi];
+        if (w.BoneIDs[3] != 255) {
+          float* wm4 = bones[w.BoneIDs[3]].WorldMatrix;
+          float f4 = w.Factor[3];
+          for (mi = 0; mi < 16; mi ++) mat[mi] += f4 * wm4[mi];
+        }
+      }
+    } 
+    v = MathLib::TransformByMatrix(v, mat);
+  }
+  return v;
+}
+
 
 
 void GLDrawer::Draw(Object3D* obj) {
@@ -37,6 +66,7 @@ void GLDrawer::Draw(Object3D* obj) {
   switch (mdl->_renderMode) {
 
     case 1: {  // Output point cloud.
+      glPointSize(1);
       glBegin(GL_POINTS);
       for (uint i = 0; i < mdl->Vertices.size(); i ++) {
         glVertex3f(mdl->Vertices[i].X, mdl->Vertices[i].Y, mdl->Vertices[i].Z);
@@ -57,11 +87,15 @@ void GLDrawer::Draw(Object3D* obj) {
           DWORD i0 = mdl->Indices[idxStart + i];
           DWORD i1 = mdl->Indices[idxStart + i + 1];
           DWORD i2 = mdl->Indices[idxStart + i + 2];
+          
+          Float3 v1 = CalculateVertex(mdl->Vertices[i0], mdl->Weights[i0], mdl->Bones);
+          Float3 v2 = CalculateVertex(mdl->Vertices[i1], mdl->Weights[i1], mdl->Bones);
+          Float3 v3 = CalculateVertex(mdl->Vertices[i2], mdl->Weights[i2], mdl->Bones);
 
           glBegin(GL_LINE_LOOP);
-          glVertex3f(mdl->Vertices[i0].X, mdl->Vertices[i0].Y, mdl->Vertices[i0].Z);
-          glVertex3f(mdl->Vertices[i1].X, mdl->Vertices[i1].Y, mdl->Vertices[i1].Z);
-          glVertex3f(mdl->Vertices[i2].X, mdl->Vertices[i2].Y, mdl->Vertices[i2].Z);
+          glVertex3f(v1.X, v1.Y, v1.Z);
+          glVertex3f(v2.X, v2.Y, v2.Z);
+          glVertex3f(v3.X, v3.Y, v3.Z);
           glEnd();
         }
       }
@@ -88,6 +122,7 @@ void GLDrawer::Draw(Object3D* obj) {
     }
 
     case 3: {  // Direct CPU rendering.
+
       glEnable(GL_LIGHTING);
       for (uint m = 0; m < mdl->Meshes.size(); m ++) { // Mesh loop.
         if (!mdl->Meshes[m].Enabled) continue;
@@ -105,7 +140,8 @@ void GLDrawer::Draw(Object3D* obj) {
           DWORD idx = mdl->Indices[idxStart + i];
           glTexCoord2f(mdl->UVs[idx].X, mdl->UVs[idx].Y);
           glNormal3f(mdl->Normals[idx].X, mdl->Normals[idx].Y, mdl->Normals[idx].Z);
-          glVertex3f(mdl->Vertices[idx].X, mdl->Vertices[idx].Y, mdl->Vertices[idx].Z);
+          Float3 vtx = CalculateVertex(mdl->Vertices[idx], mdl->Weights[idx], mdl->Bones);
+          glVertex3f(vtx.X, vtx.Y, vtx.Z);
         }
         glEnd();
 

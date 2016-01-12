@@ -17,12 +17,13 @@ class ModelTestAgent : public SpatialAgent, public IAgentLogic, public IControll
       RL = this;
       Data->Position = pos;
       Data->Model = model;
+      Data->Model->_renderMode = 2;
       AddToEnvironment();
     }
 
 
     IInteraction* Reason() {  
-      //Data->Heading.X += 1.0f;
+      Data->Heading.X += 1.0f;
       if (Data->Heading.X >= 360.0f) Data->Heading.X = 0.0f;
       return NULL;
     }

@@ -104,7 +104,7 @@ class AnimationManager {
 
   public:
 
-    int Frameskip = 6;  // The frameskip governs the animation playback speed.
+    int Frameskip = 15;  // The frameskip governs the animation playback speed.
 
     /** Create a new animation manager.
      * @param model The model to animate. */
@@ -210,15 +210,15 @@ class AnimationManager {
 
         // Calculate the absolute position.
         bone->Position = MathLib::TransformByMatrix(bone->Pivot, bone->WorldMatrix);
-        
-        if (strstr(bone->Name, "Mesh04") != NULL) {
+        /*
+        if (strstr(bone->Name, "Bone_LegToe_L") != NULL) {
           printf(
             "[%04d] %10s | %8.4f, %8.4f, %8.4f | %8.4f, %8.4f, %8.4f, %8.4f\n",
             _curFrame, bone->Name,
             bone->Position.X, bone->Position.Y, bone->Position.Z,
             bone->Rotation.X, bone->Rotation.Y, bone->Rotation.Z, bone->Rotation.W
           );
-        }
+        }*/
       }
       
       

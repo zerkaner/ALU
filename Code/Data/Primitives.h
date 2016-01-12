@@ -1,4 +1,5 @@
 #pragma once
+#include <math.h>
 
 
 /** Type definitions. */
@@ -60,6 +61,12 @@ struct Float3 {
     }
     Float3 operator*(float val) {
       return Float3(X * val, Y * val, Z * val);
+    }
+    float Distance(Float3 other) {
+      return sqrt(
+        (X - other.X)*(X - other.X) +
+        (Y - other.Y)*(Y - other.Y) +
+        (Z - other.Z)*(Z - other.Z));
     }
 };
 

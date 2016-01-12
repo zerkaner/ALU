@@ -32,7 +32,7 @@ ALU::ALU() :
   // Initial camera position.
   _camera.SetPosition(12.0f, 9.6f, 2, 244, -13);
 
-
+  /*
   // Create some test agents.
   new TestAgent(&_world, _world.GetEnvironment(), Float3(2.0f, 2.0f, 0.5f));
   new TestAgent(&_world, _world.GetEnvironment(), Float3(4.0f, 1.0f, 0.5f));
@@ -74,7 +74,7 @@ ALU::ALU() :
   obj->Position = Float3(1, 5.5f, 0.05f);
   obj->Model = ModelUtils::Load("M4/Stable.m4");
   obj->Heading.X = 80.0f;
-  _world.GetEnvironment()->AddObject(obj);
+  _world.GetEnvironment()->AddObject(obj); */
 }
 
 
@@ -117,7 +117,7 @@ void ALU::TestConvertedModel(Model2* model) {
 
   ModelUtils::PrintDebug(model);
   model->AnimMgr = new AnimationManager(model);
-  model->AnimMgr->Play("Walk");
+  model->AnimMgr->Play("Stand 1");
 
   ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Float3(7.5f, 7.5f, 0.5f));
   _listener.AddControllerModule(mta);

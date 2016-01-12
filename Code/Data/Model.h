@@ -22,6 +22,13 @@ struct Bone2 {
 };
 
 
+/** Vertex-to-bone assignment and weighting. */
+struct BoneWeight {
+  BYTE BoneIDs[4];  // Bone indices (0-4). '255' means unassigned.
+  float Factor[4];  // Weighting factor of associated bone. Stored as byte in file.
+};
+
+
 
 //____________________________________________________________________________ [ANIMATION DATA]
 
@@ -92,11 +99,12 @@ struct Model2 {
   std::vector<DWORD> Indices;
   std::vector<Mesh2> Meshes;
   std::vector<Bone2> Bones;
+  std::vector<BoneWeight> Weights;
   std::vector<Sequence> Sequences;     // <== about to replace the Animation2
   AnimationManager* AnimMgr = 0;       // This is crap cause of double ref.
   std::vector<Animation2> Animations;
   std::vector<SimpleTexture*> Textures;
-  int _renderMode = 2; // Debug flag for visual testing. Not part of the model!
+  int _renderMode = 3; // Debug flag for visual testing. Not part of the model!
 };
 
 
