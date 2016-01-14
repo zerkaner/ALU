@@ -5,9 +5,9 @@
 /** Load a Blizzard M2 file. Called by converter or MPQ reader toolchain.
  * @param m2 Opened memory stream to the M2 file.
  * @return Pointer to the imported model. */
-Model2* Converter::ReadM2(MemoryStream* m2) {
+Model* Converter::ReadM2(MemoryStream* m2) {
   
-  Model2* model = new Model2();
+  Model* model = new Model();
   DWORD dbuf;
   m2->Read(&dbuf, sizeof(DWORD));  // Skip "MD20".
   m2->Read(&dbuf, sizeof(DWORD));  // Skip version number (for now).
@@ -86,7 +86,7 @@ Model2* Converter::ReadM2(MemoryStream* m2) {
   short sBuf, iO, iL; int iBuf;
   for (int i = 0; i < nrSubmeshes; i ++) {
     
-    Mesh2* mesh = new Mesh2();              // Create new mesh.
+    Mesh* mesh = new Mesh();                // Create new mesh.
     m2->Read(&iBuf, sizeof(int));           // Read ID.
     sprintf(mesh->ID, "Geoset %02d", iBuf); // Set ID.
     strcpy(mesh->Texture, "");
@@ -99,8 +99,6 @@ Model2* Converter::ReadM2(MemoryStream* m2) {
     mesh->IndexLength = iL;
 
     m2->Seek(MemoryStream::CURRENT, 36);  // Skip the bones (until animation is integrated later). 
-    mesh->BoneOffset = 0;
-    mesh->BoneCount = 0;
 
     model->Meshes.push_back(*mesh);  // Write geoset to model.
   }

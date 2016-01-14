@@ -20,25 +20,19 @@ class Converter {
     /** Imports a model from an OBJ file.
      * @param inputfile The file to load.
      * @return The imported and index-aligned model. */
-    static Model2* ReadObj(const char* inputfile);
+    static Model* ReadObj(const char* inputfile);
 
 
     /** Reads a Blizzard MDX file (WarCraft 3).
      * @param inputfile The file to load. 
      * @return The loaded model. No need for index alignment here! */
-    static Model2* ReadMdx(const char* inputfile);
-
-
-    /** Reads a WGL lump file (TojiCode).
-     * @param filepath Path to a .wglvert or .wglmodel to load.
-     * @return Loaded model structure. */
-    static Model2* ReadWgl(const char* filepath);
+    static Model* ReadMdx(const char* inputfile);
 
 
     /** Writes a model to a JSON file.
      * @param model The model to output.
      * @param savefile Name of the file to write. */
-    static void WriteJson(Model2* model, const char* savefile);
+    static void WriteJson(Model* model, const char* savefile);
 
 
 
@@ -54,18 +48,18 @@ class Converter {
     /** Loads a file. If necessary, this method launches an import module.
      * @param inputfile Path to the model to load.
      * @return Pointer to the loaded model. 'NULL' on error. */
-    static Model2* LoadFile(const char* inputfile);
+    static Model* LoadFile(const char* inputfile);
 
 
     /** Write a model to disk. Also used to export models to different formats.
      * @param model The model to save / export. 
      * @param savefile The path and file to save to. */
-    static void WriteFile(Model2* model, const char* savefile);
+    static void WriteFile(Model* model, const char* savefile);
 
 
     /** Load a Blizzard M2 file. This function is public to be also called
      *  by the MPQ reader toolchain (World of Warcraft NPC import). 
      * @param stream Opened memory stream to the M2 file.
      * @return Pointer to the imported model. */
-    static Model2* ReadM2(MemoryStream* stream);
+    static Model* ReadM2(MemoryStream* stream);
 };

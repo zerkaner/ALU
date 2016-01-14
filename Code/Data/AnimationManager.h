@@ -12,7 +12,7 @@ class AnimationManager {
 
   private:
     vector<Sequence>& _sequences;  // All available sequences.
-    vector<Bone2>& _bones;         // The model's skeleton.
+    vector<Bone>& _bones;          // The model's skeleton.
     int _curFrame;                 // Current frame.
     Sequence* _sequence = NULL;    // The animation selected to play.
     
@@ -108,7 +108,7 @@ class AnimationManager {
 
     /** Create a new animation manager.
      * @param model The model to animate. */
-    AnimationManager(Model2* model) : 
+    AnimationManager(Model* model) : 
       _sequences(model->Sequences), 
       _bones(model->Bones) {
       int nb = _bones.size();
@@ -145,7 +145,7 @@ class AnimationManager {
           _trIndex[i] = 0; 
           _rotIndex[i] = 0; 
           _scaIndex[i] = 0;
-          Bone2* bone = &_bones[i];
+          Bone* bone = &_bones[i];
           if (_sequence->Transformations.count(bone)) {
             _trLength[i]  = _sequence->Transformations[bone].Translations.size();
             _rotLength[i] = _sequence->Transformations[bone].Rotations.size();
@@ -167,7 +167,7 @@ class AnimationManager {
 
       // Loop over all bones. It's important that this flat hierarchy starts with the roots.
       for (uint i = 0; i < _bones.size(); i ++) {
-        Bone2* bone = &_bones[i];
+        Bone* bone = &_bones[i];
 
         Float3 translation = Float3(0,0,0);
         Float4 rotation = Float4(0,0,0,0);
@@ -199,7 +199,7 @@ class AnimationManager {
         MathLib::CreateRTSMatrix(translation, rotation, scaling, bone->Pivot, localMatrix);
 
         if (bone->Parent != -1) { // Apply parent transformations to this bone.
-          Bone2* parent = &_bones[bone->Parent];
+          Bone* parent = &_bones[bone->Parent];
           MathLib::MultiplyMatrices(parent->WorldMatrix, localMatrix, bone->WorldMatrix);
           bone->Rotation = MathLib::MultiplyQuads(parent->Rotation, rotation);
         }
@@ -210,18 +210,8 @@ class AnimationManager {
 
         // Calculate the absolute position.
         bone->Position = MathLib::TransformByMatrix(bone->Pivot, bone->WorldMatrix);
-        /*
-        if (strstr(bone->Name, "Bone_LegToe_L") != NULL) {
-          printf(
-            "[%04d] %10s | %8.4f, %8.4f, %8.4f | %8.4f, %8.4f, %8.4f, %8.4f\n",
-            _curFrame, bone->Name,
-            bone->Position.X, bone->Position.Y, bone->Position.Z,
-            bone->Rotation.X, bone->Rotation.Y, bone->Rotation.Z, bone->Rotation.W
-          );
-        }*/
       }
-      
-      
+          
 
       // Advance frame offset.
       _curFrame += Frameskip;
@@ -237,12 +227,3 @@ class AnimationManager {
       }
     }
 };
-
-
-
-//// Array output for debugs.
-//for (uint i = 0; i < _bones.size(); i ++) {
-//  printf("Bone %s: T: %d/%d  R: %d/%d  S: %d/%d\n", _bones[i].Name, 
-//    _trIndex[i], _trLength[i], _rotIndex[i], _rotLength[i], _scaIndex[i], _scaLength[i]
-//  );
-//}

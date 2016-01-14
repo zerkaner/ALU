@@ -4,7 +4,7 @@
 /** Writes a model to a JSON file.
  * @param model The model to output.
  * @param savefile Name of the file to write. */
-void Converter::WriteJson(Model2* model, const char* savefile) {
+void Converter::WriteJson(Model* model, const char* savefile) {
 
   // Try to open writer stream. Quit on failure.
   FILE* writer = fopen(savefile, "w");
@@ -62,8 +62,6 @@ void Converter::WriteJson(Model2* model, const char* savefile) {
     fprintf(writer, "      \"Texture\":     \"%s\",\n", model->Meshes[i].Texture);
     fprintf(writer, "      \"IndexOffset\": %d,\n", model->Meshes[i].IndexOffset);
     fprintf(writer, "      \"IndexLength\": %d,\n", model->Meshes[i].IndexLength);
-    fprintf(writer, "      \"BoneOffset\":  %d,\n", model->Meshes[i].BoneOffset);
-    fprintf(writer, "      \"BoneCount\":   %d\n", model->Meshes[i].BoneCount);
     fprintf(writer, "    }%s", (i < nrMeshes-1)? "," : "\n  ");
   } fprintf(writer, "],\n\n\n");
 
@@ -94,12 +92,12 @@ void Converter::WriteJson(Model2* model, const char* savefile) {
 
 
   // Write the animations.
-  fprintf(writer, "  \"Animations\": [");
-  int nrAnimations = model->Animations.size();
-  for (int i = 0; i < nrAnimations; i ++) {
+  fprintf(writer, "  \"Sequences\": [");
+  int nrSequences = model->Sequences.size();
+  for (int i = 0; i < nrSequences; i ++) {
     fprintf(writer, "\n    {\n");
     //TODO Animation format output.
-    fprintf(writer, "    }%s", (i < nrAnimations - 1) ? "," : "\n  ");
+    fprintf(writer, "    }%s", (i < nrSequences - 1) ? "," : "\n  ");
   } fprintf(writer, "]\n");
 
 

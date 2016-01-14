@@ -19,7 +19,6 @@
     <ClCompile Include="..\Code\Converter\Modules\Import_M2.cpp" />
     <ClCompile Include="..\Code\Converter\Modules\Import_MDX.cpp" />
     <ClCompile Include="..\Code\Converter\Modules\Import_OBJ.cpp" />
-    <ClCompile Include="..\Code\Converter\Modules\Import_WGL.cpp" />
     <ClCompile Include="..\Code\Converter\MPQReader.cpp" />
     <ClCompile Include="..\Code\Converter\Utils\FileUtils.cpp" />
     <ClCompile Include="..\Code\Data\Compression\Archiver.cpp" />

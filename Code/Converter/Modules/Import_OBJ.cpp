@@ -26,13 +26,13 @@ struct UnevenTriangle {
  *  This function performs vector duplication and shifting to create a common index array.
  * @param model The model structure to rectify.
  * @param faces List of above triangle-index specifications. */
-void AlignIndices(Model2* model, vector<UnevenTriangle>* faces);
+void AlignIndices(Model* model, vector<UnevenTriangle>* faces);
 
 
 /** Import a model from an OBJ file.
  * @param inputfile The file to load.
  * @return The imported and index-aligned model. */
-Model2* Converter::ReadObj(const char* inputfile) {
+Model* Converter::ReadObj(const char* inputfile) {
   printf("OBJ converter loaded.\n");
   FILE* fp = FileUtils::File_open(inputfile, false);
   if (fp == NULL) return NULL;
@@ -41,7 +41,7 @@ Model2* Converter::ReadObj(const char* inputfile) {
   float x, y, z;      // Float input buffers.
   DWORD i1, i2, i3;   // Index input buffers.
 
-  Model2* model = new Model2();   // Create model structure.
+  Model* model = new Model();   // Create model structure.
   
   // Set the model name and version.
   char dir[256], file[80], name[40], ending[10];
@@ -54,7 +54,7 @@ Model2* Converter::ReadObj(const char* inputfile) {
   // Temporary face buffer. Because .obj has asymmetric indices, we'll have
   // to align them before they can be written into the model structure.
   vector<UnevenTriangle> triangles;
-  Mesh2* curMesh = NULL;  // Currently selected mesh.
+  Mesh* curMesh = NULL;     // Currently selected mesh.
   DWORD indicesRead = 0;    // Number of indices that belong to the current mesh.
   DWORD indicesOffset = 0;  // Position of current mesh's first index in total array.  
 
@@ -119,13 +119,11 @@ Model2* Converter::ReadObj(const char* inputfile) {
       if (curMesh != NULL) {
         curMesh->IndexOffset = indicesOffset;
         curMesh->IndexLength = indicesRead;
-        curMesh->BoneCount = 0;  //TODO We will take care of these someday later!
-        curMesh->BoneOffset = 0;
         model->Meshes.push_back(*curMesh);
       }
 
       // Create the new mesh.
-      curMesh = new Mesh2();
+      curMesh = new Mesh();
       strcpy(curMesh->ID, mtl);
       strcpy(curMesh->Texture, ""); //TODO Read the texture name from the MTLLIB.
       curMesh->Enabled = true;
@@ -139,7 +137,7 @@ Model2* Converter::ReadObj(const char* inputfile) {
   // End of file reached. Write the currently open mesh to the structure.
   // If no mesh was declared inside the loop we'll have to be set a default one.
   if (curMesh == NULL) {
-    curMesh = new Mesh2();
+    curMesh = new Mesh();
     strcpy(curMesh->ID, "-default-");
     strcpy(curMesh->Texture, "");
     curMesh->Enabled = true;
@@ -147,8 +145,6 @@ Model2* Converter::ReadObj(const char* inputfile) {
 
   curMesh->IndexOffset = indicesOffset;
   curMesh->IndexLength = indicesRead;
-  curMesh->BoneCount = 0;  //TODO We will take care of these someday later!
-  curMesh->BoneOffset = 0;
   model->Meshes.push_back(*curMesh);
   fclose(fp); // Close file.
 
@@ -188,7 +184,7 @@ struct VertexIndex {
 
 
 /** AlignIndices() implementation. */
-void AlignIndices(Model2* model, vector<UnevenTriangle>* faces) {
+void AlignIndices(Model* model, vector<UnevenTriangle>* faces) {
   printf("Aligning indices ... ");
 
   map<VertexIndex, int> indexMapping; // Triangle indices to new (uniform) index mapping.

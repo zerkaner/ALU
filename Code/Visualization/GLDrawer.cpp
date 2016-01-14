@@ -3,10 +3,9 @@
 #include <Data/Object3D.h>
 #include <Data/Textures/Texture.h>
 #include <SDL_opengl.h>
-//#include <cmath>
 
 
-static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone2>& bones) {
+static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone>& bones) {
   if (w.BoneIDs[0] != 255) {
     int mi;
     float mat[16];
@@ -38,7 +37,7 @@ static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone2>& bones) {
 void GLDrawer::Draw(Object3D* obj) {
 
   // Instant skip, if no model is assigned or it is disabled.
-  if (obj->Model == NULL || obj->Model->_renderMode == 0) return;
+  if (obj->Model3D == NULL || obj->Model3D->_renderMode == 0) return;
 
   //TODO Move lighting somewhere else. Maybe as a Engine.Add() function. 
   glEnable (GL_LIGHT0);
@@ -57,8 +56,9 @@ void GLDrawer::Draw(Object3D* obj) {
   glTranslatef(obj->Position.X, obj->Position.Y, obj->Position.Z);  // Translate object.     
   glRotatef(obj->Heading.X, 0.0f, 0.0f, -1.0f);   // Rotate on z [height]-Axis (set yaw).       
   glRotatef(obj->Heading.Y, 1.0f, 0.0f, 0.0f);    // Rotate on x-Axis (set pitch).  
-  
-  Model2* mdl = obj->Model;
+
+
+  Model* mdl = obj->Model3D;
   if (mdl->AnimMgr != NULL) mdl->AnimMgr->Tick();
 
 
@@ -103,13 +103,13 @@ void GLDrawer::Draw(Object3D* obj) {
       // Display the bones and connections.
       glPointSize(3);          
       for (uint b = 0; b < mdl->Bones.size(); b ++) { 
-        Bone2* bone = &mdl->Bones[b];
+        Bone* bone = &mdl->Bones[b];
         glBegin(GL_POINTS);
         glColor3f(1.0, 0.0, 0.0); 
         glVertex3f(bone->Position.X, bone->Position.Y, bone->Position.Z);
         glEnd();
         if (bone->Parent != -1) {
-          Bone2* parent = &mdl->Bones[bone->Parent];
+          Bone* parent = &mdl->Bones[bone->Parent];
           glBegin(GL_LINES);
           glColor3f(0.85f, 0.54f, 0.25f);
           glVertex3f(bone->Position.X, bone->Position.Y, bone->Position.Z);
@@ -123,7 +123,7 @@ void GLDrawer::Draw(Object3D* obj) {
 
     case 3: {  // Direct CPU rendering.
 
-      glEnable(GL_LIGHTING);
+      //glEnable(GL_LIGHTING);
       for (uint m = 0; m < mdl->Meshes.size(); m ++) { // Mesh loop.
         if (!mdl->Meshes[m].Enabled) continue;
 
@@ -147,7 +147,7 @@ void GLDrawer::Draw(Object3D* obj) {
 
         if (mdl->Meshes[m].TextureIdx != -1) glDisable(GL_TEXTURE_2D);
       }
-      glDisable(GL_LIGHTING);
+      //glDisable(GL_LIGHTING);
       break;
     }
 

@@ -12,7 +12,7 @@ class Object3D {
     Float3 Heading;       // Orientation (yaw, pitch, roll).
     Float3 Movement;      // The movement speeds as a vector (V).
     Float3 Acceleration;  // Change of movement speeds (A).
-    Model2* Model;        // 3D model reference.
+    Model* Model3D;       // 3D model reference.
 
     // Parameters for physics simulation.
     float Mass;           // Mass of object.

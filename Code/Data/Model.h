@@ -6,19 +6,13 @@
 class AnimationManager;
 
 
-struct Bone2 {
+struct Bone {
   char Name[32];
   int Parent;
   Float3 Pivot;
   Float3 Position;
   Float4 Rotation;
   float WorldMatrix[16];
-
-  //TODO Remove this sh!t.
-  bool Skinned;
-  float BindPoseMat[16];
-  Float3 WorldPos;
-  Float4 WorldRot;
 };
 
 
@@ -53,56 +47,35 @@ struct Sequence {
   int ID;         // Identifier for internal referencing.
   int Length;     // Sequence length (animation frame span).
   bool Loop;      // Loop this sequence? Useful for animations like standing and walking.
-  std::map<Bone2*, TransformationSet> Transformations; // Main array of TS for each bone.
+  std::map<Bone*, TransformationSet> Transformations; // Main array of TS for each bone.
 };
 
 
 
-struct Mesh2 {
-  char ID[32];
-  bool Enabled;           // Shall this mesh be rendered?
-  char Texture[80];       // Texture path.
-  short TextureIdx = -1;  // Index to the appended texture chunk. 
-  DWORD IndexOffset;
-  DWORD IndexLength;
-  DWORD BoneOffset;
-  DWORD BoneCount;
+struct Mesh {
+  char ID[32];           // Mesh identifier.
+  bool Enabled;          // Shall this mesh be rendered?
+  char Texture[80];      // Texture path.
+  short TextureIdx = -1; // Index to the appended texture chunk. 
+  DWORD IndexOffset;     // Offset to first vertex.
+  DWORD IndexLength;     // Number of indices. 
+  DWORD WeightOffset;    // Bone weighting offset. -1, if unattached.  
 };
 
 
-/*  TEMPORARY STUFF HERE - TO BE DELETED WHEN MDX ANIMATION OPERATIONAL  */
-struct BoneDir {
-  Float3 Position;
-  Float4 Rotation;
-};
-struct Keyframe {
-  std::vector<BoneDir> BoneTrans;
-};
-struct Animation2 {
-  int AnimVersion;
-  char Name[32];     // beides!
-  int ID;            // neu
-  int FrameRate;
-  int Duration;
-  int FrameCount;
-  std::vector<char*> Bones;
-  std::vector<Keyframe> Keyframes;
-};
-// ----------------------------------------------------------------------
 
-struct Model2 {
+struct Model {
   char Name[80];
   int Version;
   std::vector<Float3> Vertices;
   std::vector<Float3> Normals;
   std::vector<Float2> UVs;
   std::vector<DWORD> Indices;
-  std::vector<Mesh2> Meshes;
-  std::vector<Bone2> Bones;
+  std::vector<Mesh> Meshes;
+  std::vector<Bone> Bones;
   std::vector<BoneWeight> Weights;
-  std::vector<Sequence> Sequences;     // <== about to replace the Animation2
-  AnimationManager* AnimMgr = 0;       // This is crap cause of double ref.
-  std::vector<Animation2> Animations;
+  std::vector<Sequence> Sequences;
+  AnimationManager* AnimMgr = 0;
   std::vector<SimpleTexture*> Textures;
   int _renderMode = 3; // Debug flag for visual testing. Not part of the model!
 };
@@ -119,29 +92,29 @@ class ModelUtils {
     /** Load a M4 binary file.
      * @param filepath Path to the file to load. 
      * @return Pointer to the instantiated model. */
-    static Model2* Load(const char* filepath);
+    static Model* Load(const char* filepath);
 
 
     /** Save a model in the native M4 file format.
      * @param model The model to save.
      * @param savefile Name of the save file. */
-    static void Save(Model2* model, const char* savefile);
+    static void Save(Model* model, const char* savefile);
 
 
     /** Scales the model's vertices.
      * @param model The model to scale.
      * @param factor The scaling factor. */
-    static void ScaleModel(Model2* model, float factor);
+    static void ScaleModel(Model* model, float factor);
 
 
     /** Scales the model to a specific extent.
      * @param model The model to scale.
      * @param axis The axis to use as reference.
      * @param value The total extent on that axis. */
-    static void ScaleModelToExtent(Model2* model, char axis, float value);
+    static void ScaleModelToExtent(Model* model, char axis, float value);
 
 
     /** Write model properties as debug information to a text file.
      * @param model The model to output. */
-    static void PrintDebug(Model2* model);
+    static void PrintDebug(Model* model);
 };

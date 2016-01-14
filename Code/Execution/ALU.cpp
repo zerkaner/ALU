@@ -42,37 +42,37 @@ ALU::ALU() :
 
   Object3D* obj = new Object3D();
   obj->Position = Float3(8, 3, 0.2f);
-  obj->Model = ModelUtils::Load("M4/Tree01.m4");
+  obj->Model3D = ModelUtils::Load("M4/Tree01.m4");
   _world.GetEnvironment()->AddObject(obj);
 
   
   obj = new Object3D();
   obj->Position = Float3(1, 1.5f, 0.2f);
-  obj->Model = ModelUtils::Load("M4/Tree03.m4");
+  obj->Model3D = ModelUtils::Load("M4/Tree03.m4");
   obj->Heading.X = 25.0f;
   _world.GetEnvironment()->AddObject(obj);
 
   obj = new Object3D();
   obj->Position = Float3(0.8f, 8.8f, 0.2f);
-  obj->Model = ModelUtils::Load("M4/Tree04.m4");
+  obj->Model3D = ModelUtils::Load("M4/Tree04.m4");
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
   obj->Position = Float3(1.4f, 5.5f, 0.2f);
-  obj->Model = ModelUtils::Load("M4/Bear.m4");
+  obj->Model3D = ModelUtils::Load("M4/Bear.m4");
   _world.GetEnvironment()->AddObject(obj);
   
 
   obj = new Object3D();
   obj->Position = Float3(1, 7.2f, 0.1f);
-  obj->Model = ModelUtils::Load("M4/Timberwolf.m4");
+  obj->Model3D = ModelUtils::Load("M4/Timberwolf.m4");
   _world.GetEnvironment()->AddObject(obj);
 
 
   obj = new Object3D();
   obj->Position = Float3(1, 5.5f, 0.05f);
-  obj->Model = ModelUtils::Load("M4/Stable.m4");
+  obj->Model3D = ModelUtils::Load("M4/Stable.m4");
   obj->Heading.X = 80.0f;
   _world.GetEnvironment()->AddObject(obj); */
 }
@@ -109,15 +109,15 @@ void ALU::Stop() {
 
 
 /** Inserts a in-memory model from an import
-* @param model The model to test. */
-void ALU::TestConvertedModel(Model2* model) {
+ * @param model The model to test. */
+void ALU::TestConvertedModel(Model* model) {
   for (uint i = 0; i < model->Textures.size(); i ++) {
     ((SimpleTexture*) model->Textures[i])->SetupGLTextureBuffer();
   }
 
   ModelUtils::PrintDebug(model);
   model->AnimMgr = new AnimationManager(model);
-  model->AnimMgr->Play("Stand 1");
+  model->AnimMgr->Play("Stand 2");
 
   ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Float3(7.5f, 7.5f, 0.5f));
   _listener.AddControllerModule(mta);

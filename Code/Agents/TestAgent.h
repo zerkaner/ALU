@@ -21,8 +21,8 @@ class TestAgent : public SpatialAgent, public IAgentLogic {
     TestAgent(World* world, Environment* env, Float3 pos) : SpatialAgent(world, env) {
       RL = this;
       Data->Position = pos;
-      Data->Model = ModelUtils::Load("M4/Cube.m4");
-      ModelUtils::ScaleModel(Data->Model, 0.6f);
+      Data->Model3D = ModelUtils::Load("M4/Cube.m4");
+      ModelUtils::ScaleModel(Data->Model3D, 0.6f);
       AddToEnvironment();
     }
 

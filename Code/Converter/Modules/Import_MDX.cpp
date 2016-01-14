@@ -46,15 +46,15 @@ struct MDX_BoneAssignment {
 /** Forward-declaration of helper functions. */
 static MDX_Bone ReadMDXNode(FILE* fp, DWORD& inclSize);
 static MDX_BoneAssignment ReadMDXBoneAssignment(FILE* fp);
-static void ReorderBones(Model2* model);
-static void BuildVertexGroups(Model2* model, vector<MDX_BoneAssignment> ba);
+static void ReorderBones(Model* model);
+static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba);
 
 
 
 /** Reads a Blizzard MDX file (WarCraft 3).
  * @param inputfile The file to load.
  * @return The loaded model. No need for index alignment here! */
-Model2* Converter::ReadMdx(const char* inputfile) {
+Model* Converter::ReadMdx(const char* inputfile) {
   printf("MDX converter loaded.\n");
   FILE* fp = FileUtils::File_open(inputfile, true);
   if (fp == NULL) return NULL;
@@ -67,7 +67,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
   int totalV = 0, totalN = 0, totalT = 0, totalG = 0;
   
   // Create model and vectors for the reader intermediate results.
-  Model2* model = new Model2();
+  Model* model = new Model();
   vector<MDX_Sequence> sequences;
   vector<MDX_Bone> bones;
   vector<MDX_BoneAssignment> associations;
@@ -195,7 +195,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
     remaining -= dbuf;       
 
     // Setup mesh and submesh structure for this geoset.
-    Mesh2 mesh = Mesh2();
+    Mesh mesh = Mesh();
     sprintf(mesh.ID, "MDX-Geoset %02d", g);
     mesh.IndexOffset = totalG;
     mesh.Enabled = true;  //TODO To be set later by some function.
@@ -283,8 +283,6 @@ Model2* Converter::ReadMdx(const char* inputfile) {
 
     // Add new mesh.
     mesh.IndexLength = nrIndices;
-    mesh.BoneCount = 0;
-    mesh.BoneOffset = 0;
     model->Meshes.push_back(mesh);
   }
 
@@ -337,7 +335,7 @@ Model2* Converter::ReadMdx(const char* inputfile) {
 
   // Write the bones to the model.
   for (uint i = 0; i < bones.size(); i ++) {
-    Bone2 b = Bone2();
+    Bone b = Bone();
     strcpy(b.Name, bones[i].Name);
     b.Parent = bones[i].ParentID;
     b.Pivot = bones[i].Position;
@@ -423,8 +421,10 @@ Model2* Converter::ReadMdx(const char* inputfile) {
 
 
 
-
-static void BuildVertexGroups(Model2* model, vector<MDX_BoneAssignment> ba) {
+/** Transform the MDX vertex groups into a bone weighting per vertex.
+ * @param model Reference to the model.
+ * @param ba Bone assignment vector, containing associations and the matrix list. */
+static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba) {
   int vIdx = 0;
   for (uint i = 0; i < ba.size(); i ++) {
     for (uint j = 0; j < ba[i].Associations.size(); j ++) {
@@ -581,11 +581,11 @@ static MDX_Bone ReadMDXNode(FILE* fp, DWORD& inclSize) {
 
 /** Bone reordering function (to match parents-before-childs criteria). 
  * @param model The model whose bones shall be reordered. */
-static void ReorderBones(Model2* model) {
+static void ReorderBones(Model* model) {
   printf("Bone hierarchy check / reordering ... ");
   
   bool done = false;
-  vector<Bone2>& bones = model->Bones;
+  vector<Bone>& bones = model->Bones;
   int nrBones = model->Bones.size();
 
   while (!done) {
@@ -597,7 +597,7 @@ static void ReorderBones(Model2* model) {
         // Find the right position to insert to.
         for (int j = 0; j < nrBones; j ++) {
           if (bones[j].Parent > bones[i].Parent) {
-            Bone2 b = bones[i];
+            Bone b = bones[i];
             bones.erase(bones.begin() + i);      // Remove from old position ...
             bones.insert(bones.begin() + j, b);  // and insert at new one.      
             for (int k = 0; k < nrBones; k ++) {

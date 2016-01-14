@@ -7,7 +7,7 @@
 /** Load a M4 binary file.
  * @param filepath Path to the file to load.
  * @return Pointer to the instantiated model. */
-Model2* ModelUtils::Load(const char* filepath) {
+Model* ModelUtils::Load(const char* filepath) {
   
   // Try to open the file.
   printf("Loading file '%s' ", filepath);
@@ -33,19 +33,19 @@ Model2* ModelUtils::Load(const char* filepath) {
     return NULL;
   }
 
-  Model2* model = new Model2();  // Create model object. 
-  model->Version = version;      // Set version number.
+  Model* model = new Model();  // Create model object. 
+  model->Version = version;    // Set version number.
 
   // Read model name and vector sizes. Redimension vectors as needed.
   fread(&model->Name, sizeof(char), 80, fp);
-  uint nrVtx, nrNor, nrUVs, nrIdx, nrMsh, nrBne, nrAni, nrTex;
+  uint nrVtx, nrNor, nrUVs, nrIdx, nrMsh, nrBne, nrSeq, nrTex;
   fread(&nrVtx, sizeof(uint), 1, fp);  model->Vertices.reserve(nrVtx);
   fread(&nrNor, sizeof(uint), 1, fp);  model->Normals.reserve(nrNor);
   fread(&nrUVs, sizeof(uint), 1, fp);  model->UVs.reserve(nrUVs);
   fread(&nrIdx, sizeof(uint), 1, fp);  model->Indices.reserve(nrIdx);
   fread(&nrMsh, sizeof(uint), 1, fp);  model->Meshes.reserve(nrMsh);
   fread(&nrBne, sizeof(uint), 1, fp);  model->Bones.reserve(nrBne);
-  fread(&nrAni, sizeof(uint), 1, fp);  model->Animations.reserve(nrAni);
+  fread(&nrSeq, sizeof(uint), 1, fp);  model->Sequences.reserve(nrSeq);
   fread(&nrTex, sizeof(uint), 1, fp);  model->Textures.reserve(nrTex);
   
   // Read vertices, normals, texture vectors and indices.
@@ -72,15 +72,13 @@ Model2* ModelUtils::Load(const char* filepath) {
 
   // Read the meshes.
   for (uint i = 0; i < nrMsh; i ++) {
-    Mesh2 mesh = Mesh2();
+    Mesh mesh = Mesh();
     fread(&mesh.ID,          sizeof(char), 32, fp);
     fread(&mesh.Enabled,     sizeof(bool),  1, fp);
     fread(&mesh.Texture,     sizeof(char), 80, fp);
     fread(&mesh.TextureIdx,  sizeof(short), 1, fp);
     fread(&mesh.IndexOffset, sizeof(DWORD), 1, fp);
     fread(&mesh.IndexLength, sizeof(DWORD), 1, fp);
-    fread(&mesh.BoneOffset,  sizeof(DWORD), 1, fp);
-    fread(&mesh.BoneCount,   sizeof(DWORD), 1, fp);
     model->Meshes.push_back(mesh);
   }
 
@@ -88,7 +86,7 @@ Model2* ModelUtils::Load(const char* filepath) {
   for (uint i = 0; i < nrBne; i ++) { /*TODO*/ }
 
   // Read the animation sequences.
-  for (uint i = 0; i < nrAni; i ++) { /*TODO*/ }
+  for (uint i = 0; i < nrSeq; i ++) { /*TODO*/ }
 
 
   // Read the texture chunk.
@@ -109,7 +107,7 @@ Model2* ModelUtils::Load(const char* filepath) {
 /** Save a model in the native M4 file format.
  * @param model The model to save.
  * @param savefile Name of the save file. */
-void ModelUtils::Save(Model2* model, const char* savefile) {
+void ModelUtils::Save(Model* model, const char* savefile) {
 
   // Open writer stream.
   printf("Writing file '%s' ", savefile);
@@ -130,7 +128,7 @@ void ModelUtils::Save(Model2* model, const char* savefile) {
   uint nrIdx = model->Indices.size();    fwrite(&nrIdx, sizeof(uint), 1, fp);
   uint nrMsh = model->Meshes.size();     fwrite(&nrMsh, sizeof(uint), 1, fp);
   uint nrBne = model->Bones.size();      fwrite(&nrBne, sizeof(uint), 1, fp);
-  uint nrAni = model->Animations.size(); fwrite(&nrAni, sizeof(uint), 1, fp);
+  uint nrSeq = model->Sequences.size();  fwrite(&nrSeq, sizeof(uint), 1, fp);
   uint nrTex = model->Textures.size();   fwrite(&nrTex, sizeof(uint), 1, fp);
 
   // Write vertices, normals, texture vectors and indices.
@@ -147,8 +145,6 @@ void ModelUtils::Save(Model2* model, const char* savefile) {
     fwrite(&model->Meshes[i].TextureIdx,  sizeof(short), 1, fp);
     fwrite(&model->Meshes[i].IndexOffset, sizeof(DWORD), 1, fp);
     fwrite(&model->Meshes[i].IndexLength, sizeof(DWORD), 1, fp);
-    fwrite(&model->Meshes[i].BoneOffset,  sizeof(DWORD), 1, fp);
-    fwrite(&model->Meshes[i].BoneCount,   sizeof(DWORD), 1, fp);
   }
 
   // Write the bones.
@@ -157,7 +153,7 @@ void ModelUtils::Save(Model2* model, const char* savefile) {
   }
 
   // Write the animation sequences.
-  for (uint i = 0; i < nrAni; i ++) {
+  for (uint i = 0; i < nrSeq; i ++) {
     //TODO s.o.
   }
 
@@ -180,7 +176,7 @@ void ModelUtils::Save(Model2* model, const char* savefile) {
 /** Scales the model's positional values.
  * @param model The model to scale.
  * @param factor The scaling factor. */
-void ModelUtils::ScaleModel(Model2* model, float factor) {
+void ModelUtils::ScaleModel(Model* model, float factor) {
   printf("Scaling model by factor '%6.4f'.\n", factor);
   if (model == NULL) { printf("[Error] Model does not exist!\n"); return; }
   for (uint i = 0; i < model->Vertices.size(); i ++) {
@@ -195,7 +191,7 @@ void ModelUtils::ScaleModel(Model2* model, float factor) {
   }
   for (uint i = 0; i < model->Sequences.size(); i ++) {
     //std::map<Bone2*, TransformationSet>::iterator iter;
-    for (std::map<Bone2*, TransformationSet>::iterator iter = model->Sequences[i].Transformations.begin();
+    for (std::map<Bone*, TransformationSet>::iterator iter = model->Sequences[i].Transformations.begin();
          iter != model->Sequences[i].Transformations.end(); 
          iter ++) {
       for (uint j = 0; j < iter->second.Translations.size(); j ++) {
@@ -224,7 +220,7 @@ float getValue(Float3 vtx, char axis) {
  * @param model The model to scale.
  * @param axis The axis to use as reference.
  * @param value The total extent on that axis. */
-void ModelUtils::ScaleModelToExtent(Model2* model, char axis, float value) {
+void ModelUtils::ScaleModelToExtent(Model* model, char axis, float value) {
   printf("Scaling model to extent '%f' on axis '%c'.\n", value, axis);
 
   // Parameter sanity check.
@@ -254,13 +250,13 @@ void ModelUtils::ScaleModelToExtent(Model2* model, char axis, float value) {
 
 /** Write model properties as debug information to a text file.
  * @param model The model to output. */
-void ModelUtils::PrintDebug(Model2* model) {
+void ModelUtils::PrintDebug(Model* model) {
   FILE* fp = fopen("dbgOut.txt", "w");
 
   // Bone hierarchy.
   fprintf(fp, "  Bones (%d):\n", model->Bones.size());
   for (uint i = 0; i < model->Bones.size(); i ++) {
-    Bone2* bone = &model->Bones[i];
+    Bone* bone = &model->Bones[i];
     fprintf(fp, 
       "  [%02d]  %-12s  Par> %02d  | Pos: %7.4f, %7.4f, %7.4f | Rot: %7.4f, %7.4f, %7.4f, %7.4f\n",
       i, bone->Name, bone->Parent, bone->Pivot.X, bone->Pivot.Y, bone->Pivot.Z,
@@ -286,7 +282,7 @@ void ModelUtils::PrintDebug(Model2* model) {
       seq->Transformations.size()
     );
 
-    std::map<Bone2*, TransformationSet>::iterator iter;
+    std::map<Bone*, TransformationSet>::iterator iter;
     for (iter = seq->Transformations.begin(); iter != seq->Transformations.end(); iter ++) {    
       std::vector<TransformationDirective>* t = &iter->second.Translations;
       std::vector<TransformationDirective>* r = &iter->second.Rotations;

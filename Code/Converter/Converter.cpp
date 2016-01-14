@@ -60,7 +60,7 @@ Converter::Converter(int argc, char** argv) {
   }
   
   ConverterParams params = ParseParameters(argc, argv);
-  Model2* model = LoadFile(params.inputfile); // Load/import the model.
+  Model* model = LoadFile(params.inputfile); // Load/import the model.
   if (model != NULL) {
 
     // Perform additional conversions.
@@ -88,13 +88,13 @@ Converter::Converter(int argc, char** argv) {
 /** Loads a file. If necessary, this method launches an import module.
  * @param inputfile Path to the model to load.
  * @return Pointer to the loaded model. 'NULL' on error. */
-Model2* Converter::LoadFile(const char* inputfile) {  
-  enum FORMATS { GLF, M2, M4, MDX, OBJ, WGL };
-  const char* fileendings[6] = {".glf", ".m2", ".m4", ".mdx", ".obj", ".wglmodel"};
+Model* Converter::LoadFile(const char* inputfile) {  
+  enum FORMATS { GLF, M2, M4, MDX, OBJ };
+  const char* fileendings[5] = {".glf", ".m2", ".m4", ".mdx", ".obj"};
 
   // Detect file format.
   int fileformat = -1;
-  for (int i = 0; i < 6; i ++) {
+  for (int i = 0; i < 5; i ++) {
     if (Contains(inputfile, fileendings[i])) { fileformat = i; break; }
   }
 
@@ -103,20 +103,19 @@ Model2* Converter::LoadFile(const char* inputfile) {
     case GLF: ReadGlf(inputfile, "font_export.h"); return NULL;
     case OBJ: return ReadObj(inputfile);
     case MDX: return ReadMdx(inputfile);
-    case WGL: return ReadWgl(inputfile);
     case M4:  return ModelUtils::Load(inputfile); // Ahh, it's a home match... :-)
     
     // M2 is a little bit more complicated. Wrap input file in a memory stream first!
     case M2:
       MemoryStream* stream = new MemoryStream(inputfile);
-      Model2* model = ReadM2(stream);
+      Model* model = ReadM2(stream);
       delete stream;
       return model;
   }
 
   // No case matched. Seems we have -1 here.
   printf("Error reading file '%s'! Please make sure it has a proper ending.\n"
-         "Formats currently supported: .glf, .m2, .mdx, .obj, .wglmodel\n", inputfile);
+         "Formats currently supported: .glf, .m2, .mdx, .obj\n", inputfile);
   return NULL;
 }
 
@@ -124,7 +123,7 @@ Model2* Converter::LoadFile(const char* inputfile) {
 /** Write a model to disk. Also used to export models to different formats.
  * @param model The model to save / export.
  * @param savefile The path and file to save to. */
-void Converter::WriteFile(Model2* model, const char* savefile) {
+void Converter::WriteFile(Model* model, const char* savefile) {
   if (Contains(savefile, ".json") || Contains(savefile, ".m4l")) WriteJson(model, savefile);
   else if (Contains(savefile, ".m4")) ModelUtils::Save(model, savefile);
   else printf("Error saving model to file '%s'. Format not recognized!\n", savefile);

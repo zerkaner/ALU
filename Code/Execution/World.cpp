@@ -49,7 +49,7 @@ void World::AdvanceOneTick() {
     }
   }
 
-  _physics->Execute();  // Agents are done. Do physics calculation now!
+  //TODO_physics->Execute();  // Agents are done. Do physics calculation now!
       
   // Post tick: Increase tick counter and write it to blackboard.
   _ticks ++;

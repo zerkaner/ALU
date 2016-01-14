@@ -123,9 +123,6 @@
     <ClCompile Include="..\Code\Converter\Modules\Import_OBJ.cpp">
       <Filter>Converter\Modules</Filter>
     </ClCompile>
-    <ClCompile Include="..\Code\Converter\Modules\Import_WGL.cpp">
-      <Filter>Converter\Modules</Filter>
-    </ClCompile>
     <ClCompile Include="..\Code\Converter\Utils\FileUtils.cpp">
       <Filter>Converter\Utils</Filter>
     </ClCompile>

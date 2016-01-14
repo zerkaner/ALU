@@ -114,7 +114,7 @@ void DBCParser::Test() {
     MemoryStream modelstream = MemoryStream(data, filesize);
     
     // Start model loader!
-    Model2* model = Converter::ReadM2(&modelstream);
+    Model* model = Converter::ReadM2(&modelstream);
     
     // Enable the needed geosets (maybe later we'll delete the rest).
     for (unsigned int i = 0; i < model->Meshes.size(); i ++) {
