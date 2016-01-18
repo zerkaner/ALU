@@ -59,7 +59,7 @@ struct Mesh {
   short TextureIdx = -1; // Index to the appended texture chunk. 
   DWORD IndexOffset;     // Offset to first vertex.
   DWORD IndexLength;     // Number of indices. 
-  DWORD WeightOffset;    // Bone weighting offset. -1, if unattached.  
+  bool Attached;         // Attached to bone?  
 };
 
 

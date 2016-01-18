@@ -5,6 +5,7 @@
 # Temporary compile data: 
 Project (VS2013)/[Dd]ebug/
 Project (VS2013)/[Rr]elease/
+Project (VS2013)/Laden/
 
 # Project cache files:
 *.sdf

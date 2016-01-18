@@ -75,23 +75,21 @@ void GLDrawer::Draw(Object3D* obj) {
       break;
     }
 
+
     case 2: {  // Draw a triangle mesh. 
       
       for (uint m = 0; m < mdl->Meshes.size(); m ++) { // Mesh loop.
         if (!mdl->Meshes[m].Enabled) continue;
-
         DWORD idxStart = mdl->Meshes[m].IndexOffset;
         DWORD idxLength = mdl->Meshes[m].IndexLength;
-
+        
         for (DWORD i = 0; i < idxLength; i += 3) {  // Triangle loop.
           DWORD i0 = mdl->Indices[idxStart + i];
           DWORD i1 = mdl->Indices[idxStart + i + 1];
-          DWORD i2 = mdl->Indices[idxStart + i + 2];
-          
+          DWORD i2 = mdl->Indices[idxStart + i + 2];          
           Float3 v1 = CalculateVertex(mdl->Vertices[i0], mdl->Weights[i0], mdl->Bones);
           Float3 v2 = CalculateVertex(mdl->Vertices[i1], mdl->Weights[i1], mdl->Bones);
           Float3 v3 = CalculateVertex(mdl->Vertices[i2], mdl->Weights[i2], mdl->Bones);
-
           glBegin(GL_LINE_LOOP);
           glVertex3f(v1.X, v1.Y, v1.Z);
           glVertex3f(v2.X, v2.Y, v2.Z);

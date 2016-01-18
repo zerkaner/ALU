@@ -53,9 +53,6 @@ class AnimationManager {
       else return Float4(TD[curIdx].X, TD[curIdx].Y, TD[curIdx].Z, TD[curIdx].W);
     }
 
-    float Vec4Dot(Float4 a, Float4 b) {
-      return a.X * b.X + a.Y * b.Y + a.Z * b.Z + a.W * b.W;
-    };
 
     void Normalize(Float4& a) {
       float len = a.X*a.X + a.Y*a.Y + a.Z*a.Z + a.W*a.W;
@@ -69,7 +66,7 @@ class AnimationManager {
     };
 
     Float4 Nlerp(Float4 a, Float4 b, float t) {
-      float dot = Vec4Dot(a, b);
+      float dot = (a.X*b.X + a.Y*b.Y + a.Z*b.Z + a.W*b.W);
       float inverseFactor = 1.0f - t;
       Float4 ret;
       if (dot < 0) ret = Float4(
@@ -77,13 +74,13 @@ class AnimationManager {
         inverseFactor * a.Y - t * b.Y,
         inverseFactor * a.Z - t * b.Z,
         inverseFactor * a.W - t * b.W
-        );
+      );
       else ret = Float4(
         inverseFactor * a.X + t * b.X,
         inverseFactor * a.Y + t * b.Y,
         inverseFactor * a.Z + t * b.Z,
         inverseFactor * a.W + t * b.W
-        );
+      );
       Normalize(ret);
       return ret;
     };

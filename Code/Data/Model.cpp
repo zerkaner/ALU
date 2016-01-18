@@ -38,7 +38,7 @@ Model* ModelUtils::Load(const char* filepath) {
 
   // Read model name and vector sizes. Redimension vectors as needed.
   fread(&model->Name, sizeof(char), 80, fp);
-  uint nrVtx, nrNor, nrUVs, nrIdx, nrMsh, nrBne, nrSeq, nrTex;
+  uint nrVtx, nrNor, nrUVs, nrIdx, nrMsh, nrBne, nrWgt, nrSeq, nrTex;
   fread(&nrVtx, sizeof(uint), 1, fp);  model->Vertices.reserve(nrVtx);
   fread(&nrNor, sizeof(uint), 1, fp);  model->Normals.reserve(nrNor);
   fread(&nrUVs, sizeof(uint), 1, fp);  model->UVs.reserve(nrUVs);
@@ -46,6 +46,7 @@ Model* ModelUtils::Load(const char* filepath) {
   fread(&nrMsh, sizeof(uint), 1, fp);  model->Meshes.reserve(nrMsh);
   fread(&nrBne, sizeof(uint), 1, fp);  model->Bones.reserve(nrBne);
   fread(&nrSeq, sizeof(uint), 1, fp);  model->Sequences.reserve(nrSeq);
+  fread(&nrWgt, sizeof(uint), 1, fp);  model->Weights.reserve(nrWgt);
   fread(&nrTex, sizeof(uint), 1, fp);  model->Textures.reserve(nrTex);
   
   // Read vertices, normals, texture vectors and indices.
@@ -83,10 +84,84 @@ Model* ModelUtils::Load(const char* filepath) {
   }
 
   // Read the bones.
-  for (uint i = 0; i < nrBne; i ++) { /*TODO*/ }
+  for (uint i = 0; i < nrBne; i ++) { 
+    Bone bone;
+    fread(&bone.Name,   sizeof(char),  32, fp);
+    fread(&bone.Parent, sizeof(int),    1, fp);
+    fread(&bone.Pivot,  sizeof(Float3), 1, fp);
+    model->Bones.push_back(bone);
+  }
 
   // Read the animation sequences.
-  for (uint i = 0; i < nrSeq; i ++) { /*TODO*/ }
+  for (uint i = 0; i < nrSeq; i ++) { 
+    Sequence seq;
+    fread(&seq.Name,   sizeof(char), 80, fp);
+    fread(&seq.ID,     sizeof(int),   1, fp);
+    fread(&seq.Length, sizeof(int),   1, fp);
+    fread(&seq.Loop,   sizeof(bool),  1, fp);
+    uint nrTSets;
+    fread(&nrTSets, sizeof(uint), 1, fp); // Read size of Bone->TS map. 
+    for (uint s = 0; s < nrTSets; s ++) { // Map read-in loop. 
+      TransformationSet set;
+      uint nt, nr, ns;
+      char ref[32];
+      fread(&ref, sizeof(char), 32, fp);  // Read bone name.
+      fread(&nt, sizeof(uint), 1, fp);  set.Translations.reserve(nt);
+      fread(&nr, sizeof(uint), 1, fp);  set.Rotations.reserve(nr);
+      fread(&ns, sizeof(uint), 1, fp);  set.Scalings.reserve(ns);
+
+      for (uint ti = 0; ti < nt; ti ++) { // Read the translations.
+        TransformationDirective td;
+        fread(&td.Frame, sizeof(int), 1, fp);
+        fread(&td.X, sizeof(float), 1, fp);
+        fread(&td.Y, sizeof(float), 1, fp);
+        fread(&td.Z, sizeof(float), 1, fp);
+        set.Translations.push_back(td);
+      }
+
+      for (uint ti = 0; ti < nr; ti ++) { // Read the rotations.
+        TransformationDirective td;
+        fread(&td.Frame, sizeof(int), 1, fp);
+        fread(&td.X, sizeof(float), 1, fp);
+        fread(&td.Y, sizeof(float), 1, fp);
+        fread(&td.Z, sizeof(float), 1, fp);
+        fread(&td.W, sizeof(float), 1, fp);
+        set.Rotations.push_back(td);
+      }
+
+      for (uint ti = 0; ti < ns; ti ++) { // Read the scalings.
+        TransformationDirective td;
+        fread(&td.Frame, sizeof(int), 1, fp);
+        fread(&td.X, sizeof(float), 1, fp);
+        fread(&td.Y, sizeof(float), 1, fp);
+        fread(&td.Z, sizeof(float), 1, fp);
+        set.Scalings.push_back(td);
+      }
+
+      // Get the referenced bone index.
+      Bone* bone = NULL;
+      for (uint b = 0; b < model->Bones.size(); b ++) {
+        if (strcmp(model->Bones[b].Name, ref) == 0) {
+          bone = &model->Bones[b];
+          break;
+        }
+      }
+      seq.Transformations[bone] = set;
+    }
+    model->Sequences.push_back(seq);
+  }
+
+
+  // Read the weights.
+  for (uint i = 0; i < nrWgt; i ++) {
+    BoneWeight bw;
+    BYTE w[4];    
+    fread(&bw.BoneIDs, sizeof(BYTE), 4, fp);
+    fread(&w,          sizeof(BYTE), 4, fp);
+    for (int j = 0; j < 4; j ++) bw.Factor[j] = w[j]/255.0f;
+    model->Weights.push_back(bw);
+  }
+
 
 
   // Read the texture chunk.
@@ -129,6 +204,7 @@ void ModelUtils::Save(Model* model, const char* savefile) {
   uint nrMsh = model->Meshes.size();     fwrite(&nrMsh, sizeof(uint), 1, fp);
   uint nrBne = model->Bones.size();      fwrite(&nrBne, sizeof(uint), 1, fp);
   uint nrSeq = model->Sequences.size();  fwrite(&nrSeq, sizeof(uint), 1, fp);
+  uint nrWgt = model->Weights.size();    fwrite(&nrWgt, sizeof(uint), 1, fp);
   uint nrTex = model->Textures.size();   fwrite(&nrTex, sizeof(uint), 1, fp);
 
   // Write vertices, normals, texture vectors and indices.
@@ -149,14 +225,74 @@ void ModelUtils::Save(Model* model, const char* savefile) {
 
   // Write the bones.
   for (uint i = 0; i < nrBne; i ++) {
-    //TODO Anwendungslogik hier implementieren, sobald verwendet!
+    fwrite(&model->Bones[i].Name,   sizeof(char),  32, fp);
+    fwrite(&model->Bones[i].Parent, sizeof(int),    1, fp);
+    fwrite(&model->Bones[i].Pivot,  sizeof(Float3), 1, fp);
   }
 
   // Write the animation sequences.
   for (uint i = 0; i < nrSeq; i ++) {
-    //TODO s.o.
+    fwrite(&model->Sequences[i].Name,   sizeof(char), 80, fp);
+    fwrite(&model->Sequences[i].ID,     sizeof(int),   1, fp);
+    fwrite(&model->Sequences[i].Length, sizeof(int),   1, fp);
+    fwrite(&model->Sequences[i].Loop,   sizeof(bool),  1, fp);
+    uint nrTSets = model->Sequences[i].Transformations.size();
+    fwrite(&nrTSets, sizeof(uint), 1, fp);
+
+    std::map<Bone*, TransformationSet>::iterator iter;
+    Sequence& seq = model->Sequences[i];
+    for (iter = seq.Transformations.begin(); iter != seq.Transformations.end(); iter ++) {
+      std::vector<TransformationDirective>* t = &iter->second.Translations;
+      std::vector<TransformationDirective>* r = &iter->second.Rotations;
+      std::vector<TransformationDirective>* s = &iter->second.Scalings;
+      fwrite(&iter->first->Name, sizeof(char), 32, fp);  // Write bone name. Change it to index!
+      
+      // Get and write the vector sizes. Needed for loading!
+      uint nt = iter->second.Translations.size();
+      uint nr = iter->second.Rotations.size();
+      uint ns = iter->second.Scalings.size();
+      fwrite(&nt, sizeof(uint), 1, fp);  
+      fwrite(&nr, sizeof(uint), 1, fp);
+      fwrite(&ns, sizeof(uint), 1, fp);
+
+      for (uint ti = 0; ti < nt; ti ++) {
+        TransformationDirective td = iter->second.Translations[ti];
+        fwrite(&td.Frame, sizeof(int), 1, fp);
+        fwrite(&td.X, sizeof(float), 1, fp);
+        fwrite(&td.Y, sizeof(float), 1, fp);
+        fwrite(&td.Z, sizeof(float), 1, fp);
+      }
+
+      for (uint ti = 0; ti < nr; ti ++) {
+        TransformationDirective td = iter->second.Rotations[ti];
+        fwrite(&td.Frame, sizeof(int), 1, fp);
+        fwrite(&td.X, sizeof(float), 1, fp);
+        fwrite(&td.Y, sizeof(float), 1, fp);
+        fwrite(&td.Z, sizeof(float), 1, fp);
+        fwrite(&td.W, sizeof(float), 1, fp);
+      }
+
+      for (uint ti = 0; ti < ns; ti ++) {
+        TransformationDirective td = iter->second.Scalings[ti];
+        fwrite(&td.Frame, sizeof(int), 1, fp);
+        fwrite(&td.X, sizeof(float), 1, fp);
+        fwrite(&td.Y, sizeof(float), 1, fp);
+        fwrite(&td.Z, sizeof(float), 1, fp);
+      }
+    }
   }
 
+
+  // Write the weights.
+  for (uint i = 0; i < nrWgt; i ++) {
+    fwrite(&model->Weights[i].BoneIDs, sizeof(BYTE), 4, fp);    
+    BYTE w[4];
+    for (int j = 0; j < 4; j ++) {
+      float f = model->Weights[i].Factor[j];
+      w[j] = (BYTE)(255*f);
+    }
+    fwrite(&w, sizeof(BYTE), 4, fp);
+  }
 
   // Write the texture chunk.
   for (uint i = 0; i < nrTex; i ++) {

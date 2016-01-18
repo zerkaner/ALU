@@ -32,20 +32,24 @@ ALU::ALU() :
   // Initial camera position.
   _camera.SetPosition(12.0f, 9.6f, 2, 244, -13);
 
-  /*
+ 
   // Create some test agents.
-  new TestAgent(&_world, _world.GetEnvironment(), Float3(2.0f, 2.0f, 0.5f));
-  new TestAgent(&_world, _world.GetEnvironment(), Float3(4.0f, 1.0f, 0.5f));
+  //new TestAgent(&_world, _world.GetEnvironment(), Float3(2.0f, 2.0f, 0.5f));
+  //new TestAgent(&_world, _world.GetEnvironment(), Float3(4.0f, 1.0f, 0.5f));
   
   //TODO Does not work with ALU_standalone!
   //_world.GetEnvironment()->AddObject(new HeightmapTerrain("Other/Heightfield.raw"));
 
   Object3D* obj = new Object3D();
   obj->Position = Float3(8, 3, 0.2f);
-  obj->Model3D = ModelUtils::Load("M4/Tree01.m4");
+  obj->Model3D = ModelUtils::Load("test.m4");
   _world.GetEnvironment()->AddObject(obj);
 
-  
+  ModelUtils::PrintDebug(obj->Model3D);
+  obj->Model3D->AnimMgr = new AnimationManager(obj->Model3D);
+  obj->Model3D->AnimMgr->Play("Stand 2");
+
+ /*  
   obj = new Object3D();
   obj->Position = Float3(1, 1.5f, 0.2f);
   obj->Model3D = ModelUtils::Load("M4/Tree03.m4");

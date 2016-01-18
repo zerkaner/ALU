@@ -283,6 +283,7 @@ Model* Converter::ReadMdx(const char* inputfile) {
 
     // Add new mesh.
     mesh.IndexLength = nrIndices;
+    mesh.Attached = false;
     model->Meshes.push_back(mesh);
   }
 
@@ -427,6 +428,7 @@ Model* Converter::ReadMdx(const char* inputfile) {
 static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba) {
   int vIdx = 0;
   for (uint i = 0; i < ba.size(); i ++) {
+    model->Meshes[i].Attached = true;
     for (uint j = 0; j < ba[i].Associations.size(); j ++) {
       vector<BYTE> grp = ba[i].MatrixGroups[ba[i].Associations[j]];
       BoneWeight bw = BoneWeight();
@@ -448,7 +450,7 @@ static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba) {
       }
 
       model->Weights.push_back(bw);
-    }  
+    } 
   } /*
   printf("Output:\n");
   for (uint i = 0; i < model->Weights.size(); i ++) {

@@ -62,6 +62,7 @@ void Converter::WriteJson(Model* model, const char* savefile) {
     fprintf(writer, "      \"Texture\":     \"%s\",\n", model->Meshes[i].Texture);
     fprintf(writer, "      \"IndexOffset\": %d,\n", model->Meshes[i].IndexOffset);
     fprintf(writer, "      \"IndexLength\": %d,\n", model->Meshes[i].IndexLength);
+    fprintf(writer, "      \"Attached\":    %s\n", model->Meshes[i].Attached? "true" : "false");
     fprintf(writer, "    }%s", (i < nrMeshes-1)? "," : "\n  ");
   } fprintf(writer, "],\n\n\n");
 
@@ -71,32 +72,58 @@ void Converter::WriteJson(Model* model, const char* savefile) {
   fprintf(writer, "  \"Bones\": [");
   int nrBones = model->Bones.size();
   for (int i = 0; i < nrBones; i ++) {
-    fprintf(writer, "\n    {\n");
-    fprintf(writer, "      \"Name\":     \"%s\",\n", model->Bones[i].Name);
-    fprintf(writer, "      \"Parent\":   %d,\n", model->Bones[i].Parent);
-    fprintf(writer, "      \"Position\": [%f, %f, %f],\n", 
-      model->Bones[i].Position.X, 
-      model->Bones[i].Position.Y, 
-      model->Bones[i].Position.Z);
-    fprintf(writer, "      \"Rotation\": [%f, %f, %f, %f],\n", 
-      model->Bones[i].Rotation.X,
-      model->Bones[i].Rotation.Y,
-      model->Bones[i].Rotation.Z,
-      model->Bones[i].Rotation.W);
-
-    //TODO Additional bone write-out.
-
-    fprintf(writer, "    }%s", (i < nrBones - 1) ? "," : "\n  ");
+    fprintf(writer, "\n    [\"%s\", %d, [%f, %f, %f]]%s",
+      model->Bones[i].Name, model->Bones[i].Parent, model->Bones[i].Pivot.X,
+      model->Bones[i].Pivot.Y, model->Bones[i].Pivot.Z, (i < nrBones - 1) ? "," : "\n  "
+    );
   } fprintf(writer, "],\n\n\n");
-
 
 
   // Write the animations.
   fprintf(writer, "  \"Sequences\": [");
   int nrSequences = model->Sequences.size();
   for (int i = 0; i < nrSequences; i ++) {
+    Sequence& seq = model->Sequences[i];
     fprintf(writer, "\n    {\n");
-    //TODO Animation format output.
+    fprintf(writer, "      \"Name\":   \"%s\",\n", seq.Name);
+    fprintf(writer, "      \"ID\":     %d,\n", seq.ID);
+    fprintf(writer, "      \"Length\": %d,\n", seq.Length);
+    fprintf(writer, "      \"Loop\":   %s,\n", seq.Loop ? "true" : "false");
+    fprintf(writer, "      \"Transformations\": [");
+    int nrTrans = seq.Transformations.size();
+    int curTrans = 0;
+    std::map<Bone*, TransformationSet>::iterator iter;
+    for (iter = seq.Transformations.begin(); iter != seq.Transformations.end(); iter ++, curTrans ++) {
+      std::vector<TransformationDirective>* t = &iter->second.Translations;
+      std::vector<TransformationDirective>* r = &iter->second.Rotations;
+      std::vector<TransformationDirective>* s = &iter->second.Scalings;
+      fprintf(writer, "\n        {\n");
+      fprintf(writer, "          \"Bone\":         \"%s\",\n", iter->first->Name);
+      
+      fprintf(writer, "          \"Translations\": [");    
+      for (uint ti = 0; ti < iter->second.Translations.size(); ti ++) {
+        TransformationDirective td = iter->second.Translations[ti];
+        fprintf(writer, "[%d, [%f, %f, %f]]%s", 
+          td.Frame, td.X, td.Y, td.Z, (ti < iter->second.Translations.size()-1)? ", ":"");
+      } fprintf(writer, "],\n");
+
+      fprintf(writer, "          \"Rotations\":    [");
+      for (uint ti = 0; ti < iter->second.Rotations.size(); ti ++) {
+        TransformationDirective td = iter->second.Rotations[ti];
+        fprintf(writer, "[%d, [%f, %f, %f, %f]]%s",
+          td.Frame, td.X, td.Y, td.Z, td.W, (ti < iter->second.Rotations.size() - 1) ? ", " : "");
+      } fprintf(writer, "],\n");
+
+      fprintf(writer, "          \"Scalings\":     [");
+      for (uint ti = 0; ti < iter->second.Scalings.size(); ti ++) {
+        TransformationDirective td = iter->second.Scalings[ti];
+        fprintf(writer, "[%d, [%f, %f, %f]]%s",
+          td.Frame, td.X, td.Y, td.Z, (ti < iter->second.Scalings.size() - 1) ? ", " : "");
+      } fprintf(writer, "]\n");
+
+      fprintf(writer, "        }%s", (curTrans < nrTrans-1)? "," : "\n");
+    }
+    fprintf(writer, "      ]\n");
     fprintf(writer, "    }%s", (i < nrSequences - 1) ? "," : "\n  ");
   } fprintf(writer, "]\n");
 
