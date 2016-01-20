@@ -129,7 +129,7 @@ class AnimationManager {
       
       // Search for the animation.
       for (uint i = 0; i < _sequences.size(); i ++) {
-        if (strstr(animName, _sequences[i].Name) != NULL) {
+        if (strcmp(animName, _sequences[i].Name) == 0) {
           _sequence = &_sequences[i];
           break;
         }

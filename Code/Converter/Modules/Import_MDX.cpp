@@ -46,8 +46,8 @@ struct MDX_BoneAssignment {
 /** Forward-declaration of helper functions. */
 static MDX_Bone ReadMDXNode(FILE* fp, DWORD& inclSize);
 static MDX_BoneAssignment ReadMDXBoneAssignment(FILE* fp);
-static void ReorderBones(Model* model);
-static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba);
+static vector<BYTE> ReorderBones(Model* model);
+static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba, vector<BYTE> rem);
 
 
 
@@ -343,8 +343,8 @@ Model* Converter::ReadMdx(const char* inputfile) {
     model->Bones.push_back(b);
   }
   
-  //ReorderBones(model);  // Ensure correct bone order. 
-  BuildVertexGroups(model, associations);
+  vector<BYTE> idxRemapping = ReorderBones(model);  // Ensure correct bone order. 
+  BuildVertexGroups(model, associations, idxRemapping);
 
 
   //_____________________________________________________________________[PROCESS ANIMATION DATA]
@@ -424,8 +424,9 @@ Model* Converter::ReadMdx(const char* inputfile) {
 
 /** Transform the MDX vertex groups into a bone weighting per vertex.
  * @param model Reference to the model.
- * @param ba Bone assignment vector, containing associations and the matrix list. */
-static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba) {
+ * @param ba Bone assignment vector, containing associations and the matrix list.
+ * @param rem Index remapping information. */
+static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba, vector<BYTE> rem) {
   int vIdx = 0;
   for (uint i = 0; i < ba.size(); i ++) {
     model->Meshes[i].Attached = true;
@@ -433,7 +434,7 @@ static void BuildVertexGroups(Model* model, vector<MDX_BoneAssignment> ba) {
       vector<BYTE> grp = ba[i].MatrixGroups[ba[i].Associations[j]];
       BoneWeight bw = BoneWeight();
       for (uint k = 0; k < 4; k ++) {
-        if (k < grp.size()) bw.BoneIDs[k] = grp[k];
+        if (k < grp.size()) bw.BoneIDs[k] = rem[grp[k]];
         else bw.BoneIDs[k] = 255;
       }
 
@@ -582,14 +583,19 @@ static MDX_Bone ReadMDXNode(FILE* fp, DWORD& inclSize) {
 
 
 /** Bone reordering function (to match parents-before-childs criteria). 
- * @param model The model whose bones shall be reordered. */
-static void ReorderBones(Model* model) {
-  printf("Bone hierarchy check / reordering ... ");
-  
+ * @param model The model whose bones shall be reordered. 
+ * @return Index remapping information (vector[old] = new). */
+static vector<BYTE> ReorderBones(Model* model) {
+  printf("Bone hierarchy check / reordering ... "); 
+
   bool done = false;
   vector<Bone>& bones = model->Bones;
   int nrBones = model->Bones.size();
 
+  vector<string> oldMapping; // Store name-to-index assignment before reordering.
+  for (int i = 0; i < nrBones; i ++) {
+    oldMapping.push_back(string(bones[i].Name));
+  }
   while (!done) {
     done = true;
     int maxP = -1;  // Highest parent reference found. Update on iteration, stop on anomaly.
@@ -617,5 +623,18 @@ static void ReorderBones(Model* model) {
       else maxP = model->Bones[i].Parent;
     }
   }
+
+  // Create index remapping vector.
+  vector<BYTE> idxRemapping;
+  idxRemapping.reserve(nrBones);
+  for (int i = 0; i < nrBones; i ++) {
+    for (int j = 0; j < nrBones; j ++) {
+      if (strcmp(oldMapping[i].c_str(), bones[j].Name) == 0) {
+        idxRemapping.push_back((BYTE) j);
+        break;
+      }
+    }   
+  }
   printf("[done]\n");
+  return idxRemapping;
 }

@@ -2,6 +2,7 @@
 #include "Model.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 /** Load a M4 binary file.
@@ -394,9 +395,8 @@ void ModelUtils::PrintDebug(Model* model) {
   for (uint i = 0; i < model->Bones.size(); i ++) {
     Bone* bone = &model->Bones[i];
     fprintf(fp, 
-      "  [%02d]  %-12s  Par> %02d  | Pos: %7.4f, %7.4f, %7.4f | Rot: %7.4f, %7.4f, %7.4f, %7.4f\n",
-      i, bone->Name, bone->Parent, bone->Pivot.X, bone->Pivot.Y, bone->Pivot.Z,
-      bone->Rotation.X, bone->Rotation.Y, bone->Rotation.Z, bone->Rotation.W  
+      "  [%02d]  %-24s  Par> %02d  | Pos: %7.4f, %7.4f, %7.4f\n",
+      i, bone->Name, bone->Parent, bone->Pivot.X, bone->Pivot.Y, bone->Pivot.Z
     );
   }
 

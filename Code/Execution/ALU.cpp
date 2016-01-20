@@ -39,16 +39,16 @@ ALU::ALU() :
   
   //TODO Does not work with ALU_standalone!
   //_world.GetEnvironment()->AddObject(new HeightmapTerrain("Other/Heightfield.raw"));
-
+  
   Object3D* obj = new Object3D();
-  obj->Position = Float3(8, 3, 0.2f);
-  obj->Model3D = ModelUtils::Load("test.m4");
+  obj->Position = Float3(7, 6, 0.2f);
+  obj->Model3D = ModelUtils::Load("../Bear.m4");
   _world.GetEnvironment()->AddObject(obj);
 
-  ModelUtils::PrintDebug(obj->Model3D);
+  //ModelUtils::PrintDebug(obj->Model3D);
   obj->Model3D->AnimMgr = new AnimationManager(obj->Model3D);
   obj->Model3D->AnimMgr->Play("Stand 2");
-
+  
  /*  
   obj = new Object3D();
   obj->Position = Float3(1, 1.5f, 0.2f);

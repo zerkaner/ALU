@@ -33,7 +33,6 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* ca
   glBlendFunc(0x0302, 0x0303);  // Blending function: Source alpha to (1 - source alpha).
   glDepthFunc(GL_LEQUAL);       // Only render points with less or equal depth (def.: GL_LESS).
   glShadeModel(GL_SMOOTH);      // Shading type 'smooth' (def.). Other option: 'flat'. 
-  
   glClearColor(0.5f, 0.5f, 0.5f, 1);                 // Grey background color.
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Highest quality desired.
 

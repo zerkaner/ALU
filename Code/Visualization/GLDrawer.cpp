@@ -138,7 +138,8 @@ void GLDrawer::Draw(Object3D* obj) {
           DWORD idx = mdl->Indices[idxStart + i];
           glTexCoord2f(mdl->UVs[idx].X, mdl->UVs[idx].Y);
           glNormal3f(mdl->Normals[idx].X, mdl->Normals[idx].Y, mdl->Normals[idx].Z);
-          Float3 vtx = CalculateVertex(mdl->Vertices[idx], mdl->Weights[idx], mdl->Bones);
+          Float3 vtx = mdl->Vertices[idx];
+          if (mdl->Meshes[m].Attached) vtx = CalculateVertex(vtx, mdl->Weights[idx], mdl->Bones);
           glVertex3f(vtx.X, vtx.Y, vtx.Z);
         }
         glEnd();
