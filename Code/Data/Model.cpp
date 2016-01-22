@@ -81,6 +81,7 @@ Model* ModelUtils::Load(const char* filepath) {
     fread(&mesh.TextureIdx,  sizeof(short), 1, fp);
     fread(&mesh.IndexOffset, sizeof(DWORD), 1, fp);
     fread(&mesh.IndexLength, sizeof(DWORD), 1, fp);
+    fread(&mesh.Attached,    sizeof(bool),  1, fp);
     model->Meshes.push_back(mesh);
   }
 
@@ -222,6 +223,7 @@ void ModelUtils::Save(Model* model, const char* savefile) {
     fwrite(&model->Meshes[i].TextureIdx,  sizeof(short), 1, fp);
     fwrite(&model->Meshes[i].IndexOffset, sizeof(DWORD), 1, fp);
     fwrite(&model->Meshes[i].IndexLength, sizeof(DWORD), 1, fp);
+    fwrite(&model->Meshes[i].Attached,    sizeof(bool),  1, fp);
   }
 
   // Write the bones.

@@ -1,6 +1,7 @@
 #include <Converter/Converter.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <vector>
 using namespace std;
 
@@ -73,6 +74,7 @@ Model* Converter::ReadMdx(const char* inputfile) {
   vector<MDX_BoneAssignment> associations;
   vector<DWORD> texIDs;
   vector<char*> textures;
+  vector<short> texIdx;
 
   // Set the model name and version.
   char dir[256], file[80], name[40], ending[10];
@@ -82,221 +84,219 @@ Model* Converter::ReadMdx(const char* inputfile) {
   model->Version = 2;
 
 
-  //__________________________________________________________________________________[SEQUENCES]
-  // Scan for 'SEQS' - animation sequence codeblock.
-  while (dbuf != 'SQES') fread(&dbuf, sizeof(DWORD), 1, fp);
-  fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read total sequence chunk size.
-  for (uint i = 0; i < chunkSize / 132; i ++) {
-    MDX_Sequence seq = MDX_Sequence();
-    fread(&seq.Name,          sizeof(char),  80, fp); // Read sequence name.
-    fread(&seq.IntervalStart, sizeof(DWORD),  1, fp); // Read first animation frame.
-    fread(&seq.IntervalEnd,   sizeof(DWORD),  1, fp); // Read last animation frame.
-    fread(&seq.MoveSpeed,     sizeof(float),  1, fp); // Read movement speed.
-    fread(&dbuf,              sizeof(DWORD),  1, fp); // Read flags (evaluation later). 
-    seq.Loop = (dbuf == 0);                           // Flags: 0: Looping, 1: NonLooping.                 
-    fread(&fbuf,              sizeof(float),  1, fp); // Read 'Rarity' (whatever it is).
-    fread(&dbuf,              sizeof(DWORD),  1, fp); // Read 'SyncPoint' (probably n.y.i). 
-    fread(&seq.BoundsRadius,  sizeof(float),  1, fp); // Read bounds radius (broad phase CD).
-    fread(&seq.MinimumExtent, sizeof(Float3), 1, fp); // Read minimum animation extent.
-    fread(&seq.MaximumExtent, sizeof(Float3), 1, fp); // Read maximum animation extent.
-    sequences.push_back(seq);
-  }
-
-
-
-  //__________________________________________________________________________________[MATERIALS]
-  // Scan for 'MTLS' - materials codeblock.
-  while (dbuf != 'SLTM') fread(&dbuf, sizeof(DWORD), 1, fp);
-  fread(&chunkSize, sizeof(DWORD), 1, fp);    // Read total material chunk size.
-  DWORD inclSize;                             // Material inclusive size storage.
-
-  // Read all materials.
-  for (uint i = 0; i < chunkSize; i += inclSize) {
-    fread(&inclSize, sizeof(DWORD), 1, fp);  // Read 'InclusiveSize'.
-    fread(&dbuf, sizeof(DWORD), 1, fp);      // 'Priority Plane'.
-    fread(&dbuf, sizeof(DWORD), 1, fp);      // 'Flags'.      
-    fread(&dbuf, sizeof(DWORD), 1, fp);      // Skip the 'LAYS' keyword.
-    DWORD nrLayers;                          // Number of layers following.
-    fread(&nrLayers, sizeof(DWORD), 1, fp);  // Read number of layers.
-
-    // Read all layers of current material.
-    for (unsigned int l = 0; l < nrLayers; l ++) {
-      DWORD lInclSize;
-      fread(&lInclSize, sizeof(DWORD), 1, fp); // Read layer inclusive size.
-      fread(&dbuf, sizeof(DWORD), 1, fp);      // 'FilterMode'.
-      fread(&dbuf, sizeof(DWORD), 1, fp);      // 'ShadingFlags'.
-      fread(&dbuf, sizeof(DWORD), 1, fp);      // 'TextureID'.
-      texIDs.push_back(dbuf);                  // Save the texture ID for later association.
-
-      // Because we don't need all the following stuff at the moment, we just skip it.
-      long remaining = lInclSize - 4*sizeof(DWORD);
-      fseek(fp, remaining, SEEK_CUR);
-      //fread(&dbuf, sizeof(DWORD), 1, fp);      // 'TextureAnimationID'.
-      //fread(&dbuf, sizeof(DWORD), 1, fp);      // 'CoordID'.
-      //fread(&dbuf, sizeof(float), 1, fp);      // 'Alpha'.
-      // Read material alpha structure.
-      // Read material texture ID structure.    
-    }
-  }
-
-
-
-  //___________________________________________________________________________________[TEXTURES]
-  // Scan for 'TEXS' - textures codeblock.
-  while (dbuf != 'SXET') fread(&dbuf, sizeof(DWORD), 1, fp);
-  fread(&chunkSize, sizeof(DWORD), 1, fp);
-
-  // Iterate over all texture paths.
-  for (uint t = 0; t < chunkSize / 268; t ++) {
-    char* texPath = (char*) calloc(260, sizeof(char));    
-    fread(&dbuf, sizeof(DWORD), 1, fp);      // Read (and discard) 'Replaceable ID'.    
-    fread(texPath, sizeof(char), 260, fp);   // Read texture path.
-    fread(&dbuf, sizeof(DWORD), 1, fp);      // Read 'Texture Flags' (also not used).    
-    textures.push_back(texPath);
-  }
-
-  
-  /* Reading the texture files. */
-  vector<short> texIdx;
-  for (uint t = 0; t < textures.size(); t ++) {
-    printf("Loading texture '%s' ", textures[t]);
-
-    // Try to open file stream.
-    FILE* texReader = fopen(textures[t], "rb");
-    if (texReader != NULL) {  
-      fseek(texReader, 0L, SEEK_END);          //| Read image size
-      unsigned long bytes = ftell(texReader);  //| and output.
-      printf("[%lu bytes] ", bytes);
-      BYTE* rawData = (BYTE*) calloc(bytes, sizeof(BYTE));
-      fseek(texReader, 0L, SEEK_SET);
-      fread(rawData, sizeof(BYTE), bytes, texReader);
-      model->Textures.push_back(new SimpleTexture(rawData, bytes, textures[t]));
-      fclose(texReader);
-      printf("[OK]\n");
-      texIdx.push_back(t);
-    }
-    else {
-      printf("[ERROR]\n");
-      texIdx.push_back(-1);
-    }
-  }
-
-
-
-
-  //____________________________________________________________________________________[GEOSETS]
-  // Skip file to geoset definitions and read in size.
-  while (dbuf != 'SOEG') fread(&dbuf, sizeof(DWORD), 1, fp);
-  fread(&remaining, sizeof(DWORD), 1, fp);
-  for (uint g = 0; remaining > 0; g ++) {
-    
-    // Read size of this geoset and reduce remaining size.
-    fread(&dbuf, sizeof(DWORD), 1, fp);
-    remaining -= dbuf;       
-
-    // Setup mesh and submesh structure for this geoset.
-    Mesh mesh = Mesh();
-    sprintf(mesh.ID, "MDX-Geoset %02d", g);
-    mesh.IndexOffset = totalG;
-    mesh.Enabled = true;  //TODO To be set later by some function.
-
-
-    // Read all vertices.
-    uint nrVertices;
-    fread(&dbuf, sizeof(DWORD), 1, fp); // Skip 'VRTX'.
-    fread(&nrVertices, sizeof(DWORD), 1, fp);
-    totalV += nrVertices;
-    model->Vertices.reserve(totalV);
-    for (uint vtx = 0; vtx < nrVertices; vtx ++) {
-      Float3 v = Float3();
-      fread(&v.X, sizeof(float), 1, fp);
-      fread(&v.Y, sizeof(float), 1, fp);
-      fread(&v.Z, sizeof(float), 1, fp);
-      model->Vertices.push_back(v);
-    }
-
-    // Read the normals.
-    uint nrNormals;
-    fread(&dbuf, sizeof(DWORD), 1, fp); // Skip 'NRMS'.
-    fread(&nrNormals, sizeof(DWORD), 1, fp);
-    totalN += nrNormals;
-    model->Normals.reserve(totalN);
-    for (uint nor = 0; nor < nrNormals; nor ++) {
-      Float3 n = Float3();
-      fread(&n.X, sizeof(float), 1, fp);
-      fread(&n.Y, sizeof(float), 1, fp);
-      fread(&n.Z, sizeof(float), 1, fp);
-      model->Normals.push_back(n);
-    }
-    
-    // Scan to faces definition.
-    while (dbuf != 'XTVP') fread(&dbuf, sizeof(DWORD), 1, fp);  // Skip 'PVTX'.
-    uint nrIndices;
-    fread(&nrIndices, sizeof(DWORD), 1, fp);
-    totalG += nrIndices;
-    model->Indices.reserve(totalG);
-    WORD index;
-    for (uint idx = 0; idx < nrIndices; idx ++) {
-      fread(&index, sizeof(WORD), 1, fp);
-      index += (totalV-nrVertices);  // Read indices are relative to the geoset. Add offset! 
-      model->Indices.push_back(index);
-    }
-
-
-    associations.push_back(ReadMDXBoneAssignment(fp));
-
-
-    // Read the material ID.
-    fread(&dbuf, sizeof(DWORD), 1, fp);
-
-    // Get associated texture from texture ID vector.
-    if (dbuf < texIDs.size()) {
-      if (texIDs[dbuf] < textures.size()) {
-        strcpy(mesh.Texture, textures[texIDs[dbuf]]);
-        mesh.TextureIdx = texIdx[texIDs[dbuf]];
-      }
-      else {
-        printf("[ERROR] Texture association failed. Entry %d is invalid (only %d texture%s)!\n",
-          texIDs[dbuf], textures.size(), (textures.size() > 1)? "s" : "");
-        strcpy(mesh.Texture, "");
-        mesh.TextureIdx = -1;
-      }
-    }
-    else { // Texture index is out of bounds. Print error and leave texture field empty. 
-      printf("[ERROR] Texture association failed. No texture entry for material ID %lu!\n",dbuf);
-      strcpy(mesh.Texture, "");
-    }
-
-
-    // Skip to texture coordinates [UVBS].
-    while (dbuf != 'SBVU') fread(&dbuf, sizeof(DWORD), 1, fp);
-    uint nrUVs;
-    fread(&nrUVs, sizeof(DWORD), 1, fp);
-    totalT += nrUVs;
-    model->UVs.reserve(nrUVs);
-    for (uint uv = 0; uv < nrUVs; uv ++) {
-      Float2 tex = Float2();
-      fread(&tex.X, sizeof(float), 1, fp);
-      fread(&tex.Y, sizeof(float), 1, fp);
-      model->UVs.push_back(tex);
-    }
-
-    // Add new mesh.
-    mesh.IndexLength = nrIndices;
-    mesh.Attached = false;
-    model->Meshes.push_back(mesh);
-  }
-
-
   bool repeatLoop = true;
   while (repeatLoop) {
     fread(&dbuf, sizeof(DWORD), 1, fp); // Read identifier flag.
     switch (dbuf) {
 
+
+      //______________________________________________________________________________[SEQUENCES]
+      // Scan for 'SEQS' - animation sequence codeblock.
+      case 'SQES': {
+        fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read total sequence chunk size.
+        for (uint i = 0; i < chunkSize / 132; i ++) {
+          MDX_Sequence seq = MDX_Sequence();
+          fread(&seq.Name,          sizeof(char),  80, fp); // Read sequence name.
+          fread(&seq.IntervalStart, sizeof(DWORD),  1, fp); // Read first animation frame.
+          fread(&seq.IntervalEnd,   sizeof(DWORD),  1, fp); // Read last animation frame.
+          fread(&seq.MoveSpeed,     sizeof(float),  1, fp); // Read movement speed.
+          fread(&dbuf,              sizeof(DWORD),  1, fp); // Read flags (evaluation later). 
+          seq.Loop = (dbuf == 0);                           // Flags: 0: Looping, 1: NonLooping.                 
+          fread(&fbuf,              sizeof(float),  1, fp); // Read 'Rarity' (whatever it is).
+          fread(&dbuf,              sizeof(DWORD),  1, fp); // Read 'SyncPoint' (probably n.y.i). 
+          fread(&seq.BoundsRadius,  sizeof(float),  1, fp); // Read bounds radius (broad phase CD).
+          fread(&seq.MinimumExtent, sizeof(Float3), 1, fp); // Read minimum animation extent.
+          fread(&seq.MaximumExtent, sizeof(Float3), 1, fp); // Read maximum animation extent.
+          sequences.push_back(seq);
+        }
+        break;
+      }
+
+      //______________________________________________________________________________[MATERIALS]
+      // Scan for 'MTLS' - materials codeblock.
+      case 'SLTM': {
+        fread(&chunkSize, sizeof(DWORD), 1, fp);    // Read total material chunk size.
+        DWORD inclSize;                             // Material inclusive size storage.
+
+        // Read all materials.
+        for (uint i = 0; i < chunkSize; i += inclSize) {
+          fread(&inclSize, sizeof(DWORD), 1, fp);  // Read 'InclusiveSize'.
+          fread(&dbuf, sizeof(DWORD), 1, fp);      // 'Priority Plane'.
+          fread(&dbuf, sizeof(DWORD), 1, fp);      // 'Flags'.      
+          fread(&dbuf, sizeof(DWORD), 1, fp);      // Skip the 'LAYS' keyword.
+          DWORD nrLayers;                          // Number of layers following.
+          fread(&nrLayers, sizeof(DWORD), 1, fp);  // Read number of layers.
+
+          // Read all layers of current material.
+          for (unsigned int l = 0; l < nrLayers; l ++) {
+            DWORD lInclSize;
+            fread(&lInclSize, sizeof(DWORD), 1, fp); // Read layer inclusive size.
+            fread(&dbuf, sizeof(DWORD), 1, fp);      // 'FilterMode'.
+            fread(&dbuf, sizeof(DWORD), 1, fp);      // 'ShadingFlags'.
+            fread(&dbuf, sizeof(DWORD), 1, fp);      // 'TextureID'.
+            texIDs.push_back(dbuf);                  // Save the texture ID for later association.
+
+            // Because we don't need all the following stuff at the moment, we just skip it.
+            long remaining = lInclSize - 4*sizeof(DWORD);
+            fseek(fp, remaining, SEEK_CUR);
+            //fread(&dbuf, sizeof(DWORD), 1, fp);      // 'TextureAnimationID'.
+            //fread(&dbuf, sizeof(DWORD), 1, fp);      // 'CoordID'.
+            //fread(&dbuf, sizeof(float), 1, fp);      // 'Alpha'.
+            // Read material alpha structure.
+            // Read material texture ID structure.    
+          }
+        }
+        break;
+      }
+
+      //_______________________________________________________________________________[TEXTURES]
+      // Scan for 'TEXS' - textures codeblock.
+      case 'SXET': {
+        fread(&chunkSize, sizeof(DWORD), 1, fp);
+
+        // Iterate over all texture paths.
+        for (uint t = 0; t < chunkSize / 268; t ++) {
+          char* texPath = (char*) calloc(260, sizeof(char));    
+          fread(&dbuf, sizeof(DWORD), 1, fp);      // Read (and discard) 'Replaceable ID'.    
+          fread(texPath, sizeof(char), 260, fp);   // Read texture path.
+          fread(&dbuf, sizeof(DWORD), 1, fp);      // Read 'Texture Flags' (also not used).    
+          textures.push_back(texPath);
+        }
+
+        // Reading the texture files.
+        for (uint t = 0; t < textures.size(); t ++) {
+          printf("Loading texture '%s' ", textures[t]);
+          FILE* texReader = fopen(textures[t], "rb");
+          if (texReader != NULL) {  
+            fseek(texReader, 0L, SEEK_END);          //| Read image size
+            unsigned long bytes = ftell(texReader);  //| and output.
+            printf("[%lu bytes] ", bytes);
+            BYTE* rawData = (BYTE*) calloc(bytes, sizeof(BYTE));
+            fseek(texReader, 0L, SEEK_SET);
+            fread(rawData, sizeof(BYTE), bytes, texReader);
+            model->Textures.push_back(new SimpleTexture(rawData, bytes, textures[t]));
+            fclose(texReader);
+            printf("[OK]\n");
+            texIdx.push_back(t);
+          }
+          else {
+            printf("[ERROR]\n");
+            texIdx.push_back(-1);
+          }
+        }
+        break;
+      }
+
+      //________________________________________________________________________________[GEOSETS]
+      // Scan for geoset definitions ('GEOS') and read in size.
+      case 'SOEG': {
+        fread(&remaining, sizeof(DWORD), 1, fp);
+        for (uint g = 0; remaining > 0; g ++) {
+    
+          // Read size of this geoset and reduce remaining size.
+          fread(&dbuf, sizeof(DWORD), 1, fp);
+          remaining -= dbuf;       
+
+          // Setup mesh and submesh structure for this geoset.
+          Mesh mesh = Mesh();
+          sprintf(mesh.ID, "MDX-Geoset %02d", g);
+          mesh.IndexOffset = totalG;
+          mesh.Enabled = true;  //TODO To be set later by some function.
+
+
+          // Read all vertices.
+          uint nrVertices;
+          fread(&dbuf, sizeof(DWORD), 1, fp); // Skip 'VRTX'.
+          fread(&nrVertices, sizeof(DWORD), 1, fp);
+          totalV += nrVertices;
+          model->Vertices.reserve(totalV);
+          for (uint vtx = 0; vtx < nrVertices; vtx ++) {
+            Float3 v = Float3();
+            fread(&v.X, sizeof(float), 1, fp);
+            fread(&v.Y, sizeof(float), 1, fp);
+            fread(&v.Z, sizeof(float), 1, fp);
+            model->Vertices.push_back(v);
+          }
+
+          // Read the normals.
+          uint nrNormals;
+          fread(&dbuf, sizeof(DWORD), 1, fp); // Skip 'NRMS'.
+          fread(&nrNormals, sizeof(DWORD), 1, fp);
+          totalN += nrNormals;
+          model->Normals.reserve(totalN);
+          for (uint nor = 0; nor < nrNormals; nor ++) {
+            Float3 n = Float3();
+            fread(&n.X, sizeof(float), 1, fp);
+            fread(&n.Y, sizeof(float), 1, fp);
+            fread(&n.Z, sizeof(float), 1, fp);
+            model->Normals.push_back(n);
+          }
+    
+          // Scan to faces definition.
+          while (dbuf != 'XTVP') fread(&dbuf, sizeof(DWORD), 1, fp);  // Skip 'PVTX'.
+          uint nrIndices;
+          fread(&nrIndices, sizeof(DWORD), 1, fp);
+          totalG += nrIndices;
+          model->Indices.reserve(totalG);
+          WORD index;
+          for (uint idx = 0; idx < nrIndices; idx ++) {
+            fread(&index, sizeof(WORD), 1, fp);
+            index += (totalV-nrVertices);  // Read indices are relative to the geoset. Add offset! 
+            model->Indices.push_back(index);
+          }
+
+
+          associations.push_back(ReadMDXBoneAssignment(fp));
+
+
+          // Read the material ID.
+          fread(&dbuf, sizeof(DWORD), 1, fp);
+
+          // Get associated texture from texture ID vector.
+          if (dbuf < texIDs.size()) {
+            if (texIDs[dbuf] < textures.size()) {
+              strcpy(mesh.Texture, textures[texIDs[dbuf]]);
+              mesh.TextureIdx = texIdx[texIDs[dbuf]];
+            }
+            else {
+              printf("[ERROR] Texture association failed. Entry %d is invalid (only %d texture%s)!\n",
+                texIDs[dbuf], textures.size(), (textures.size() > 1)? "s" : "");
+              strcpy(mesh.Texture, "");
+              mesh.TextureIdx = -1;
+            }
+          }
+          else { // Texture index is out of bounds. Print error and leave texture field empty. 
+            printf("[ERROR] Texture association failed. No texture entry for material ID %lu!\n",dbuf);
+            strcpy(mesh.Texture, "");
+          }
+
+
+          // Skip to texture coordinates [UVBS].
+          while (dbuf != 'SBVU') fread(&dbuf, sizeof(DWORD), 1, fp);
+          uint nrUVs;
+          fread(&nrUVs, sizeof(DWORD), 1, fp);
+          totalT += nrUVs;
+          model->UVs.reserve(nrUVs);
+          for (uint uv = 0; uv < nrUVs; uv ++) {
+            Float2 tex = Float2();
+            fread(&tex.X, sizeof(float), 1, fp);
+            fread(&tex.Y, sizeof(float), 1, fp);
+            model->UVs.push_back(tex);
+          }
+
+          // Add new mesh.
+          mesh.IndexLength = nrIndices;
+          mesh.Attached = false;
+          model->Meshes.push_back(mesh);
+        }
+        break;
+      }
+
       //__________________________________________________________________________________[BONES]
       // Scan for 'BONE' - animation bones codeblock.
       case 'ENOB': {
         fread(&chunkSize, sizeof(DWORD), 1, fp);   // Read total bone chunk size.
+        DWORD inclSize;                            // Chunk inclusive size variable. 
         for (uint i = 0; i < chunkSize; i += inclSize) {
           MDX_Bone bone = ReadMDXNode(fp, inclSize);
           fread(&dbuf, sizeof(DWORD), 1, fp);   // Read 'GeosetID'.
@@ -311,6 +311,7 @@ Model* Converter::ReadMdx(const char* inputfile) {
       // Scan for 'HELP' - auxiliary nodes ... and the main bone on some models (?!)
       case 'PLEH': {
         fread(&chunkSize, sizeof(DWORD), 1, fp);         // Read helper chunk size.
+        DWORD inclSize;                                  // Chunk inclusive size variable. 
         for (uint i = 0; i < chunkSize; i += inclSize) { // Read the auxiliary nodes.  
           MDX_Bone bone = ReadMDXNode(fp, inclSize);
           bones.push_back(bone);
@@ -347,9 +348,19 @@ Model* Converter::ReadMdx(const char* inputfile) {
   BuildVertexGroups(model, associations, idxRemapping);
 
 
+
   //_____________________________________________________________________[PROCESS ANIMATION DATA]
   // Adjusting the MDX sequences (global frame line, interleaved anim data) to ours.
-  for (uint i = 0; i < sequences.size(); i ++) {
+
+  // If we have no animation sequence at all, there's no need to store bones and weights.
+  if (sequences.size() == 0) {
+    model->Bones.clear();
+    model->Sequences.clear();
+    model->Weights.clear();
+    for (uint i = 0; i < model->Meshes.size(); i ++) model->Meshes[i].Attached = false;
+  }
+
+  else for (uint i = 0; i < sequences.size(); i ++) {
     Sequence seq = Sequence();
     strcpy(seq.Name, sequences[i].Name);
     seq.ID = i;
@@ -397,8 +408,6 @@ Model* Converter::ReadMdx(const char* inputfile) {
     }
     model->Sequences.push_back(seq);
   }
-
-
 
 
 

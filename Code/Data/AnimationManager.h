@@ -36,54 +36,22 @@ class AnimationManager {
     }
 
     /** Linear frame interpolation function. */
-    Float4 Interpolate(vector<TransformationDirective>& TD, int curIdx, int nextIdx, bool isFloat4 = false) {
+    Float3 Interpolate(vector<TransformationDirective>& TD, int curIdx, int nextIdx) {
       if (nextIdx > curIdx) {
         int distance = TD[nextIdx].Frame - TD[curIdx].Frame;
         int pos = _curFrame - TD[curIdx].Frame;
         float factor = (float) pos / distance;
         float inv = 1.0f - factor;
-        return Float4(
+        return Float3(
           inv*TD[curIdx].X  +  factor*TD[nextIdx].X,
           inv*TD[curIdx].Y  +  factor*TD[nextIdx].Y,
-          inv*TD[curIdx].Z  +  factor*TD[nextIdx].Z,
-          isFloat4? (inv*TD[curIdx].W  +  factor*TD[nextIdx].W) : 0.0f
+          inv*TD[curIdx].Z  +  factor*TD[nextIdx].Z
         );
       }
       // There's nothing to interpolate here. Just return current frame.
-      else return Float4(TD[curIdx].X, TD[curIdx].Y, TD[curIdx].Z, TD[curIdx].W);
+      else return Float3(TD[curIdx].X, TD[curIdx].Y, TD[curIdx].Z);
     }
 
-
-    void Normalize(Float4& a) {
-      float len = a.X*a.X + a.Y*a.Y + a.Z*a.Z + a.W*a.W;
-      if (len > 0) {
-        len = 1.0f / sqrtf(len);
-        a.X *= len;
-        a.Y *= len;
-        a.Z *= len;
-        a.W *= len;
-      }
-    };
-
-    Float4 Nlerp(Float4 a, Float4 b, float t) {
-      float dot = (a.X*b.X + a.Y*b.Y + a.Z*b.Z + a.W*b.W);
-      float inverseFactor = 1.0f - t;
-      Float4 ret;
-      if (dot < 0) ret = Float4(
-        inverseFactor * a.X - t * b.X,
-        inverseFactor * a.Y - t * b.Y,
-        inverseFactor * a.Z - t * b.Z,
-        inverseFactor * a.W - t * b.W
-      );
-      else ret = Float4(
-        inverseFactor * a.X + t * b.X,
-        inverseFactor * a.Y + t * b.Y,
-        inverseFactor * a.Z + t * b.Z,
-        inverseFactor * a.W + t * b.W
-      );
-      Normalize(ret);
-      return ret;
-    };
 
     Float4 Interpolate2(vector<TransformationDirective>& TD, int curIdx, int nextIdx) {
       if (nextIdx > curIdx) {
@@ -92,7 +60,7 @@ class AnimationManager {
         float factor = (float) pos / distance;        
         Float4 a = Float4(TD[curIdx].X,  TD[curIdx].Y,  TD[curIdx].Z,  TD[curIdx].W);
         Float4 b = Float4(TD[nextIdx].X, TD[nextIdx].Y, TD[nextIdx].Z, TD[nextIdx].W);      
-        return Nlerp(a, b, factor);
+        return MathLib::Interpolate_NLERP(a, b, factor);
       }
       // There's nothing to interpolate here. Just return current frame.
       else return Float4(TD[curIdx].X, TD[curIdx].Y, TD[curIdx].Z, TD[curIdx].W);
@@ -175,8 +143,7 @@ class AnimationManager {
           if (_trLength[i] > 0) {  // Step 1: TRANSLATION.  
             vector<TransformationDirective>& trans = _sequence->Transformations[bone].Translations;
             int next = AdvanceIndex(i, _trIndex, _trLength, trans);
-            Float4 tl = Interpolate(trans, _trIndex[i], next);
-            translation = Float3(tl.X, tl.Y, tl.Z);
+            translation = Interpolate(trans, _trIndex[i], next);
           }     
           if (_rotLength[i] > 0) { // Step 2: ROTATION. 
             vector<TransformationDirective>& rot = _sequence->Transformations[bone].Rotations;
@@ -186,8 +153,7 @@ class AnimationManager {
           if (_scaLength[i] > 0) { // Step 3: SCALING.
             vector<TransformationDirective>& sca = _sequence->Transformations[bone].Scalings;
             int next = AdvanceIndex(i, _scaIndex, _scaLength, sca);
-            Float4 sc = Interpolate(sca, _scaIndex[i], next);
-            scaling = Float3(sc.X, sc.Y, sc.Z);
+            scaling = Interpolate(sca, _scaIndex[i], next);
           }
         }
 

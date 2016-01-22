@@ -4,6 +4,9 @@
 #include <Data/Textures/Texture.h>
 #include <SDL_opengl.h>
 
+//#include <Execution/Stopwatch.h>
+//Stopwatch sw = Stopwatch();
+
 
 static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone>& bones) {
   if (w.BoneIDs[0] != 255) {
@@ -87,9 +90,14 @@ void GLDrawer::Draw(Object3D* obj) {
           DWORD i0 = mdl->Indices[idxStart + i];
           DWORD i1 = mdl->Indices[idxStart + i + 1];
           DWORD i2 = mdl->Indices[idxStart + i + 2];          
-          Float3 v1 = CalculateVertex(mdl->Vertices[i0], mdl->Weights[i0], mdl->Bones);
-          Float3 v2 = CalculateVertex(mdl->Vertices[i1], mdl->Weights[i1], mdl->Bones);
-          Float3 v3 = CalculateVertex(mdl->Vertices[i2], mdl->Weights[i2], mdl->Bones);
+          Float3 v1 = mdl->Vertices[i0];
+          Float3 v2 = mdl->Vertices[i1];
+          Float3 v3 = mdl->Vertices[i2];
+          if (mdl->Meshes[m].Attached) {
+            v1 = CalculateVertex(v1, mdl->Weights[i0], mdl->Bones);
+            v2 = CalculateVertex(v2, mdl->Weights[i1], mdl->Bones);
+            v3 = CalculateVertex(v3, mdl->Weights[i2], mdl->Bones);
+          }
           glBegin(GL_LINE_LOOP);
           glVertex3f(v1.X, v1.Y, v1.Z);
           glVertex3f(v2.X, v2.Y, v2.Z);

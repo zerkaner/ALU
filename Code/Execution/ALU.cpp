@@ -42,12 +42,12 @@ ALU::ALU() :
   
   Object3D* obj = new Object3D();
   obj->Position = Float3(7, 6, 0.2f);
-  obj->Model3D = ModelUtils::Load("../Bear.m4");
+  obj->Model3D = ModelUtils::Load("../Tree01.m4");
   _world.GetEnvironment()->AddObject(obj);
 
   //ModelUtils::PrintDebug(obj->Model3D);
-  obj->Model3D->AnimMgr = new AnimationManager(obj->Model3D);
-  obj->Model3D->AnimMgr->Play("Stand 2");
+//  obj->Model3D->AnimMgr = new AnimationManager(obj->Model3D);
+  //obj->Model3D->AnimMgr->Play("Stand 2");
   
  /*  
   obj = new Object3D();
@@ -85,20 +85,26 @@ ALU::ALU() :
 /** Enters execution loop. */
 void ALU::Start() {
   _run = true;         // Enable loop execution.
-  long delay;          // Stores sleep time (in ms).
-      
   while (_run) {
     _stopwatch.GetInterval();     // Reset stopwatch counter.
     _world.AdvanceOneTick();      // 1) Execute the world.
     _listener.EvaluateEvents();   // 2) Read and evaluate user input.
     _3dEngine.Render();           // 3) Render the 3D environment.
-
-    // Information pass along and sleep calculation.
-    long execTime = _stopwatch.GetInterval();
-    StatsInfo::ExecTime = execTime;
-    StatsInfo::FPS = _targetFPS;
-    delay = (long)((1.0f/_targetFPS)*1000) - execTime;
-    if (delay > 0) Sleep(delay);
+    
+    // Information pass along and FPS calculation.
+    long execTime = _stopwatch.GetInterval(); 
+    StatsInfo::ExecTime = execTime;      
+    _fps ++;
+    _time += execTime;
+    if (_time > 1000) {
+      StatsInfo::FPS = _fps;
+      _time = 0;
+      _fps = 0;  
+    }
+  
+    // Sleep calculation.
+    // long delay = (long)((1.0f/_targetFPS)*1000) - execTime;
+    // if (delay > 0) Sleep(delay);
   }
 
   //TODO Put sound deletion code here.
@@ -112,7 +118,7 @@ void ALU::Stop() {
 }
 
 
-/** Inserts a in-memory model from an import
+/** Inserts a in-memory model from an import.
  * @param model The model to test. */
 void ALU::TestConvertedModel(Model* model) {
   for (uint i = 0; i < model->Textures.size(); i ++) {
@@ -123,7 +129,7 @@ void ALU::TestConvertedModel(Model* model) {
   model->AnimMgr = new AnimationManager(model);
   model->AnimMgr->Play("Stand 2");
 
-  ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Float3(7.5f, 7.5f, 0.5f));
+  ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Float3(7.5f, 7.5f, 0.0f));
   _listener.AddControllerModule(mta);
   _camera.SetPosition(16.0f, 11.0f, 4, 244, -13);
 }

@@ -11,7 +11,7 @@ Float4 MathLib::MultiplyQuads(Float4 quat1, Float4 quat2) {
     qax = quat1.X, qay = quat1.Y, qaz = quat1.Z, qaw = quat1.W,  // Left quaternion.
     qbx = quat2.X, qby = quat2.Y, qbz = quat2.Z, qbw = quat2.W;  // Right quaternion.
 
-  // Perform quaternion multiplcation.
+  // Perform quaternion multiplication.
   return Float4(
     qax * qbw  +  qaw * qbx  +  qay * qbz  -  qaz * qby,
     qay * qbw  +  qaw * qby  +  qaz * qbx  -  qax * qbz,
@@ -54,6 +54,33 @@ void MathLib::MultiplyMatrices(float* m1, float* m2, float* out) {
   out[13] = b30 * a01 + b31 * a11 + b32 * a21 + b33 * a31;
   out[14] = b30 * a02 + b31 * a12 + b32 * a22 + b33 * a32;
   out[15] = b30 * a03 + b31 * a13 + b32 * a23 + b33 * a33;
+}
+
+
+/** Perform normalized linear interpolation.
+ * @param a First quaternion.
+ * @param b Second quaternion.
+ * @param f Interpolation factor.
+ * @return The interpolated rotation. */
+Float4 MathLib::Interpolate_NLERP(Float4& a, Float4& b, float f) {
+  float dot = (a.X*b.X + a.Y*b.Y + a.Z*b.Z + a.W*b.W);
+  float inverseFactor = 1.0f - f;
+  if (dot < 0) f = -f;
+  Float4 r = Float4(
+    inverseFactor * a.X + f * b.X,
+    inverseFactor * a.Y + f * b.Y,
+    inverseFactor * a.Z + f * b.Z,
+    inverseFactor * a.W + f * b.W
+  );
+  float len = r.X*r.X + r.Y*r.Y + r.Z*r.Z + r.W*r.W;
+  if (len > 0) { // Normalize the result.
+    len = 1.0f / sqrtf(len);
+    r.X *= len;
+    r.Y *= len;
+    r.Z *= len;
+    r.W *= len;
+  }
+  return r;
 }
 
 

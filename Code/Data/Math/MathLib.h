@@ -20,6 +20,14 @@ class MathLib {
     static void MultiplyMatrices(float* m1, float* m2, float* out);
 
 
+    /** Perform normalized linear interpolation.
+     * @param a First quaternion.
+     * @param b Second quaternion. 
+     * @param f Interploation factor.
+     * @return The interpolated rotation. */
+    static Float4 Interpolate_NLERP(Float4& a, Float4& b, float f);
+
+
     /** Apply a transformation matrix to a vector.
      * @param vecIn Input vector (position).
      * @param mat Transformation matrix. 

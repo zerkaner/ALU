@@ -20,7 +20,8 @@ class ALU {
     UserInterface _interface;  // 2D user interface overlay. 
     bool _run;                 // Loop execution flag. 
     int _targetFPS = 30;       // Targeted frames per second.
-
+    int _fps = 0;              // FPS counter for current second.
+    long _time = 0;            // Milliseconds elapsed of current second.
 
   public:
     
