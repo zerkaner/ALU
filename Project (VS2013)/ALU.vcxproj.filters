@@ -55,6 +55,9 @@
     <Filter Include="Data\Math">
       <UniqueIdentifier>{11521a9b-a61b-418f-910f-2f6255834970}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Visualization\Shader">
+      <UniqueIdentifier>{e3ac7335-a3bb-4d75-8860-7e529032e7f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Code\Agents\Agent.cpp">
@@ -137,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="..\Code\Data\Math\MathLib.cpp">
       <Filter>Data\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Visualization\Shader\ModelVBO.cpp">
+      <Filter>Visualization\Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +295,9 @@
     </ClInclude>
     <ClInclude Include="..\Code\Data\Math\MathLib.h">
       <Filter>Data\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\Shader\ExtLoader.h">
+      <Filter>Visualization\Shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

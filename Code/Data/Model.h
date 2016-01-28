@@ -4,6 +4,14 @@
 #include <map>
 #include <vector>
 class AnimationManager;
+struct Model;
+
+struct VertexBufferObject {
+  uint VtxBuf, NorBuf, TexBuf, IdxBuf;
+  VertexBufferObject(Model* mdl);
+  ~VertexBufferObject();
+  void Bind();
+};
 
 
 struct Bone {
@@ -77,6 +85,7 @@ struct Model {
   std::vector<Sequence> Sequences;
   AnimationManager* AnimMgr = 0;
   std::vector<SimpleTexture*> Textures;
+  VertexBufferObject* VBO = 0;
   int _renderMode = 3; // Debug flag for visual testing. Not part of the model!
 };
 

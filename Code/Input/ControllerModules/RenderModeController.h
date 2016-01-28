@@ -31,6 +31,7 @@ public:
         case KEY_1: dpMode = 1; break;
         case KEY_2: dpMode = 2; break;
         case KEY_3: dpMode = 3; break;
+        case KEY_4: dpMode = 4; break;
       }
       if (dpMode != -1) {
         for (unsigned int i = 0; i < _worldObjects->size(); i ++) {

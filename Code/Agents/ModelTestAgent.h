@@ -53,7 +53,7 @@ class ModelTestAgent : public SpatialAgent, public IAgentLogic, public IControll
 
         case KEY_R:
           Data->Model3D->_renderMode ++;
-          if (Data->Model3D->_renderMode == 4) Data->Model3D->_renderMode = 0;
+          if (Data->Model3D->_renderMode == 5) Data->Model3D->_renderMode = 0;
           break;
       }
     }

@@ -8,7 +8,6 @@
 #include <stdio.h>
 
 
-
 Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* camera, UserInterface* ui, IDrawable* world) :
   _camera(camera), _ui(ui), _world(world) {
   
@@ -35,7 +34,6 @@ Engine::Engine(char* winname, int width, int height, bool fullscreen, Camera* ca
   glShadeModel(GL_SMOOTH);      // Shading type 'smooth' (def.). Other option: 'flat'. 
   glClearColor(0.5f, 0.5f, 0.5f, 1);                 // Grey background color.
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST); // Highest quality desired.
-
 
   // Initialize viewport and resolution.
   SetResolution (width, height, fullscreen); 
@@ -85,7 +83,7 @@ void Engine::Render() {
   glLoadIdentity();    // Reset model matrix.
   _camera->Update();   // Position calculation and camera update.
   _world->Draw();      // Draw the world.
-  
+
   // Switch to 2D rendering for the user interface.
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();

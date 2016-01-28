@@ -42,6 +42,7 @@
     <ClCompile Include="..\Code\Visualization\Camera.cpp" />
     <ClCompile Include="..\Code\Visualization\Engine.cpp" />
     <ClCompile Include="..\Code\Visualization\GLDrawer.cpp" />
+    <ClCompile Include="..\Code\Visualization\Shader\ModelVBO.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Code\Agents\Agent.h" />
@@ -94,6 +95,7 @@
     <ClInclude Include="..\Code\Visualization\Engine.h" />
     <ClInclude Include="..\Code\Visualization\IDrawable.h" />
     <ClInclude Include="..\Code\Visualization\GLDrawer.h" />
+    <ClInclude Include="..\Code\Visualization\Shader\ExtLoader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6A1E07B8-D75A-47FB-98A3-67682FF66EB4}</ProjectGuid>

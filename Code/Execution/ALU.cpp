@@ -42,7 +42,7 @@ ALU::ALU() :
   
   Object3D* obj = new Object3D();
   obj->Position = Float3(7, 6, 0.2f);
-  obj->Model3D = ModelUtils::Load("../Tree01.m4");
+  obj->Model3D = ModelUtils::Load("../M4/Tree01.m4");
   _world.GetEnvironment()->AddObject(obj);
 
   //ModelUtils::PrintDebug(obj->Model3D);

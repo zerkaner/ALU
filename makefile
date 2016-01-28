@@ -24,6 +24,7 @@ OBJS = $(wildcard $(SRC)/Agents/*.cpp)\
        $(wildcard $(SRC)/Physics/Modules/*.cpp)\
        $(wildcard $(SRC)/UserInterface/*.cpp)\
        $(wildcard $(SRC)/Visualization/*.cpp)\
+       $(wildcard $(SRC)/Visualization/Shader/*.cpp)\
 
 # Include paths.
 INC_PATHS = -I$(SRC) -I$(RES)/SDL2-2.0.3/include

@@ -8,6 +8,7 @@
 //Stopwatch sw = Stopwatch();
 
 
+
 static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone>& bones) {
   if (w.BoneIDs[0] != 255) {
     int mi;
@@ -52,6 +53,7 @@ void GLDrawer::Draw(Object3D* obj) {
   glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuseLight);    // Set diffuse light.
   glLightfv (GL_LIGHT0, GL_AMBIENT, ambientLight);    // Set ambient light.
   glLightfv (GL_LIGHT0, GL_SPECULAR, specularLight);  // Set specular light. 
+  glColor3f(1.0, 1.0, 1.0);
 
   glPushMatrix();    // Use designated matrix for object rendering.
   
@@ -159,7 +161,14 @@ void GLDrawer::Draw(Object3D* obj) {
     }
 
 
-    // Further rendering cases here.
+    // GPU-rendering via GLSL.
+    case 4: {
+      if (mdl->VBO == NULL) mdl->VBO = new VertexBufferObject(mdl);
+      mdl->VBO->Bind();
+
+
+      break;
+    }
   }
   glPopMatrix();
 }
