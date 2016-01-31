@@ -4,14 +4,7 @@
 #include <map>
 #include <vector>
 class AnimationManager;
-struct Model;
-
-struct VertexBufferObject {
-  uint VtxBuf, NorBuf, TexBuf, IdxBuf;
-  VertexBufferObject(Model* mdl);
-  ~VertexBufferObject();
-  void Bind();
-};
+struct VertexBufferObject;
 
 
 struct Bone {

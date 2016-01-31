@@ -1,4 +1,5 @@
 #include "GLDrawer.h"
+#include "Shader/ShaderRenderer.h"
 #include <Data/AnimationManager.h>
 #include <Data/Object3D.h>
 #include <Data/Textures/Texture.h>
@@ -6,7 +7,8 @@
 
 //#include <Execution/Stopwatch.h>
 //Stopwatch sw = Stopwatch();
-
+//#include <stdlib.h>
+ShaderRenderer* sr = NULL;
 
 
 static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone>& bones) {
@@ -42,7 +44,7 @@ void GLDrawer::Draw(Object3D* obj) {
 
   // Instant skip, if no model is assigned or it is disabled.
   if (obj->Model3D == NULL || obj->Model3D->_renderMode == 0) return;
-
+  
   //TODO Move lighting somewhere else. Maybe as a Engine.Add() function. 
   glEnable (GL_LIGHT0);
   float lightpos [] = {35.0f, 50.0f, 40.0f, 1.0f};    // Position. 4th is directional (0) or positional. 
@@ -54,7 +56,7 @@ void GLDrawer::Draw(Object3D* obj) {
   glLightfv (GL_LIGHT0, GL_AMBIENT, ambientLight);    // Set ambient light.
   glLightfv (GL_LIGHT0, GL_SPECULAR, specularLight);  // Set specular light. 
   glColor3f(1.0, 1.0, 1.0);
-
+  
   glPushMatrix();    // Use designated matrix for object rendering.
   
   // Displace and rotate model based on position and orientation vector.
@@ -163,10 +165,21 @@ void GLDrawer::Draw(Object3D* obj) {
 
     // GPU-rendering via GLSL.
     case 4: {
-      if (mdl->VBO == NULL) mdl->VBO = new VertexBufferObject(mdl);
-      mdl->VBO->Bind();
+      if (sr == NULL) sr = new ShaderRenderer("../vs1.glsl", "../fs1.glsl");
+      if (mdl->VBO == NULL) sr->CreateModelVBO(mdl);
+      sr->BindVBO(mdl->VBO);
+      for (uint m = 0; m < mdl->Meshes.size(); m ++) {
+        Mesh& mesh = mdl->Meshes[m];
+        if (!mesh.Enabled) continue;
 
-
+        // Load and set texture, if available.
+        if (mesh.TextureIdx != -1) {
+          glEnable(GL_TEXTURE_2D);
+          glBindTexture(GL_TEXTURE_2D, mdl->Textures[mesh.TextureIdx]->ID());
+        }
+        sr->DrawVBO(mdl->VBO, mesh.IndexOffset, mesh.IndexLength);
+        if (mesh.TextureIdx != -1) glDisable(GL_TEXTURE_2D);
+      }
       break;
     }
   }
