@@ -165,8 +165,12 @@ void GLDrawer::Draw(Object3D* obj) {
 
     // GPU-rendering via GLSL.
     case 4: {
-      if (sr == NULL) sr = new ShaderRenderer("../vs1.glsl", "../fs1.glsl");
+      if (sr == NULL) sr = new ShaderRenderer("../shader1.vert", "../shader1.frag");
       if (mdl->VBO == NULL) sr->CreateModelVBO(mdl);
+      Mesh& mesh = mdl->Meshes[0];
+      sr->Dbg(mdl->Textures[mesh.TextureIdx]->ID(), mesh.IndexOffset, mesh.IndexLength, mdl->VBO);
+      //sr->Dbg2();
+      /*
       sr->BindVBO(mdl->VBO);
       for (uint m = 0; m < mdl->Meshes.size(); m ++) {
         Mesh& mesh = mdl->Meshes[m];
@@ -174,12 +178,12 @@ void GLDrawer::Draw(Object3D* obj) {
 
         // Load and set texture, if available.
         if (mesh.TextureIdx != -1) {
-          glEnable(GL_TEXTURE_2D);
-          glBindTexture(GL_TEXTURE_2D, mdl->Textures[mesh.TextureIdx]->ID());
+          //glEnable(GL_TEXTURE_2D);
+          //glBindTexture(GL_TEXTURE_2D, mdl->Textures[mesh.TextureIdx]->ID());
         }
         sr->DrawVBO(mdl->VBO, mesh.IndexOffset, mesh.IndexLength);
-        if (mesh.TextureIdx != -1) glDisable(GL_TEXTURE_2D);
-      }
+        //if (mesh.TextureIdx != -1) glDisable(GL_TEXTURE_2D);
+      }*/
       break;
     }
   }

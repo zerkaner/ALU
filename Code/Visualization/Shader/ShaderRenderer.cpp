@@ -25,6 +25,7 @@ PFNGLSHADERSOURCEPROC shaderSource;
 PFNGLUSEPROGRAMPROC useProgram;
 PFNGLDELETEPROGRAMPROC deleteProgram;
 PFNGLGENBUFFERSPROC genBuffers;
+PFNGLACTIVETEXTUREPROC activeTexture;
 PFNGLBINDBUFFERPROC bindBuffer;
 PFNGLBUFFERDATAPROC bufferData;
 PFNGLDELETEBUFFERSPROC deleteBuffers;
@@ -39,7 +40,7 @@ PFNGLUNIFORM3FPROC uniform3f;
 
 
 //TODO Das kann man bestimmt noch besser hinkriegen!
-int pMatrixUniform, mvMatrixUniform, nMatrixUniform, materialShininessUniform, showSpecularHighlightsUniform,
+int pMatrixUniform, mvMatrixUniform, nMatrixUniform, samplerUniform, materialShininessUniform, showSpecularHighlightsUniform,
 useTexturesUniform, useLightingUniform, ambientColorUniform, pointLightingLocationUniform,
 pointLightingSpecularColorUniform, pointLightingDiffuseColorUniform;
 //_________________________________________________________________
@@ -111,6 +112,7 @@ void ShaderRenderer::InitExtensions() {
   createProgram = (PFNGLCREATEPROGRAMPROC) wglGetProcAddress("glCreateProgram");
   deleteProgram = (PFNGLDELETEPROGRAMPROC) wglGetProcAddress("glDeleteProgram");
   genBuffers = (PFNGLGENBUFFERSARBPROC) wglGetProcAddress("glGenBuffers");
+  activeTexture = (PFNGLACTIVETEXTUREPROC) wglGetProcAddress("glActiveTexture");
   bindBuffer = (PFNGLBINDBUFFERARBPROC) wglGetProcAddress("glBindBuffer");
   bufferData = (PFNGLBUFFERDATAARBPROC) wglGetProcAddress("glBufferData");
   deleteBuffers = (PFNGLDELETEBUFFERSARBPROC) wglGetProcAddress("glDeleteBuffers");
@@ -202,6 +204,10 @@ ShaderRenderer::ShaderRenderer(const char* vsFile, const char* fsFile) {
     if (shaderProgram != 0) {
       SetupShader();
       printf("[ShaderRenderer] Initialized with shaders '%s', '%s'.\n", vsFile, fsFile);
+      printf("[ShaderRenderer] OpenGL version: %s\n", glGetString(GL_VERSION));
+      printf("[ShaderRenderer] GLSL version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+      printf("[ShaderRenderer] Vendor: %s\n", glGetString(GL_VENDOR));
+      printf("[ShaderRenderer] Renderer: %s\n", glGetString(GL_RENDERER));
     }
   }
 }
@@ -275,6 +281,9 @@ void ShaderRenderer::CreateModelVBO(Model* mdl) {
 /* Internal functions for shader handling. */
 void ShaderRenderer::SetupShader() { 
 
+  return;
+  useProgram(shaderProgram);
+
   // Get the attributes.
   posAttr = getAttribLocation(shaderProgram, "posAttr"); enableVertexAttribArray(posAttr);
   norAttr = getAttribLocation(shaderProgram, "norAttr"); enableVertexAttribArray(norAttr); 
@@ -284,6 +293,7 @@ void ShaderRenderer::SetupShader() {
   pMatrixUniform = getUniformLocation(shaderProgram, "uPMatrix");
   mvMatrixUniform = getUniformLocation(shaderProgram, "uMVMatrix");
   nMatrixUniform = getUniformLocation(shaderProgram, "uNMatrix");
+  samplerUniform = getUniformLocation(shaderProgram, "uSampler");
   materialShininessUniform = getUniformLocation(shaderProgram, "uMaterialShininess");
   showSpecularHighlightsUniform = getUniformLocation(shaderProgram, "uShowSpecularHighlights");
   useTexturesUniform = getUniformLocation(shaderProgram, "uUseTextures");
@@ -294,8 +304,9 @@ void ShaderRenderer::SetupShader() {
   pointLightingDiffuseColorUniform = getUniformLocation(shaderProgram, "uPointLightingDiffuseColor");
   
   uniform1i(useLightingUniform, true);
+  uniform1i(samplerUniform, 0);
   uniform1i(useTexturesUniform, true);
-  uniform1i(showSpecularHighlightsUniform, false);
+  uniform1i(showSpecularHighlightsUniform, true);
   
   uniform3f(pointLightingLocationUniform, 80, 40, 10);
   uniform3f(ambientColorUniform, 0.6f, 0.3f, 0.3f);
@@ -303,11 +314,12 @@ void ShaderRenderer::SetupShader() {
   uniform3f(pointLightingDiffuseColorUniform, 0.8f, 0.8f, 0.8f);    
 
   uniform1f(materialShininessUniform, 1.0f);
-
 }
 
 
 void ShaderRenderer::BindVBO(VertexBufferObject* vbo) {
+  useProgram(shaderProgram);
+  activeTexture(GL_TEXTURE0);
   bindBuffer(GL_ARRAY_BUFFER, vbo->vBuf);  // Load vertex buffer.
   vertexAttribPointer(posAttr, 3, GL_FLOAT, false, 0, 0);
   bindBuffer(GL_ARRAY_BUFFER, vbo->nBuf);   // Load normal vector buffer.
@@ -315,10 +327,97 @@ void ShaderRenderer::BindVBO(VertexBufferObject* vbo) {
   bindBuffer(GL_ARRAY_BUFFER, vbo->tBuf);  // Load texture coordinate buffer.
   vertexAttribPointer(texAttr, 2, GL_FLOAT, false, 0, 0);
   bindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->iBuf); // Load vertex index buffer.
+  useProgram(NULL);
 }
 
 void ShaderRenderer::DrawVBO(VertexBufferObject* vbo, int offset, int length) {
+  useProgram(shaderProgram);
+  
   glDrawElements(GL_TRIANGLES, length, GL_UNSIGNED_INT, (void*) (offset * sizeof(GLuint)));
+
+
+  useProgram(NULL);
 }
 
 
+
+void ShaderRenderer::Dbg(unsigned int tex, unsigned int offset, unsigned int length, VertexBufferObject* vbo) {
+  useProgram(shaderProgram);
+
+  activeTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, tex);
+  uniform1i(samplerUniform, 0);
+
+  bindBuffer(GL_ARRAY_BUFFER, vbo->vBuf);  // Load vertex buffer.
+  vertexAttribPointer(posAttr, 3, GL_FLOAT, false, 0, 0);
+  bindBuffer(GL_ARRAY_BUFFER, vbo->nBuf);   // Load normal vector buffer.
+  vertexAttribPointer(norAttr, 3, GL_FLOAT, false, 0, 0);
+  bindBuffer(GL_ARRAY_BUFFER, vbo->tBuf);  // Load texture coordinate buffer.
+  vertexAttribPointer(texAttr, 2, GL_FLOAT, false, 0, 0);
+  bindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->iBuf); // Load vertex index buffer.
+
+  glDrawElements(GL_TRIANGLES, length, GL_UNSIGNED_INT, (void*) (offset * sizeof(GLuint)));
+
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  useProgram(0);
+}
+
+/*
+#include <Data/Textures/ImageLoader.h>
+void ShaderRenderer::Dbg2() {
+
+  GLuint gVBO;
+
+  // make and bind the VBO
+  genBuffers(1, &gVBO);
+  bindBuffer(GL_ARRAY_BUFFER, gVBO);
+
+  // Put the three triangle vertices (XYZ) and texture coordinates (UV) into the VBO
+  GLfloat vertexData[] = {
+    //  X     Y     Z       U     V
+    0.0f, 0.8f, 0.0f, 0.5f, 1.0f,
+    -0.8f, -0.8f, 0.0f, 0.0f, 0.0f,
+    0.8f, -0.8f, 0.0f, 1.0f, 0.0f,
+  };
+  bufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
+
+  // connect the xyz to the "vert" attribute of the vertex shader.
+  enableVertexAttribArray(getAttribLocation(shaderProgram, "vert"));
+  vertexAttribPointer(getAttribLocation(shaderProgram, "vert"), 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), NULL);
+
+  // connect the uv coords to the "vertTexCoord" attribute of the vertex shader
+  enableVertexAttribArray(getAttribLocation(shaderProgram, "vertTexCoord"));
+  vertexAttribPointer(getAttribLocation(shaderProgram, "vertTexCoord"), 2, GL_FLOAT, GL_TRUE, 5 * sizeof(GLfloat), (const GLvoid*) (3 * sizeof(GLfloat)));
+
+  // bind the program (the shaders)
+  useProgram(shaderProgram);
+
+  // bind the texture and set the "tex" uniform in the fragment shader
+  
+
+  uint texture_id = ImageLoader::LoadDirect("../hazard.png");
+  activeTexture(GL_TEXTURE0);
+  uniform1i(getAttribLocation(shaderProgram, "tex"), 0);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+
+  
+  //glBindTexture(GL_TEXTURE_2D, tex->ID());
+  //activeTexture(GL_TEXTURE0);
+  //uniform1i(getAttribLocation(shaderProgram, "tex"), 0); //set to 0 because the texture is bound to GL_TEXTURE0
+  
+  // bind the VAO (the triangle)
+  //bindVertexArray(gVAO);
+
+  // draw the VAO
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  // unbind the VAO, the program and the texture
+  //glindVertexArray(0);
+  glBindTexture(GL_TEXTURE_2D, 0);
+  useProgram(0);
+
+
+}
+*/

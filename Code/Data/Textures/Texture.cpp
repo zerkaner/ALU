@@ -33,6 +33,14 @@ SimpleTexture::SimpleTexture(unsigned char* rawdata, unsigned long size, const c
 
 
 void SimpleTexture::SetupGLTextureBuffer() {
+  /* int resX, resY, cmp;
+  GLubyte* imgdata = stbi_load_from_memory(_data, _size, &resX, &resY, &cmp, 0);
+  glGenTextures(1, &_id);
+  glBindTexture(GL_TEXTURE_2D, _id);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, resX, resY,
+    0, GL_RGBA, GL_UNSIGNED_BYTE, imgdata);
+  glBindTexture(GL_TEXTURE_2D, 0); */
 
   // Take care of the byteorder for RGB-masks.
   uint32_t rmask, gmask, bmask, amask;
@@ -97,7 +105,7 @@ void SimpleTexture::SetupGLTextureBuffer() {
 
 
   // Set texture attributes.
-  glEnable(GL_TEXTURE_2D);
+  //glEnable(GL_TEXTURE_2D);
   glGenTextures(1, &_id);
   glBindTexture(GL_TEXTURE_2D, _id);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

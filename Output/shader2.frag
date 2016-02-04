@@ -1,5 +1,3 @@
-#version 110
-
 precision mediump float;
 
 varying vec2 vTextureCoord;
@@ -23,7 +21,6 @@ uniform sampler2D uSampler;
 
 void main(void) {
   vec3 lightWeighting;
-  /*
   if (!uUseLighting) {
     lightWeighting = vec3(1.0, 1.0, 1.0);
   }
@@ -44,14 +41,14 @@ void main(void) {
       + uPointLightingSpecularColor * specularLightWeighting
       + uPointLightingDiffuseColor * diffuseLightWeighting;
   }
-  */
+
   vec4 fragmentColor;
-  //if (uUseTextures) {
-  //  fragmentColor = texture2D(uSampler, vTextureCoord);
-  //}
-  //else {
+  if (uUseTextures) {
+    fragmentColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
+  }
+  else {
     fragmentColor = vec4(1.0, 1.0, 1.0, 1.0);
-  //}
-  gl_FragColor = fragmentColor;// vec4(fragmentColor.rgb * lightWeighting, fragmentColor.a);
-  //if (gl_FragColor.a < 0.5) discard;
+  }
+  gl_FragColor = vec4(fragmentColor.rgb * lightWeighting, fragmentColor.a);
+  if (gl_FragColor.a < 0.5) discard;
 }
