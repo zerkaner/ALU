@@ -100,7 +100,11 @@ GLuint ShaderRenderer::BuildShaderProgram(const char* vss, const char* fss) {
     return 0;
   }
 
-  // All instructions succeeded. Return program ID!
+  // All instructions succeeded. Print information and return program ID!
+  printf("[ShaderRenderer] OpenGL version: %s\n", glGetString(GL_VERSION));
+  printf("[ShaderRenderer] GLSL version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+  printf("[ShaderRenderer] Vendor: %s\n", glGetString(GL_VENDOR));
+  printf("[ShaderRenderer] Renderer: %s\n", glGetString(GL_RENDERER));
   return gProgramID;
 }
 
@@ -178,16 +182,13 @@ void ShaderRenderer::PrintShaderLog(GLuint shader, bool isVtx) {
 /** Create a new shader renderer with the default shader. */
 ShaderRenderer::ShaderRenderer() {
   InitExtensions();
-  const char* v1 = "#version 140\nin vec2 LVertexPos2D; void main() { gl_Position = vec4( LVertexPos2D.x, LVertexPos2D.y, 0, 1 ); }";
-  const char* f1 = "#version 140\nout vec4 LFragment; void main() { LFragment = vec4( 1.0, 1.0, 1.0, 1.0 ); }";
-  const char* v2 = "#version 140\nattribute vec3 posAttr; attribute vec3 norAttr; attribute vec2 texAttr; uniform mat4 uMVMatrix; uniform mat4 uPMatrix; uniform mat3 uNMatrix; varying vec2 vTextureCoord; varying vec3 vTransformedNormal; varying vec4 vPosition; void main(void) { vPosition = uMVMatrix * vec4(posAttr, 1.0); gl_Position = uPMatrix * vPosition; vTextureCoord = texAttr; vTransformedNormal = uNMatrix * norAttr; }";
-  const char* f2 = "#version 140\nprecision mediump float; varying vec2 vTextureCoord; varying vec3 vTransformedNormal; varying vec4 vPosition; uniform float uMaterialShininess; uniform bool uShowSpecularHighlights; uniform bool uUseLighting; uniform bool uUseTextures; uniform vec3 uAmbientColor; uniform vec3 uPointLightingLocation; uniform vec3 uPointLightingSpecularColor; uniform vec3 uPointLightingDiffuseColor; uniform sampler2D uSampler; void main(void) { vec3 lightWeighting; if (!uUseLighting) { lightWeighting = vec3(1.0, 1.0, 1.0); } else { vec3 lightDirection = normalize(uPointLightingLocation - vPosition.xyz); vec3 normal = normalize(vTransformedNormal); float specularLightWeighting = 0.0; if (uShowSpecularHighlights) { vec3 eyeDirection = normalize(-vPosition.xyz); vec3 reflectionDirection = reflect(-lightDirection, normal); specularLightWeighting = pow(max(dot(reflectionDirection, eyeDirection), 0.0), uMaterialShininess); } float diffuseLightWeighting = max(dot(normal, lightDirection), 0.0); lightWeighting = uAmbientColor + uPointLightingSpecularColor * specularLightWeighting + uPointLightingDiffuseColor * diffuseLightWeighting; } vec4 fragmentColor; if (uUseTextures) { fragmentColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t)); } else { fragmentColor = vec4(1.0, 1.0, 1.0, 1.0); } gl_FragColor = vec4(fragmentColor.rgb * lightWeighting, fragmentColor.a); if (gl_FragColor.a < 0.46) discard; }";
-  shaderProgram = BuildShaderProgram(v2, f2);
+  const char* vDef = "in vec3 vert;\nin vec2 vertTexCoord;\nvarying vec2 fragTexCoord;\nvoid main() {\nfragTexCoord = vertTexCoord;\ngl_Position = gl_ModelViewProjectionMatrix * vec4(vert, 1);\n}";
+  const char* fDef = "uniform sampler2D tex;\nvarying vec2 fragTexCoord;\nvoid main() {\ngl_FragColor = texture(tex, fragTexCoord);\n}";
+  shaderProgram = BuildShaderProgram(vDef, fDef);
   if (shaderProgram != 0) {
     SetupShader();
     printf("[ShaderRenderer] Initialized with default shader.\n");
   }
-
 }
 
 
@@ -204,10 +205,6 @@ ShaderRenderer::ShaderRenderer(const char* vsFile, const char* fsFile) {
     if (shaderProgram != 0) {
       SetupShader();
       printf("[ShaderRenderer] Initialized with shaders '%s', '%s'.\n", vsFile, fsFile);
-      printf("[ShaderRenderer] OpenGL version: %s\n", glGetString(GL_VERSION));
-      printf("[ShaderRenderer] GLSL version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-      printf("[ShaderRenderer] Vendor: %s\n", glGetString(GL_VENDOR));
-      printf("[ShaderRenderer] Renderer: %s\n", glGetString(GL_RENDERER));
     }
   }
 }
@@ -278,12 +275,12 @@ void ShaderRenderer::CreateModelVBO(Model* mdl) {
 
 
 
-/* Internal functions for shader handling. */
+/** Set up the shader by obtaining the addresses and enabling the attibute pointers. */
 void ShaderRenderer::SetupShader() { 
+  posAttr = getAttribLocation(shaderProgram, "vert"); enableVertexAttribArray(posAttr);
+  texAttr = getAttribLocation(shaderProgram, "vertTexCoord"); enableVertexAttribArray(texAttr);
 
-  return;
-  useProgram(shaderProgram);
-
+  /*
   // Get the attributes.
   posAttr = getAttribLocation(shaderProgram, "posAttr"); enableVertexAttribArray(posAttr);
   norAttr = getAttribLocation(shaderProgram, "norAttr"); enableVertexAttribArray(norAttr); 
@@ -312,14 +309,30 @@ void ShaderRenderer::SetupShader() {
   uniform3f(ambientColorUniform, 0.6f, 0.3f, 0.3f);
   uniform3f(pointLightingSpecularColorUniform, 1.0f, 1.0f, 1.0f);
   uniform3f(pointLightingDiffuseColorUniform, 0.8f, 0.8f, 0.8f);    
-
   uniform1f(materialShininessUniform, 1.0f);
+  */
 }
 
 
+
+/** Enable or disable the shader renderer. */
+void ShaderRenderer::SetActive(bool enabled) {
+  if (enabled) {
+    useProgram(shaderProgram);
+    activeTexture(GL_TEXTURE0);
+    uniform1i(getAttribLocation(shaderProgram, "tex"), 0);
+  }
+  else { // Unbind texture and the program.
+    glBindTexture(GL_TEXTURE_2D, 0);
+    useProgram(NULL);
+  }
+}
+
+
+
+/** Bind a vertex buffer object to the GPU buffers.
+ * @param vbo VBO to bind. */
 void ShaderRenderer::BindVBO(VertexBufferObject* vbo) {
-  useProgram(shaderProgram);
-  activeTexture(GL_TEXTURE0);
   bindBuffer(GL_ARRAY_BUFFER, vbo->vBuf);  // Load vertex buffer.
   vertexAttribPointer(posAttr, 3, GL_FLOAT, false, 0, 0);
   bindBuffer(GL_ARRAY_BUFFER, vbo->nBuf);   // Load normal vector buffer.
@@ -327,97 +340,15 @@ void ShaderRenderer::BindVBO(VertexBufferObject* vbo) {
   bindBuffer(GL_ARRAY_BUFFER, vbo->tBuf);  // Load texture coordinate buffer.
   vertexAttribPointer(texAttr, 2, GL_FLOAT, false, 0, 0);
   bindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->iBuf); // Load vertex index buffer.
-  useProgram(NULL);
 }
 
-void ShaderRenderer::DrawVBO(VertexBufferObject* vbo, int offset, int length) {
-  useProgram(shaderProgram);
-  
+
+
+/** Draw a part of a bound VBO with the given texture.
+ * @param offset Start index offset for this call.
+ * @param length Number of indices to use for drawing call.
+ * @param texture Index to texture (GPU buffer). */
+void ShaderRenderer::Draw(int offset, int length, GLuint texture) {
+  glBindTexture(GL_TEXTURE_2D, texture);
   glDrawElements(GL_TRIANGLES, length, GL_UNSIGNED_INT, (void*) (offset * sizeof(GLuint)));
-
-
-  useProgram(NULL);
 }
-
-
-
-void ShaderRenderer::Dbg(unsigned int tex, unsigned int offset, unsigned int length, VertexBufferObject* vbo) {
-  useProgram(shaderProgram);
-
-  activeTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, tex);
-  uniform1i(samplerUniform, 0);
-
-  bindBuffer(GL_ARRAY_BUFFER, vbo->vBuf);  // Load vertex buffer.
-  vertexAttribPointer(posAttr, 3, GL_FLOAT, false, 0, 0);
-  bindBuffer(GL_ARRAY_BUFFER, vbo->nBuf);   // Load normal vector buffer.
-  vertexAttribPointer(norAttr, 3, GL_FLOAT, false, 0, 0);
-  bindBuffer(GL_ARRAY_BUFFER, vbo->tBuf);  // Load texture coordinate buffer.
-  vertexAttribPointer(texAttr, 2, GL_FLOAT, false, 0, 0);
-  bindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo->iBuf); // Load vertex index buffer.
-
-  glDrawElements(GL_TRIANGLES, length, GL_UNSIGNED_INT, (void*) (offset * sizeof(GLuint)));
-
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  useProgram(0);
-}
-
-/*
-#include <Data/Textures/ImageLoader.h>
-void ShaderRenderer::Dbg2() {
-
-  GLuint gVBO;
-
-  // make and bind the VBO
-  genBuffers(1, &gVBO);
-  bindBuffer(GL_ARRAY_BUFFER, gVBO);
-
-  // Put the three triangle vertices (XYZ) and texture coordinates (UV) into the VBO
-  GLfloat vertexData[] = {
-    //  X     Y     Z       U     V
-    0.0f, 0.8f, 0.0f, 0.5f, 1.0f,
-    -0.8f, -0.8f, 0.0f, 0.0f, 0.0f,
-    0.8f, -0.8f, 0.0f, 1.0f, 0.0f,
-  };
-  bufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-
-  // connect the xyz to the "vert" attribute of the vertex shader.
-  enableVertexAttribArray(getAttribLocation(shaderProgram, "vert"));
-  vertexAttribPointer(getAttribLocation(shaderProgram, "vert"), 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), NULL);
-
-  // connect the uv coords to the "vertTexCoord" attribute of the vertex shader
-  enableVertexAttribArray(getAttribLocation(shaderProgram, "vertTexCoord"));
-  vertexAttribPointer(getAttribLocation(shaderProgram, "vertTexCoord"), 2, GL_FLOAT, GL_TRUE, 5 * sizeof(GLfloat), (const GLvoid*) (3 * sizeof(GLfloat)));
-
-  // bind the program (the shaders)
-  useProgram(shaderProgram);
-
-  // bind the texture and set the "tex" uniform in the fragment shader
-  
-
-  uint texture_id = ImageLoader::LoadDirect("../hazard.png");
-  activeTexture(GL_TEXTURE0);
-  uniform1i(getAttribLocation(shaderProgram, "tex"), 0);
-  glBindTexture(GL_TEXTURE_2D, texture_id);
-
-  
-  //glBindTexture(GL_TEXTURE_2D, tex->ID());
-  //activeTexture(GL_TEXTURE0);
-  //uniform1i(getAttribLocation(shaderProgram, "tex"), 0); //set to 0 because the texture is bound to GL_TEXTURE0
-  
-  // bind the VAO (the triangle)
-  //bindVertexArray(gVAO);
-
-  // draw the VAO
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-
-  // unbind the VAO, the program and the texture
-  //glindVertexArray(0);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  useProgram(0);
-
-
-}
-*/

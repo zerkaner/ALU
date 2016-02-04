@@ -127,7 +127,7 @@ void ALU::TestConvertedModel(Model* model) {
 
   //ModelUtils::PrintDebug(model);
   model->AnimMgr = new AnimationManager(model);
-  model->AnimMgr->Play("Stand -1");
+  model->AnimMgr->Play("Stand");
 
   ModelTestAgent* mta = new ModelTestAgent(&_world, _world.GetEnvironment(), model, Float3(7.5f, 7.5f, 0.0f));
   _listener.AddControllerModule(mta);

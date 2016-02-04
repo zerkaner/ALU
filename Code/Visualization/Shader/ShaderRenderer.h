@@ -61,12 +61,22 @@ class ShaderRenderer {
     void CreateModelVBO(Model* mdl);
 
 
-    void BindVBO(VertexBufferObject* vbo);
-
-    void DrawVBO(VertexBufferObject* vbo, int offset, int length);
-
+    /** Set up the shader by obtaining the addresses and enabling the attibute pointers. */
     void SetupShader();
 
-    void Dbg(unsigned int tex, unsigned int offset, unsigned int length, VertexBufferObject* vbo);
-    //void Dbg2();
+
+    /** Enable or disable the shader renderer. */
+    void SetActive(bool enabled);
+
+
+    /** Bind a vertex buffer object to the GPU buffers.
+     * @param vbo VBO to bind. */
+    void BindVBO(VertexBufferObject* vbo);
+
+
+    /** Draw a part of a bound VBO with the given texture.
+     * @param offset Start index offset for this call. 
+     * @param length Number of indices to use for drawing call. 
+     * @param texture Index to texture (GPU buffer). */
+    void Draw(int offset, int length, unsigned int texture);
 };
