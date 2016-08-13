@@ -182,8 +182,8 @@ void ShaderRenderer::PrintShaderLog(GLuint shader, bool isVtx) {
 /** Create a new shader renderer with the default shader. */
 ShaderRenderer::ShaderRenderer() {
   InitExtensions();
-  const char* vDef = "in vec3 vert;\nin vec2 vertTexCoord;\nvarying vec2 fragTexCoord;\nvoid main() {\nfragTexCoord = vertTexCoord;\ngl_Position = gl_ModelViewProjectionMatrix * vec4(vert, 1);\n}";
-  const char* fDef = "uniform sampler2D tex;\nvarying vec2 fragTexCoord;\nvoid main() {\ngl_FragColor = texture(tex, fragTexCoord);\n}";
+  const char* vDef = "attribute vec3 vert; attribute vec2 vertTexCoord; varying vec2 fragTexCoord; void main(void) { fragTexCoord = vertTexCoord; gl_Position = gl_ModelViewProjectionMatrix * vec4(vert, 1);}";
+  const char* fDef = "uniform sampler2D tex; varying vec2 fragTexCoord; void main() {gl_FragColor = texture(tex, fragTexCoord);}";
   shaderProgram = BuildShaderProgram(vDef, fDef);
   if (shaderProgram != 0) {
     SetupShader();
@@ -214,7 +214,7 @@ ShaderRenderer::ShaderRenderer(const char* vsFile, const char* fsFile) {
 /** Create a vertex buffer object (VBO) for shader rendering.
  * @params Linear VNTI arrays, their respective sizes and return array (uint[4]).
  * @return Pointer to vertex buffer object. */
-VertexBufferObject* ShaderRenderer::CreateVBO(float* vtx, float* nor, float* tex, 
+VertexBufferObject* ShaderRenderer::CreateVBO(float* vtx, float* nor, float* tex,
   unsigned int* idx, int nrVtx, int nrNor, int nrTex, int nrIdx) {
 
   // Create the buffers.
@@ -274,11 +274,15 @@ void ShaderRenderer::CreateModelVBO(Model* mdl) {
 }
 
 
+uint wgtAttr, bneAttr;
+
 
 /** Set up the shader by obtaining the addresses and enabling the attibute pointers. */
 void ShaderRenderer::SetupShader() { 
   posAttr = getAttribLocation(shaderProgram, "vert"); enableVertexAttribArray(posAttr);
   texAttr = getAttribLocation(shaderProgram, "vertTexCoord"); enableVertexAttribArray(texAttr);
+  wgtAttr = getAttribLocation(shaderProgram, "weights"); enableVertexAttribArray(wgtAttr);
+  bneAttr = getAttribLocation(shaderProgram, "bones"); enableVertexAttribArray(bneAttr);
 
   /*
   // Get the attributes.
