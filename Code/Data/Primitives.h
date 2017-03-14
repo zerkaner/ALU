@@ -46,7 +46,7 @@ struct Float4 {
 
 /** Float structure for three-dimensional data. */
 struct Float3 {
-  float X, Y, Z;  
+  float X, Y, Z;
   public:
     Float3() {}
     Float3(float x, float y, float z) {
@@ -56,7 +56,7 @@ struct Float3 {
     }
     void operator+=(Float3 right) {
       X += right.X;
-      Y += right.Y; 
+      Y += right.Y;
       Z += right.Z;
     }
     Float3 operator*(float val) {

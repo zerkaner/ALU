@@ -9,7 +9,7 @@
  * @param filepath Path to the file to load.
  * @return Pointer to the instantiated model. */
 Model* ModelUtils::Load(const char* filepath) {
-  
+
   // Try to open the file.
   printf("Loading file '%s' ", filepath);
   FILE* fp = fopen(filepath, "rb");
@@ -20,21 +20,21 @@ Model* ModelUtils::Load(const char* filepath) {
   unsigned long bytes = ftell(fp);
   fseek(fp, 0L, SEEK_SET);
   printf("[%lu bytes]\n", bytes);
-  
+
   // Read format identifier and version. Skip on mismatch.
   DWORD formatID;
   fread(&formatID, sizeof(DWORD), 1, fp);
-  if (formatID != '4ULA') { 
-  printf("[ERROR] File format not recognized!\n"); return NULL; 
+  if (formatID != '4ULA') {
+  printf("[ERROR] File format not recognized!\n"); return NULL;
   }
   WORD version;
   fread(&version, sizeof(WORD), 1, fp);
   if (version != 2) {
-    printf("\n[ERROR] File version mismatch (expected '2', got '%d'!\n", version); 
+    printf("\n[ERROR] File version mismatch (expected '2', got '%d'!\n", version);
     return NULL;
   }
 
-  Model* model = new Model();  // Create model object. 
+  Model* model = new Model();  // Create model object.
   model->Version = version;    // Set version number.
 
   // Read model name and vector sizes. Redimension vectors as needed.
@@ -49,7 +49,7 @@ Model* ModelUtils::Load(const char* filepath) {
   fread(&nrSeq, sizeof(uint), 1, fp);  model->Sequences.reserve(nrSeq);
   fread(&nrWgt, sizeof(uint), 1, fp);  model->Weights.reserve(nrWgt);
   fread(&nrTex, sizeof(uint), 1, fp);  model->Textures.reserve(nrTex);
-  
+
   // Read vertices, normals, texture vectors and indices.
   for (uint i = 0; i < nrVtx; i ++) {
     Float3 f = Float3();
@@ -86,7 +86,7 @@ Model* ModelUtils::Load(const char* filepath) {
   }
 
   // Read the bones.
-  for (uint i = 0; i < nrBne; i ++) { 
+  for (uint i = 0; i < nrBne; i ++) {
     Bone bone;
     fread(&bone.Name,   sizeof(char),  32, fp);
     fread(&bone.Parent, sizeof(int),    1, fp);
@@ -95,15 +95,15 @@ Model* ModelUtils::Load(const char* filepath) {
   }
 
   // Read the animation sequences.
-  for (uint i = 0; i < nrSeq; i ++) { 
+  for (uint i = 0; i < nrSeq; i ++) {
     Sequence seq;
     fread(&seq.Name,   sizeof(char), 80, fp);
     fread(&seq.ID,     sizeof(int),   1, fp);
     fread(&seq.Length, sizeof(int),   1, fp);
     fread(&seq.Loop,   sizeof(bool),  1, fp);
     uint nrTSets;
-    fread(&nrTSets, sizeof(uint), 1, fp); // Read size of Bone->TS map. 
-    for (uint s = 0; s < nrTSets; s ++) { // Map read-in loop. 
+    fread(&nrTSets, sizeof(uint), 1, fp); // Read size of Bone->TS map.
+    for (uint s = 0; s < nrTSets; s ++) { // Map read-in loop.
       TransformationSet set;
       uint nt, nr, ns;
       char ref[32];
@@ -157,7 +157,7 @@ Model* ModelUtils::Load(const char* filepath) {
   // Read the weights.
   for (uint i = 0; i < nrWgt; i ++) {
     BoneWeight bw;
-    BYTE w[4];    
+    BYTE w[4];
     fread(&bw.BoneIDs, sizeof(BYTE), 4, fp);
     fread(&w,          sizeof(BYTE), 4, fp);
     for (int j = 0; j < 4; j ++) bw.Factor[j] = w[j]/255.0f;
@@ -167,9 +167,9 @@ Model* ModelUtils::Load(const char* filepath) {
 
 
   // Read the texture chunk.
-  for (uint i = 0; i < nrTex; i ++) { 
+  for (uint i = 0; i < nrTex; i ++) {
     DWORD size;
-    fread(&size, sizeof(DWORD), 1, fp);    
+    fread(&size, sizeof(DWORD), 1, fp);
     BYTE* data = (BYTE*) calloc(size, sizeof(BYTE));
     fread(data, sizeof(BYTE), size, fp);
     SimpleTexture* texture = new SimpleTexture(data, size, "-internal-");
@@ -249,12 +249,12 @@ void ModelUtils::Save(Model* model, const char* savefile) {
       std::vector<TransformationDirective>* r = &iter->second.Rotations;
       std::vector<TransformationDirective>* s = &iter->second.Scalings;
       fwrite(&iter->first->Name, sizeof(char), 32, fp);  // Write bone name. Change it to index!
-      
+
       // Get and write the vector sizes. Needed for loading!
       uint nt = iter->second.Translations.size();
       uint nr = iter->second.Rotations.size();
       uint ns = iter->second.Scalings.size();
-      fwrite(&nt, sizeof(uint), 1, fp);  
+      fwrite(&nt, sizeof(uint), 1, fp);
       fwrite(&nr, sizeof(uint), 1, fp);
       fwrite(&ns, sizeof(uint), 1, fp);
 
@@ -288,7 +288,7 @@ void ModelUtils::Save(Model* model, const char* savefile) {
 
   // Write the weights.
   for (uint i = 0; i < nrWgt; i ++) {
-    fwrite(&model->Weights[i].BoneIDs, sizeof(BYTE), 4, fp);    
+    fwrite(&model->Weights[i].BoneIDs, sizeof(BYTE), 4, fp);
     BYTE w[4];
     for (int j = 0; j < 4; j ++) {
       float f = model->Weights[i].Factor[j];
@@ -331,7 +331,7 @@ void ModelUtils::ScaleModel(Model* model, float factor) {
   for (uint i = 0; i < model->Sequences.size(); i ++) {
     //std::map<Bone2*, TransformationSet>::iterator iter;
     for (std::map<Bone*, TransformationSet>::iterator iter = model->Sequences[i].Transformations.begin();
-         iter != model->Sequences[i].Transformations.end(); 
+         iter != model->Sequences[i].Transformations.end();
          iter ++) {
       for (uint j = 0; j < iter->second.Translations.size(); j ++) {
         TransformationDirective* td = &iter->second.Translations[j];
@@ -381,7 +381,7 @@ void ModelUtils::ScaleModelToExtent(Model* model, char axis, float value) {
     else if (val < minVal) minVal = val;
   }
 
-  // Calculate maximal extents and perform scaling based on desired value. 
+  // Calculate maximal extents and perform scaling based on desired value.
   float factor = value / (maxVal - minVal);
   ScaleModel(model, factor);
 }
@@ -393,10 +393,10 @@ void ModelUtils::PrintDebug(Model* model) {
   FILE* fp = fopen("dbgOut.txt", "w");
 
   // Bone hierarchy.
-  fprintf(fp, "  Bones (%d):\n", model->Bones.size());
+  fprintf(fp, "  Bones (%lu):\n", model->Bones.size());
   for (uint i = 0; i < model->Bones.size(); i ++) {
     Bone* bone = &model->Bones[i];
-    fprintf(fp, 
+    fprintf(fp,
       "  [%02d]  %-24s  Par> %02d  | Pos: %7.4f, %7.4f, %7.4f\n",
       i, bone->Name, bone->Parent, bone->Pivot.X, bone->Pivot.Y, bone->Pivot.Z
     );
@@ -404,7 +404,7 @@ void ModelUtils::PrintDebug(Model* model) {
 
 
   // Animation sequence output.
-  fprintf(fp, "\n  Sequences (%d):", model->Sequences.size());
+  fprintf(fp, "\n  Sequences (%lu):", model->Sequences.size());
   for (uint i = 0; i < model->Sequences.size(); i ++) {
     Sequence* seq = &model->Sequences[i];
     fprintf(fp,
@@ -414,31 +414,31 @@ void ModelUtils::PrintDebug(Model* model) {
       "  - ID:     %d\n"
       "  - Length: %d\n"
       "  - Loop:   %s\n"
-      "  - Transformations (%d sets):\n",
+      "  - Transformations (%lu sets):\n",
 
-      i, seq->Name, seq->ID, seq->Length, seq->Loop? "true" : "false", 
+      i, seq->Name, seq->ID, seq->Length, seq->Loop? "true" : "false",
       seq->Transformations.size()
     );
 
     std::map<Bone*, TransformationSet>::iterator iter;
-    for (iter = seq->Transformations.begin(); iter != seq->Transformations.end(); iter ++) {    
+    for (iter = seq->Transformations.begin(); iter != seq->Transformations.end(); iter ++) {
       std::vector<TransformationDirective>* t = &iter->second.Translations;
       std::vector<TransformationDirective>* r = &iter->second.Rotations;
       std::vector<TransformationDirective>* s = &iter->second.Scalings;
-      
-      fprintf(fp, "    ['%s']\n", iter->first->Name); // Bone name. 
-      fprintf(fp, "    - T: ");                       // Translation output.    
+
+      fprintf(fp, "    ['%s']\n", iter->first->Name); // Bone name.
+      fprintf(fp, "    - T: ");                       // Translation output.
       for (uint ti = 0; ti < iter->second.Translations.size(); ti ++) {
         TransformationDirective td = iter->second.Translations[ti];
         fprintf(fp, "{%d: (%f, %f, %f)}, ", td.Frame, td.X, td.Y, td.Z);
-      } 
+      }
 
       fprintf(fp, "\n    - R: ");                    // Rotation output.
       for (uint ti = 0; ti < iter->second.Rotations.size(); ti ++) {
         TransformationDirective td = iter->second.Rotations[ti];
         fprintf(fp, "{%d: (%f, %f, %f, %f)}, ", td.Frame, td.X, td.Y, td.Z, td.W);
       }
-      
+
       fprintf(fp, "\n    - S: ");                    // Scaling output.
       for (uint ti = 0; ti < iter->second.Scalings.size(); ti ++) {
         TransformationDirective td = iter->second.Scalings[ti];

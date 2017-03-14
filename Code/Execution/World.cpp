@@ -6,6 +6,7 @@
 #include <Physics/Modules/GravityModule.h>
 #include <algorithm>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 
@@ -27,7 +28,7 @@ void World::AdvanceOneTick() {
   _environment->AdvanceEnvironment(); // Advance environment first.
 
   // Main queue: If a random execution is desired, we shuffle the agent list.
-  if (_randomExec) {        
+  if (_randomExec) {
     _rndAgts = std::vector<Agent*> (_agents);
     _execSize = _rndAgts.size();
     for (int i = 0; i < _execSize; i ++) {
@@ -35,7 +36,7 @@ void World::AdvanceOneTick() {
       Agent* temp = _rndAgts[i];
       _rndAgts[i] = _rndAgts[j];
       _rndAgts[j] = temp;
-    }                           
+    }
     for (_execIndex = 0; _execIndex < _execSize; _execIndex ++) {
       _rndAgts[_execIndex]->Tick();  // Execute agent.
     }
@@ -50,7 +51,7 @@ void World::AdvanceOneTick() {
   }
 
   //TODO_physics->Execute();  // Agents are done. Do physics calculation now!
-      
+
   // Post tick: Increase tick counter and write it to blackboard.
   _ticks ++;
   StatsInfo::Ticks = _ticks;
@@ -78,15 +79,15 @@ int GetIndexOfElement(std::vector<Agent*> vec, Agent* elem) {
 
 
 
-void World::RemoveAgent(Agent* agent) {    
+void World::RemoveAgent(Agent* agent) {
 
-  // Remove from agent list. Note: This has to be done regardless of random or 
+  // Remove from agent list. Note: This has to be done regardless of random or
   // sequential execution (because random list is derived from sequential list).
   int aIndex = GetIndexOfElement(_agents, agent);
   if (aIndex != -1) _agents.erase(_agents.begin() + aIndex);
   if (!_randomExec && (aIndex <= _execIndex)) _execIndex --; // Index check for seq.
-      
-  // If we use the shuffled agent execution, remove also from that list. 
+
+  // If we use the shuffled agent execution, remove also from that list.
   if (_randomExec) {
     int rIndex = GetIndexOfElement(_rndAgts, agent);
     if (rIndex != -1) _rndAgts.erase(_rndAgts.begin() + rIndex);
@@ -100,7 +101,7 @@ void World::RemoveAgent(Agent* agent) {
 
 long World::GetID() {
   return _idCounter ++;
-}  
+}
 
 
 

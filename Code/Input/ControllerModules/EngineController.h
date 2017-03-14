@@ -1,4 +1,4 @@
-#pragma once;
+#pragma once
 #include "../IControllerModule.h"
 #include <Visualization/Engine.h>
 

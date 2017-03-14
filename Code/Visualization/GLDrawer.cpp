@@ -1,5 +1,5 @@
 #include "GLDrawer.h"
-#include "Shader/ShaderRenderer.h"
+//TODO #include "Shader/ShaderRenderer.h"
 #include <Data/AnimationManager.h>
 #include <Data/Object3D.h>
 #include <Data/Textures/Texture.h>
@@ -8,7 +8,7 @@
 //#include <Execution/Stopwatch.h>
 //Stopwatch sw = Stopwatch();
 //#include <stdlib.h>
-ShaderRenderer* sr = NULL;
+//TODO ShaderRenderer* sr = NULL;
 
 
 static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone>& bones) {
@@ -32,7 +32,7 @@ static Float3 CalculateVertex(Float3 v, BoneWeight w, vector<Bone>& bones) {
           for (mi = 0; mi < 16; mi ++) mat[mi] += f4 * wm4[mi];
         }
       }
-    } 
+    }
     v = MathLib::TransformByMatrix(v, mat);
   }
   return v;
@@ -44,25 +44,25 @@ void GLDrawer::Draw(Object3D* obj) {
 
   // Instant skip, if no model is assigned or it is disabled.
   if (obj->Model3D == NULL || obj->Model3D->_renderMode == 0) return;
-  
-  //TODO Move lighting somewhere else. Maybe as a Engine.Add() function. 
+
+  //TODO Move lighting somewhere else. Maybe as a Engine.Add() function.
   glEnable (GL_LIGHT0);
-  float lightpos [] = {35.0f, 50.0f, 40.0f, 1.0f};    // Position. 4th is directional (0) or positional. 
+  float lightpos [] = {35.0f, 50.0f, 40.0f, 1.0f};    // Position. 4th is directional (0) or positional.
   float diffuseLight [] = {0.8f, 0.8f, 0.8f, 1.0f};   // Color for diffuse light (RGBA code).
   float ambientLight [] = {0.2f, 0.2f, 0.2f, 1.0f};   // Color for ambient (environmental) light.
   float specularLight[] = {1.0f, 1.0f, 1.0f, 1.0f};   // Specular (reflected) light.
   glLightfv (GL_LIGHT0, GL_POSITION, lightpos);       // Set position of light source.
   glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuseLight);    // Set diffuse light.
   glLightfv (GL_LIGHT0, GL_AMBIENT, ambientLight);    // Set ambient light.
-  glLightfv (GL_LIGHT0, GL_SPECULAR, specularLight);  // Set specular light. 
+  glLightfv (GL_LIGHT0, GL_SPECULAR, specularLight);  // Set specular light.
   glColor3f(1.0, 1.0, 1.0);
-  
+
   glPushMatrix();    // Use designated matrix for object rendering.
-  
+
   // Displace and rotate model based on position and orientation vector.
-  glTranslatef(obj->Position.X, obj->Position.Y, obj->Position.Z);  // Translate object.     
-  glRotatef(obj->Heading.X, 0.0f, 0.0f, -1.0f);   // Rotate on z [height]-Axis (set yaw).       
-  glRotatef(obj->Heading.Y, 1.0f, 0.0f, 0.0f);    // Rotate on x-Axis (set pitch).  
+  glTranslatef(obj->Position.X, obj->Position.Y, obj->Position.Z);  // Translate object.
+  glRotatef(obj->Heading.X, 0.0f, 0.0f, -1.0f);   // Rotate on z [height]-Axis (set yaw).
+  glRotatef(obj->Heading.Y, 1.0f, 0.0f, 0.0f);    // Rotate on x-Axis (set pitch).
 
 
   Model* mdl = obj->Model3D;
@@ -82,18 +82,17 @@ void GLDrawer::Draw(Object3D* obj) {
       break;
     }
 
+    case 2: {  // Draw a triangle mesh.
 
-    case 2: {  // Draw a triangle mesh. 
-      
       for (uint m = 0; m < mdl->Meshes.size(); m ++) { // Mesh loop.
         if (!mdl->Meshes[m].Enabled) continue;
         DWORD idxStart = mdl->Meshes[m].IndexOffset;
         DWORD idxLength = mdl->Meshes[m].IndexLength;
-        
+
         for (DWORD i = 0; i < idxLength; i += 3) {  // Triangle loop.
           DWORD i0 = mdl->Indices[idxStart + i];
           DWORD i1 = mdl->Indices[idxStart + i + 1];
-          DWORD i2 = mdl->Indices[idxStart + i + 2];          
+          DWORD i2 = mdl->Indices[idxStart + i + 2];
           Float3 v1 = mdl->Vertices[i0];
           Float3 v2 = mdl->Vertices[i1];
           Float3 v3 = mdl->Vertices[i2];
@@ -109,13 +108,13 @@ void GLDrawer::Draw(Object3D* obj) {
           glEnd();
         }
       }
-      
+
       // Display the bones and connections.
-      glPointSize(3);          
-      for (uint b = 0; b < mdl->Bones.size(); b ++) { 
+      glPointSize(3);
+      for (uint b = 0; b < mdl->Bones.size(); b ++) {
         Bone* bone = &mdl->Bones[b];
         glBegin(GL_POINTS);
-        glColor3f(1.0, 0.0, 0.0); 
+        glColor3f(1.0, 0.0, 0.0);
         glVertex3f(bone->Position.X, bone->Position.Y, bone->Position.Z);
         glEnd();
         if (bone->Parent != -1) {
@@ -126,7 +125,7 @@ void GLDrawer::Draw(Object3D* obj) {
           glVertex3f(parent->Position.X, parent->Position.Y, parent->Position.Z);
           glEnd();
         }
-      }   
+      }
       glColor3f(1.0, 1.0, 1.0);
       break;
     }
@@ -162,12 +161,12 @@ void GLDrawer::Draw(Object3D* obj) {
       break;
     }
 
-
     // GPU-rendering via GLSL.
     case 4: {
-      if (sr == NULL) sr = new ShaderRenderer(/*
-        "../Shadercode/shader1.vert", 
-        "../Shadercode/shader1.frag"*/);
+      /* TODO //////////
+      if (sr == NULL) sr = new ShaderRenderer();
+        //"../Shadercode/shader1.vert",
+        //"../Shadercode/shader1.frag");
       if (mdl->VBO == NULL) sr->CreateModelVBO(mdl);
       sr->BindVBO(mdl->VBO);
       sr->SetActive(true);
@@ -177,6 +176,7 @@ void GLDrawer::Draw(Object3D* obj) {
         sr->Draw(mesh.IndexOffset, mesh.IndexLength, mdl->Textures[mesh.TextureIdx]->ID());
       }
       sr->SetActive(false);
+      */
       break;
     }
   }

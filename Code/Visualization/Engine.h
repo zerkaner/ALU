@@ -26,15 +26,15 @@ class Engine {
   public:
 
     /** Create a new OpenGL engine instance.
-     * @param winname String with the window title. 
+     * @param winname String with the window title.
      * @param width The window's starting width.
      * @param height The initial height of the window.
      * @param fullscreen If 'true', supplied width and height are ignored.
      * @param camera Pointer to the associated camera.
      * @param ui Pointer to the user interface.
      * @param world The world to draw. */
-    Engine(char* winname, int width, int height, bool fullscreen, Camera* camera, UserInterface* ui, IDrawable* world);
-    
+    Engine(const char* winname, int width, int height, bool fullscreen, Camera* camera, UserInterface* ui, IDrawable* world);
+
 
     /** Terminate the SDL / OpenGL engine and return to main program. */
     ~Engine();
@@ -45,7 +45,7 @@ class Engine {
     SDL_Window** GetWindowHandle();
 
 
-    /** Set the window resolution, update the viewport and adjust perspective. 
+    /** Set the window resolution, update the viewport and adjust perspective.
      * @param width The window's width.
      * @param height The height of the window.
      * @param fullscreen If 'true', supplied width and height are ignored. */

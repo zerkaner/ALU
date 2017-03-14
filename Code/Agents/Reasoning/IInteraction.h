@@ -1,13 +1,13 @@
 #pragma once
 
 
-/** Interaction interface. Just ensures executability, needed by the abstract base agent. */  
+/** Interaction interface. Just ensures executability, needed by the abstract base agent. */
 class IInteraction {
 
   public:
 
     /** Abstract class deconstructor. */
-    ~IInteraction() {}
+    virtual ~IInteraction() {}
 
 
     /** Execute the interaction object. */

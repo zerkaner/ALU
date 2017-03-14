@@ -16,3 +16,6 @@ Project (VS2013)/Laden/
 *.pdb
 *.ilk
 *.bsc
+
+# Mac OSX files.
+.DS_Store

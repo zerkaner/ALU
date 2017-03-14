@@ -8,7 +8,7 @@ class IAgentLogic {
   public:
 
     /** Abstract class destructor. */
-    ~IAgentLogic() {}
+    virtual ~IAgentLogic() {}
 
 
     /** Reasoning logic method.

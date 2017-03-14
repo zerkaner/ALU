@@ -42,12 +42,12 @@ Model* Converter::ReadObj(const char* inputfile) {
   DWORD i1, i2, i3;   // Index input buffers.
 
   Model* model = new Model();   // Create model structure.
-  
+
   // Set the model name and version.
   char dir[256], file[80], name[40], ending[10];
   FileUtils::File_splitPath(inputfile, dir, file);
   FileUtils::File_splitEnding(file, name, ending);
-  strcpy(model->Name, name); 
+  strcpy(model->Name, name);
   model->Version = 2;
 
 
@@ -56,7 +56,7 @@ Model* Converter::ReadObj(const char* inputfile) {
   vector<UnevenTriangle> triangles;
   Mesh* curMesh = NULL;     // Currently selected mesh.
   DWORD indicesRead = 0;    // Number of indices that belong to the current mesh.
-  DWORD indicesOffset = 0;  // Position of current mesh's first index in total array.  
+  DWORD indicesOffset = 0;  // Position of current mesh's first index in total array.
 
   // Main read-in loop. Runs over the entire file and evaluates the read line.
   while (fgets(buffer, 256, fp) != NULL) {
@@ -83,24 +83,24 @@ Model* Converter::ReadObj(const char* inputfile) {
     else if (startsWith(buffer, "f ")) {
       UnevenTriangle* triangle = new UnevenTriangle();
 
-      char* splitPtr = strtok(buffer, " ");   // Split of first segment.   
+      char* splitPtr = strtok(buffer, " ");   // Split of first segment.
       for (int i = 0;  splitPtr != NULL;      // While there's something left.
         i ++, splitPtr = strtok(NULL, " ")) { // Advance counter and take next bit.
 
         // Dereference the vertices, normals and texture crap.
-        if (sscanf(splitPtr, "%d/%d/%d", &i1, &i2, &i3) == 3) {  // Vertex, texeland normal.
+        if (sscanf(splitPtr, "%ld/%ld/%ld", &i1, &i2, &i3) == 3) {  // Vertex, texel and normal.
           triangle->vIdx[i] = i1 - 1;  triangle->tIdx[i] = i2 - 1;  triangle->nIdx[i] = i3 - 1;
         }
 
-        else if (sscanf(splitPtr, "%d//%d", &i1, &i2) == 2) {   // Vertex and normal.
+        else if (sscanf(splitPtr, "%ld//%ld", &i1, &i2) == 2) {   // Vertex and normal.
           triangle->vIdx[i] = i1 - 1;  triangle->nIdx[i] = i2 - 1;  triangle->tIdx[i] = 0;
         }
 
-        else if (sscanf(splitPtr, "%d/%d", &i1, &i2) == 2) {    // Vertex and texel.
+        else if (sscanf(splitPtr, "%ld/%ld", &i1, &i2) == 2) {    // Vertex and texel.
           triangle->vIdx[i] = i1 - 1;  triangle->nIdx[i] = 0;  triangle->tIdx[i] = i2 - 1;
         }
 
-        else if (sscanf(splitPtr, "%d", &i1) == 1) {           // Vertex only.
+        else if (sscanf(splitPtr, "%ld", &i1) == 1) {           // Vertex only.
           triangle->vIdx[i] = i1 - 1;  triangle->nIdx[i] = 0;  triangle->tIdx[i] = 0;
         }
 
@@ -113,7 +113,7 @@ Model* Converter::ReadObj(const char* inputfile) {
     // Material definition: =>  usemtl ElepEYE
     else if (startsWith(buffer, "usemtl ")) {
       char mtl[32];
-      sscanf(buffer, "usemtl %s", &mtl);
+      sscanf(buffer, "usemtl %s", mtl);
 
       // Save current mesh before we create the new one.
       if (curMesh != NULL) {
@@ -150,11 +150,11 @@ Model* Converter::ReadObj(const char* inputfile) {
 
   // Print parser results.
   printf("Parser results:\n"
-    " - Meshes    : %d\n"
-    " - Vertices  : %d\n"
-    " - Normals   : %d\n"
-    " - TexCoords : %d\n"
-    " - Geometries: %d\n",
+    " - Meshes    : %lu\n"
+    " - Vertices  : %lu\n"
+    " - Normals   : %lu\n"
+    " - TexCoords : %lu\n"
+    " - Geometries: %lu\n",
     model->Meshes.size(), model->Vertices.size(), model->Normals.size(), model->UVs.size(), triangles.size());
 
   // Rectify the indices.
@@ -202,8 +202,8 @@ void AlignIndices(Model* model, vector<UnevenTriangle>* faces) {
 
       // If this <v,vn,vt> pair already has an index, we use it!
       if (indexMapping.count(indices)) index = indexMapping[indices];
-      
-      else { // Otherwise we append a new vertex and index.    
+
+      else { // Otherwise we append a new vertex and index.
         index = vertexBuffer.size();
         Vertex vtx = Vertex();
         vtx.position = model->Vertices[indices.v];
@@ -223,7 +223,7 @@ void AlignIndices(Model* model, vector<UnevenTriangle>* faces) {
   model->Normals.clear();   model->Normals.reserve(nrElem);
   model->UVs.clear();       model->UVs.reserve(nrElem);
 
-  // Write new values to the model array.  
+  // Write new values to the model array.
   for (uint i = 0; i < nrElem; i ++) {
     model->Vertices.push_back(vertexBuffer[i].position);
     model->Normals.push_back(vertexBuffer[i].normal);
@@ -232,5 +232,5 @@ void AlignIndices(Model* model, vector<UnevenTriangle>* faces) {
 
   printf("[finished]\n"
          " - new V/N/T sizes: %d\n"
-         " - new index size : %d\n", nrElem, model->Indices.size());
+         " - new index size : %lu\n", nrElem, model->Indices.size());
 }

@@ -47,7 +47,7 @@ void Converter::WriteJson(Model* model, const char* savefile) {
   fprintf(writer, "  \"Indices\":  [");
   int nrIdx = model->Indices.size();
   for (int i = 0; i < nrIdx; i ++) {
-    fprintf(writer, "%d%s", model->Indices[i], (i < nrIdx - 1) ? "," : "");
+    fprintf(writer, "%lu%s", model->Indices[i], (i < nrIdx - 1) ? "," : "");
   } fprintf(writer, "],\n\n\n");
 
 
@@ -60,8 +60,8 @@ void Converter::WriteJson(Model* model, const char* savefile) {
     fprintf(writer, "      \"ID\":          \"%s\",\n", model->Meshes[i].ID);
     fprintf(writer, "      \"Enabled\":     %s,\n", model->Meshes[i].Enabled? "true" : "false");
     fprintf(writer, "      \"Texture\":     \"%s\",\n", model->Meshes[i].Texture);
-    fprintf(writer, "      \"IndexOffset\": %d,\n", model->Meshes[i].IndexOffset);
-    fprintf(writer, "      \"IndexLength\": %d,\n", model->Meshes[i].IndexLength);
+    fprintf(writer, "      \"IndexOffset\": %lu,\n", model->Meshes[i].IndexOffset);
+    fprintf(writer, "      \"IndexLength\": %lu,\n", model->Meshes[i].IndexLength);
     fprintf(writer, "      \"Attached\":    %s\n", model->Meshes[i].Attached? "true" : "false");
     fprintf(writer, "    }%s", (i < nrMeshes-1)? "," : "\n  ");
   } fprintf(writer, "],\n\n\n");
@@ -99,11 +99,11 @@ void Converter::WriteJson(Model* model, const char* savefile) {
       std::vector<TransformationDirective>* s = &iter->second.Scalings;
       fprintf(writer, "\n        {\n");
       fprintf(writer, "          \"Bone\":         \"%s\",\n", iter->first->Name);
-      
-      fprintf(writer, "          \"Translations\": [");    
+
+      fprintf(writer, "          \"Translations\": [");
       for (uint ti = 0; ti < iter->second.Translations.size(); ti ++) {
         TransformationDirective td = iter->second.Translations[ti];
-        fprintf(writer, "[%d, [%f, %f, %f]]%s", 
+        fprintf(writer, "[%d, [%f, %f, %f]]%s",
           td.Frame, td.X, td.Y, td.Z, (ti < iter->second.Translations.size()-1)? ", ":"");
       } fprintf(writer, "],\n");
 
@@ -131,6 +131,6 @@ void Converter::WriteJson(Model* model, const char* savefile) {
 
   // Close output file stream.
   fprintf(writer, "}");
-  printf("Written %d bytes to file '%s'.\n", ftell(writer), savefile);
+  printf("Written %lu bytes to file '%s'.\n", ftell(writer), savefile);
   fclose(writer);
 }

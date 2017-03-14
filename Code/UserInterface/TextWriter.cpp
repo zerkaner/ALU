@@ -5,7 +5,12 @@
 
 #include <stdio.h>
 #include <SDL_opengl.h>
-#include <gl/GLU.h>
+
+#ifdef __APPLE__
+  #include <OpenGL/glu.h>
+#else
+  #include <gl/GLU.h>
+#endif
 
 
 
@@ -19,10 +24,10 @@ TextWriter::TextWriter(char* filename) {
   }
 
   fread(&_font, sizeof(Font), 1, file);        // Read in font structure.
-  glGenTextures(1, &_font.TextureID);          // Generate OpenGL texture number.     
+  glGenTextures(1, &_font.TextureID);          // Generate OpenGL texture number.
   int nrChars = _font.End - _font.Start + 1;   // Get number of characters.
   _font.Characters = new Character[nrChars];   // Allocate memory for characters.
-  fread(_font.Characters, sizeof(Character), nrChars, file);	// Read in characters.     
+  fread(_font.Characters, sizeof(Character), nrChars, file);	// Read in characters.
   int size = _font.Width * _font.Height * 2;	       // Get texture size.
   unsigned char* textures = new unsigned char[size]; // Allocate memory for texture data.
   fread(textures, sizeof(char), size, file);         // Read texture data from file.
@@ -55,7 +60,7 @@ void TextWriter::InitializeDefaultFont() {
 
 
 void TextWriter::InitializeTexture(unsigned char* texture) {
-	
+
   // Set texture attributes.
 	glBindTexture(GL_TEXTURE_2D, _font.TextureID);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -65,7 +70,7 @@ void TextWriter::InitializeTexture(unsigned char* texture) {
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	// Create texture.
-	glTexImage2D(GL_TEXTURE_2D, 0, 2, _font.Width, _font.Height, 0, 
+	glTexImage2D(GL_TEXTURE_2D, 0, 2, _font.Width, _font.Height, 0,
                GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, (void*) texture);
 }
 
@@ -78,18 +83,18 @@ TextWriter::~TextWriter() {
 
 
 void TextWriter::WriteText(char* text, int x, int y) {
-   
-  // Enable font texture.  
+
+  // Enable font texture.
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, _font.TextureID);
-      
+
   // Use quad mode to draw each character.
   glBegin(GL_QUADS);
   for (int i = 0; text[i] != '\0'; i ++) {
-        
+
     // Calculate pointer to the char to print.
-    Character* c = &_font.Characters[(int)text[i] - _font.Start]; 
-		
+    Character* c = &_font.Characters[(int)text[i] - _font.Start];
+
 		// Specify vertices and texture coordinates.
 		glTexCoord2f(c->tx1, c->ty1);	  glVertex2i(x, y);
 		glTexCoord2f(c->tx1, c->ty2);   glVertex2i(x, y + c->height);

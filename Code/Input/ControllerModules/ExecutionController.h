@@ -16,7 +16,7 @@ class ExecutionController : public IControllerModule {
      * @param runtime ALU reference. */
     ExecutionController(ALU* runtime) {
       _runtime = runtime;
-    }  
+    }
 
 
     /** A key was pressed.

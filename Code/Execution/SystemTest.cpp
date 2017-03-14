@@ -1,7 +1,3 @@
-#ifndef _WIN32
-#define _WIN32
-#endif
-
 #include <Converter/Converter.h>
 #include <Converter/DBCParser.h>
 #include <Execution/ALU.h>
@@ -9,7 +5,7 @@
 
 int main(int argc, char** argv) {
 
-  // Run converter on parameter "--conv". 
+  // Run converter on parameter "--conv".
   if (argc > 1 && (strcmp(argv[1], "--conv") == 0)) {
     Converter(argc - 2, &argv[2]);
   }
@@ -30,8 +26,8 @@ int main(int argc, char** argv) {
     alu->Start();
     delete(alu);
   }
-  
-  // Delay exit (for debug reasons), then return. 
+
+  // Delay exit (for debug reasons), then return.
   printf("Press any key to exit.");
   getchar();
   return 0;

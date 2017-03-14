@@ -1,0 +1,35 @@
+# Directory and name settings.
+SRC  = ./Code
+OUT  = ./Output
+NAME = ALU_OSX
+
+#OBJS specifies which files to compile as part of the project.
+OBJS = $(wildcard $(SRC)/Agents/*.cpp)\
+       $(wildcard $(SRC)/Agents/Perception/*.cpp)\
+       $(wildcard $(SRC)/Agents/Reasoning/*.cpp)\
+       $(wildcard $(SRC)/Converter/*.cpp)\
+       $(wildcard $(SRC)/Converter/Modules/*.cpp)\
+       $(wildcard $(SRC)/Converter/Utils/*.cpp)\
+       $(wildcard $(SRC)/Data/*.cpp)\
+       $(wildcard $(SRC)/Data/Compression/*.cpp)\
+       $(wildcard $(SRC)/Data/Math/*.cpp)\
+       $(wildcard $(SRC)/Data/Textures/*.cpp)\
+       $(wildcard $(SRC)/Environment/*.cpp)\
+       $(wildcard $(SRC)/Execution/*.cpp)\
+       $(wildcard $(SRC)/Input/*.cpp)\
+       $(wildcard $(SRC)/Input/ControllerModules/*.cpp)\
+       $(wildcard $(SRC)/Physics/*.cpp)\
+       $(wildcard $(SRC)/Physics/Modules/*.cpp)\
+       $(wildcard $(SRC)/UserInterface/*.cpp)\
+       $(wildcard $(SRC)/Visualization/*.cpp)\
+
+# Include paths.
+INC_PATHS = -I$(SRC) -I./Ressources/SDL2-2.0.3/include
+
+# Compiler flags.
+C_FLAGS = -Os -std=c++11 -Wno-switch
+
+
+#This is the target that compiles our executable.
+all : $(OBJS)
+	g++ $(OBJS) $(C_FLAGS) $(INC_PATHS) -framework SDL2 -framework OpenGL -o $(OUT)/$(NAME)

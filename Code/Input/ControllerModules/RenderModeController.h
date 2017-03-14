@@ -1,4 +1,4 @@
-#pragma once;
+#pragma once
 #include "../IControllerModule.h"
 #include <Data/Object3D.h>
 #include <vector>
@@ -38,7 +38,7 @@ public:
           Model* model = (*_worldObjects)[i]->Model3D;
           if (model != NULL) model->_renderMode = dpMode;
         }
-      }    
+      }
     }
   }
 };

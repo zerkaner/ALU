@@ -34,8 +34,8 @@ void Converter::ReadGlf(const char* inputfile, const char* savename) {
   fprintf(writer, "0 };\n");
 
   int nrChars = e - s + 1;    // Number of characters: End position - start position + 1.
-  
-  fprintf(writer, "  defFont.Characters = new Character[%d];\n\n", nrChars); 
+
+  fprintf(writer, "  defFont.Characters = new Character[%d];\n\n", nrChars);
   fprintf(writer, "  // Size and texture vector definition for each character:");
   for (int j = 0; j < nrChars; j ++) {
     fprintf(writer, "\n  defFont.Characters[%2d] = {", j);
@@ -43,12 +43,12 @@ void Converter::ReadGlf(const char* inputfile, const char* savename) {
 		ch.width =  (int)((ch.tx2 - ch.tx1)*w); //| Perform calculation here.
 		ch.height = (int)((ch.ty2 - ch.ty1)*h); //| (storage precision too low)
     fprintf(writer, "%d, ", ch.width);      // Character width.
-    fprintf(writer, "%d, ", ch.height);     // Character height. 
-    fprintf(writer, "%ff, ", ch.tx1);       // Texture x1.  
-    fprintf(writer, "%ff, ", ch.ty1);       // Texture y1.  
-    fprintf(writer, "%ff, ", ch.tx2);       // Texture x2.  
-    fprintf(writer, "%ff",   ch.ty2);       // Texture y2.  
-    fprintf(writer, " };");  
+    fprintf(writer, "%d, ", ch.height);     // Character height.
+    fprintf(writer, "%ff, ", ch.tx1);       // Texture x1.
+    fprintf(writer, "%ff, ", ch.ty1);       // Texture y1.
+    fprintf(writer, "%ff, ", ch.tx2);       // Texture x2.
+    fprintf(writer, "%ff",   ch.ty2);       // Texture y2.
+    fprintf(writer, " };");
   }
   fprintf(writer, "\n  return defFont;\n}");
 
@@ -60,12 +60,12 @@ void Converter::ReadGlf(const char* inputfile, const char* savename) {
   while ((c = fgetc (fp)) != EOF) {
     if (i == 0) fprintf(writer, "\n  ");  // Indent new line by two spaces.
     fprintf(writer, "0x%02x, ", c);       // Output in hex (like 0x21). %d is also possible.
-    if (++i == 16) i = 0;                 // Limit line length to 16. 
+    if (++i == 16) i = 0;                 // Limit line length to 16.
   }
   fprintf(writer, "\n};\n");
 
   // Close in- and output file stream.
-  printf ("Written %d bytes to file '%s'.\n", ftell(writer), savename);  
+  printf ("Written %lu bytes to file '%s'.\n", ftell(writer), savename);
   fclose(writer);
   fclose(fp);
 }

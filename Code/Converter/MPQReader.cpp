@@ -7,6 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __APPLE__
+  #define FSEEK64 fseeko     // Mac OSX (64 bit).
+#else
+  #define FSEEK64 _fseeki64  // Windows.
+#endif
+
 
 //_________________________________________________________________________________________________
 // PUBLIC FUNCTIONS.
@@ -41,7 +47,7 @@ void MPQReader::Close() {
 
 
 
-BYTE* MPQReader::ExtractFile(char* filename, DWORD* filesize) {
+BYTE* MPQReader::ExtractFile(const char* filename, DWORD* filesize) {
   if (_archive == NULL || _fp == NULL) {
     printf("[MPQReader] Error extracting file '%s'. No archive opened!\n", filename);
     return NULL;
@@ -80,7 +86,7 @@ void MPQReader::PrepareCryptTable() {
 
 
 
-unsigned long MPQReader::HashString(char* filename, unsigned long hashtype) {
+unsigned long MPQReader::HashString(const char* filename, unsigned long hashtype) {
   unsigned char* key = (unsigned char*) filename;
   unsigned long seed1 = 0x7FED7FED, seed2 = 0xEEEEEEEE;
   int ch;
@@ -110,7 +116,7 @@ void MPQReader::DecryptBlock(void* block, long length, unsigned long key) {
 
 
 
-int MPQReader::GetHashTablePos(char* filename, HashTableEntry* hashtable, DWORD tablesize) {
+int MPQReader::GetHashTablePos(const char* filename, HashTableEntry* hashtable, DWORD tablesize) {
   DWORD nHash = HashString(filename, 0);
   DWORD nHashA = HashString(filename, 1);
   DWORD nHashB = HashString(filename, 2);
@@ -123,7 +129,7 @@ int MPQReader::GetHashTablePos(char* filename, HashTableEntry* hashtable, DWORD 
     else nHashPos = (nHashPos + 1) % tablesize;
     if (nHashPos == nHashStart) break;
   }
-  return -1; // Return error value ("not found"). 
+  return -1; // Return error value ("not found").
 }
 
 
@@ -133,8 +139,8 @@ MPQArchive* MPQReader::OpenArchive(FILE* fp) {
 
   do { // Scan for 'MPQ\x1A' header block.
     fread(&signature, sizeof(DWORD), 1, fp);
-  } while(signature != '\x1AQPM'); 
-  
+  } while(signature != '\x1AQPM');
+
   DWORD headerSize;      // Size of the archive header.
   DWORD archiveSize;     // Size of MPQ archive (deprecated since Burning Crusade).
   WORD version;          // 0 = Original, 1 = Burning Crusade, 2+ WotLK and newer.
@@ -155,7 +161,7 @@ MPQArchive* MPQReader::OpenArchive(FILE* fp) {
   QWORD highBlocktablePos; // Offset to the beginning of array of 16-bit high parts of file offsets.
   WORD highHashtable;      // High 16 bits of the hash table offset for large archives.
   WORD highBlocktable;     // High 16 bits of the block table offset for large archives.
-  if (version == 1) {      // Burning Crusade header contains additional 12 bytes. 
+  if (version == 1) {      // Burning Crusade header contains additional 12 bytes.
     fread(&highBlocktablePos, sizeof(QWORD), 1, fp);
     fread(&highHashtable, sizeof(WORD), 1, fp);
     fread(&highBlocktable, sizeof(WORD), 1, fp);
@@ -171,9 +177,9 @@ MPQArchive* MPQReader::OpenArchive(FILE* fp) {
   // Create storage for hash and block table and read them from file. Decrypt tables afterwards.
   HashTableEntry*  hashtable = (HashTableEntry*) calloc(hashtableSize, sizeof(HashTableEntry));
   BlockTableEntry* blocktable = (BlockTableEntry*) calloc(blocktableSize, sizeof(BlockTableEntry));
-  _fseeki64(fp, (long long) hashtableHiPos, SEEK_SET);
+  FSEEK64(fp, (long long) hashtableHiPos, SEEK_SET);
   fread(hashtable, sizeof(HashTableEntry), hashtableSize, fp);
-  _fseeki64(fp, (long long) blocktableHiPos, SEEK_SET);
+  FSEEK64(fp, (long long) blocktableHiPos, SEEK_SET);
   fread(blocktable, sizeof(BlockTableEntry), blocktableSize, fp);
   DecryptBlock(hashtable, hashtableSize * 4, HashString("(hash table)", 3));
   DecryptBlock(blocktable, blocktableSize * 4, HashString("(block table)", 3));
@@ -195,10 +201,10 @@ MPQArchive* MPQReader::OpenArchive(FILE* fp) {
 bool MPQReader::ReadSector(void* destination, FILE* fp, int sectorSize, int dataSize) {
 
   // The block content must be compressed by at least one byte (inclusive compression byte). Otherwise, the data
-  // is not compressed at all (because it would be of no use). In that case, we just read it directly.  
+  // is not compressed at all (because it would be of no use). In that case, we just read it directly.
   if (sectorSize < dataSize) {
 
-    // Read compression algorithm. 
+    // Read compression algorithm.
     BYTE compression = 0x00;
     fread(&compression, sizeof(BYTE), 1, fp);
 
@@ -242,7 +248,7 @@ bool MPQReader::ReadSector(void* destination, FILE* fp, int sectorSize, int data
 
 
 
-BYTE* MPQReader::ReadFile(FILE* fp, MPQArchive* archive, char* filename, DWORD* filesize) {
+BYTE* MPQReader::ReadFile(FILE* fp, MPQArchive* archive, const char* filename, DWORD* filesize) {
 
   // Query file from hash table. Quit, if file not found!
   int result = GetHashTablePos(filename, archive->hashtable, archive->hashtableSize);
@@ -284,11 +290,11 @@ BYTE* MPQReader::ReadFile(FILE* fp, MPQArchive* archive, char* filename, DWORD* 
 
 
   // Set stream pointer to begin of file data and reserve result memory.
-  _fseeki64(fp, (long long) archive->blocktable[index].position, SEEK_SET);
+  FSEEK64(fp, (long long) archive->blocktable[index].position, SEEK_SET);
   BYTE* filedata = (BYTE*) malloc(uncompressedSize);
   bool success;  // Stores reading returns to determine success.
 
-  // The file is stored as a single block.  
+  // The file is stored as a single block.
   if (isSingleUnit) success = ReadSector(filedata, fp, compressedSize, uncompressedSize);
 
   // Otherwise we have a segmentation.
@@ -302,7 +308,7 @@ BYTE* MPQReader::ReadFile(FILE* fp, MPQArchive* archive, char* filename, DWORD* 
     // It tells us the starting positions of each sector (and thereby the sizes of the compressed data).
     if (isCompressed) {
 
-      // Sector offset table exists: Calculate and read the sector sizes.   
+      // Sector offset table exists: Calculate and read the sector sizes.
       DWORD* sectorOffsets = (DWORD*) calloc(nrSectors, sizeof(DWORD));
       fread(sectorOffsets, sizeof(DWORD), nrSectors, fp);
       DWORD dbuf;                                                      //| At the end of the sector offset table follows
@@ -311,8 +317,8 @@ BYTE* MPQReader::ReadFile(FILE* fp, MPQArchive* archive, char* filename, DWORD* 
       // Loop over all sectors.
       for (int i = 0; i < nrSectors; i ++) {
 
-        // Calculate sector sizes.   
-        int target = (i < nrSectors - 1) ? sectorOffsets[i + 1] : compressedSize;  // Offset target: Next sector or EOF. 
+        // Calculate sector sizes.
+        int target = (i < nrSectors - 1) ? sectorOffsets[i + 1] : compressedSize;  // Offset target: Next sector or EOF.
         int comprSize = target - sectorOffsets[i] - 1;  // Length to read. Reduced by one because compression byte is separate.
         int uncomprSize = (i < nrSectors - 1) ? archive->blocksize : uncompressedSize%archive->blocksize; // Target size.
 

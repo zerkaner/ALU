@@ -22,7 +22,7 @@ class MemoryStream {
 
 
     /** Create a memory stream for a byte array.
-     * @param data The byte array. 
+     * @param data The byte array.
      * @param size The length of the array. */
     MemoryStream(BYTE* data, DWORD size) {
       _data = data;
@@ -34,7 +34,7 @@ class MemoryStream {
     /** Create memory stream for a file from a MPQ archive.
      * @param reader An initialized MPQ reader pointing to the right file.
      * @param file The file to extract from the archive. */
-    MemoryStream(MPQReader* reader, char* file) {
+    MemoryStream(MPQReader* reader, const char* file) {
       _data = reader->ExtractFile(file, &_size);
       if (_data == NULL) printf("[MemoryStream] Error reading file '%s' from archive!\n", file);
     }
@@ -57,14 +57,14 @@ class MemoryStream {
 
 
     /** Reads data from the current position of the stream.
-     * @param destination Target address to write data to. 
+     * @param destination Target address to write data to.
      * @param bytes The number of bytes to read. */
     void Read(void* destination, int bytes) {
       if (_data != NULL && _position + bytes < _size) {
         memcpy(destination, &_data[_position], bytes);
         _position += bytes;
       }
-      else printf("[MemoryStream] Address violation at position '%u'!\n", (_position + bytes));
+      else printf("[MemoryStream] Address violation at position '%lu'!\n", (_position + bytes));
     }
 
 
@@ -82,7 +82,7 @@ class MemoryStream {
 
     /** Prints the current stream position. */
     void Tell() {
-      printf("[MemoryStream] Current position: %u / %u.\n", _position, _size);
+      printf("[MemoryStream] Current position: %lu / %lu.\n", _position, _size);
     }
 
 
