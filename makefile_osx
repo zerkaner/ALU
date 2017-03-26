@@ -24,7 +24,7 @@ OBJS = $(wildcard $(SRC)/Agents/*.cpp)\
        $(wildcard $(SRC)/Visualization/*.cpp)\
 
 # Include paths.
-INC_PATHS = -I$(SRC) -I./Ressources/SDL2-2.0.3/include
+INC_PATHS = -I$(SRC) -I./Resources/SDL2-2.0.5/include
 
 # Compiler flags.
 C_FLAGS = -Os -std=c++11 -Wno-switch

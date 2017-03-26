@@ -63,7 +63,7 @@ struct Float3 {
       return Float3(X * val, Y * val, Z * val);
     }
     float Distance(Float3 other) {
-      return sqrt(
+      return sqrtf(
         (X - other.X)*(X - other.X) +
         (Y - other.Y)*(Y - other.Y) +
         (Z - other.Z)*(Z - other.Z));

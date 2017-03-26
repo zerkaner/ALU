@@ -1,7 +1,7 @@
 # Directory and name settings.
 SRC  = ./Code
 OUT  = ./Output
-RES  = ./Ressources
+RES  = ./Resources
 NAME = ALU_standalone.exe
 
 
@@ -27,10 +27,10 @@ OBJS = $(wildcard $(SRC)/Agents/*.cpp)\
        $(wildcard $(SRC)/Visualization/Shader/*.cpp)\
 
 # Include paths.
-INC_PATHS = -I$(SRC) -I$(RES)/SDL2-2.0.3/include
+INC_PATHS = -I$(SRC) -I$(RES)/SDL2-2.0.5/include
 
 # Library paths.
-LIB_PATHS = -L$(RES)/SDL2-2.0.3/lib_x86_mingw
+LIB_PATHS = -L$(RES)/SDL2-2.0.5/lib_x86_mingw
 
 # Compiler flags.
 C_FLAGS = -Os -w -Wl,-subsystem,console

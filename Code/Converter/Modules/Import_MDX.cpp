@@ -376,12 +376,12 @@ Model* Converter::ReadMdx(const char* inputfile) {
 
       // Go over the TRS sets. Because they're basically the same, we use this generic loop.
       for (int setLoop = 0; setLoop < 3; setLoop ++) {
-        MDX_AnimSet* animset;
-        vector<TransformationDirective>* vec;
+        MDX_AnimSet* animset = NULL;
+        vector<TransformationDirective>* vec = NULL;
         if (setLoop == 0) { animset = bones[b].Translation; vec = &set.Translations; }
         if (setLoop == 1) { animset = bones[b].Rotation; vec = &set.Rotations; }
         if (setLoop == 2) { animset = bones[b].Scaling; vec = &set.Scalings; }
-        if (animset == 0) continue;  // Skip on empty set, else loop over its entries.
+        if (animset == NULL) continue;  // Skip on empty set, else loop over its entries.
         for (int s = 0; s < animset->Size; s ++) {
           int frame = animset->Time[s];
           if (frame < start) continue;   // Before start: Skip!
@@ -392,7 +392,7 @@ Model* Converter::ReadMdx(const char* inputfile) {
           dir.Y = animset->Values[s].Y;
           dir.Z = animset->Values[s].Z;
           if (setLoop == 1) dir.W = animset->Values[s].W;  //| 4th value (quaternion).
-          vec->push_back(dir);                             //| We only have it on 2nd set!
+          if (vec != NULL) vec->push_back(dir);            //| We only have it on 2nd set!
         }
       }
 

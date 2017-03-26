@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Agents">
+      <UniqueIdentifier>{51980fdd-c1c9-41e9-8676-cae23966ebd3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Converter">
+      <UniqueIdentifier>{29ab8534-7564-4b70-a7dc-b7dd17169c1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{3cf5fd64-7a72-4099-a6b6-4963bd004da7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Environment">
+      <UniqueIdentifier>{6855e0e9-9c36-4285-aadc-e03c05d38ce1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Execution">
+      <UniqueIdentifier>{b12236df-d6de-4a17-94d3-700e443e68b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{a8cf9ea6-f056-43a3-a160-09cee7c102d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visualization">
+      <UniqueIdentifier>{56cfeb81-9ecd-48c4-b002-7bf3bee19b6d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{cdc82ca5-89e2-418c-82b3-73e9373266d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UserInterface">
+      <UniqueIdentifier>{12143306-5348-4094-a21d-e02616886eb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics\Modules">
+      <UniqueIdentifier>{f2b39ec9-71bc-45d8-9e57-bb5107ae6d5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Input\ControllerModules">
+      <UniqueIdentifier>{9b549005-f2a4-4b79-b435-b9453eef31eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Agents\Perception">
+      <UniqueIdentifier>{7d2ce918-96de-42b5-8b15-403c34df755d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Agents\Reasoning">
+      <UniqueIdentifier>{3f406afa-a6ba-4434-adeb-28c8a308da7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Textures">
+      <UniqueIdentifier>{1df3deb3-a954-4782-89d9-9681c005de42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Compression">
+      <UniqueIdentifier>{bb0650bf-b71c-4dda-b44e-ed66d4bc0ccb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Converter\Modules">
+      <UniqueIdentifier>{8af7c576-1524-49e6-b925-0a4dc54e963c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Converter\Utils">
+      <UniqueIdentifier>{229db1d2-5e7b-4864-a9a4-ae97b338c5b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data\Math">
+      <UniqueIdentifier>{11521a9b-a61b-418f-910f-2f6255834970}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Visualization\Shader">
+      <UniqueIdentifier>{e3ac7335-a3bb-4d75-8860-7e529032e7f1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\Agents\Agent.cpp">
+      <Filter>Agents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Visualization\Engine.cpp">
+      <Filter>Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Execution\ALU.cpp">
+      <Filter>Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Physics\PhysicsEngine.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\UserInterface\TextWriter.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\UserInterface\UserInterface.cpp">
+      <Filter>UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Visualization\Camera.cpp">
+      <Filter>Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Execution\SystemTest.cpp">
+      <Filter>Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Input\InputListener.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\StatsInfo.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Execution\World.cpp">
+      <Filter>Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Visualization\GLDrawer.cpp">
+      <Filter>Visualization</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Textures\Texture.cpp">
+      <Filter>Data\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Textures\stb_image.cpp">
+      <Filter>Data\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Textures\ImageLoader.cpp">
+      <Filter>Data\Textures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\DBCParser.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\MPQReader.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Compression\Archiver.cpp">
+      <Filter>Data\Compression</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Model.cpp">
+      <Filter>Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Export_JSON.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_MDX.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_OBJ.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Utils\FileUtils.cpp">
+      <Filter>Converter\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_GLF.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Converter.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Converter\Modules\Import_M2.cpp">
+      <Filter>Converter\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Data\Math\MathLib.cpp">
+      <Filter>Data\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Visualization\Shader\ShaderRenderer.cpp">
+      <Filter>Visualization\Shader</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Agents\Agent.h">
+      <Filter>Agents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Object3D.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Primitives.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\Engine.h">
+      <Filter>Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\ALU.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Physics\IPhysicsModule.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Physics\PhysicsEngine.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\UserInterface\TextWriter.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\UserInterface\UserInterface.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\Camera.h">
+      <Filter>Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\InputListener.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Physics\Modules\GravityModule.h">
+      <Filter>Physics\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Environment\Environment.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\Stopwatch.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Environment\GridTerrain.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\StatsInfo.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerFPS.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\CameraControllerRTS.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\ExecutionController.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\IDrawable.h">
+      <Filter>Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Environment\HeightmapTerrain.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\UserInterface\FontArchive.h">
+      <Filter>UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\EngineController.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Execution\World.h">
+      <Filter>Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Physics\Modules\DragModule.h">
+      <Filter>Physics\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Environment\Quadtree.h">
+      <Filter>Environment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\Reasoning\IAgentLogic.h">
+      <Filter>Agents\Reasoning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\Reasoning\IInteraction.h">
+      <Filter>Agents\Reasoning</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\Perception\Sensor.h">
+      <Filter>Agents\Perception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\Perception\PerceptionUnit.h">
+      <Filter>Agents\Perception</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\TestAgent.h">
+      <Filter>Agents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\SpatialAgent.h">
+      <Filter>Agents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\IControllerModule.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\GLDrawer.h">
+      <Filter>Visualization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Textures\stb_image.h">
+      <Filter>Data\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Textures\Texture.h">
+      <Filter>Data\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\InputSymbols.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Textures\ImageLoader.h">
+      <Filter>Data\Textures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Agents\ModelTestAgent.h">
+      <Filter>Agents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\DBCParser.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\MPQReader.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Compression\Archiver.h">
+      <Filter>Data\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Compression\Miniz.h">
+      <Filter>Data\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\AnimationManager.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Input\ControllerModules\RenderModeController.h">
+      <Filter>Input\ControllerModules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Model.h">
+      <Filter>Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\Utils\FileUtils.h">
+      <Filter>Converter\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\Converter.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Converter\Utils\MemoryStream.h">
+      <Filter>Converter\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Data\Math\MathLib.h">
+      <Filter>Data\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Visualization\Shader\ShaderRenderer.h">
+      <Filter>Visualization\Shader</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -2,10 +2,10 @@
 # Lists all files that Git shall ignore:
 
 
-# Temporary compile data: 
-Project (VS2013)/[Dd]ebug/
-Project (VS2013)/[Rr]elease/
-Project (VS2013)/Laden/
+# Visual Studio temporary data: 
+VS2017-Project/[Dd]ebug/
+VS2017-Project/[Rr]elease/
+VS2017-Project/.vs/
 
 # Project cache files:
 *.sdf
